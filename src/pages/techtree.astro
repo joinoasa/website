@@ -1,0 +1,463 @@
+---
+import Base from '../layouts/Base.astro';
+import tree from '../data/techtree.json';
+import { site, contact, nav } from '../config/site';
+import TreeMap from '../components/techtree/TreeMap.astro';
+
+const ORDER = [
+  'Roots', 'Trunk', 'Air', 'Lighter-than-air & wind', 'Ground', 'Surface water', 'Underwater',
+  'Sensing', 'Manipulation', 'Operations', 'Infrastructure inspection', 'Commercial services', 'Space',
+];
+const INTRO: Record<string, string> = {
+  Roots: 'What every system needs: communications, security, power, control, navigation and timing.',
+  Trunk: 'The shared platform: mesh, TAK map, payloads, logs, AI, docks and RF.',
+  Air: 'From a low-cost quad to aircraft that stay aloft indefinitely.',
+  'Lighter-than-air & wind': 'Kites, aerostats and solar blimps.',
+  Ground: 'Rovers, legged robots and city and snow robots.',
+  'Surface water': 'Boats, buoys and cleanup vessels.',
+  Underwater: 'Subs, tethers and acoustic links.',
+  Sensing: 'Cameras, thermal, LiDAR, radar, acoustics and mapping.',
+  Manipulation: 'Arms, drops, launchers and speakers.',
+  Operations: 'Fleets, repair, logistics and community services.',
+  'Infrastructure inspection': 'Roads, pipes, power lines, bridges, dams and levees.',
+  'Commercial services': 'Roof inspection, construction tracking, cleaning.',
+  Space: 'Near space, CubeSats and planetary analogs.',
+};
+const STATUS_LABEL: Record<string, string> = { available: 'Available', locked: 'Locked', 'in-progress': 'In progress', done: 'Done' };
+
+const branches = ORDER.filter((b) => tree.branches.includes(b)).map((b) => ({
+  name: b,
+  slug: b.toLowerCase().replace(/[^a-z]+/g, '-'),
+  nodes: tree.nodes.filter((n) => n.branch === b),
+}));
+const known = new Set(tree.nodes.map((n) => n.id));
+const nodeById = new Map(tree.nodes.map((n) => [n.id, n]));
+const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five'];
+type Part = { id?: string; text?: string };
+// Requires rendered from the groups: "A-1 or A-2, T-NET2", "T-AI1, two of X-2, X-3, X-4".
+function requiresParts(n: (typeof tree.nodes)[number]): Part[] {
+  const out: Part[] = [];
+  n.requiresGroups.forEach((g: any, gi: number) => {
+    if (gi > 0) out.push({ text: ', ' });
+    if (g.kind === 'atLeast') out.push({ text: `${WORDS[g.n] ?? g.n} of ` });
+    const items: Part[] = [...g.ids.map((id: string) => ({ id })), ...(g.text ?? []).map((text: string) => ({ text }))];
+    items.forEach((it, i) => {
+      if (i > 0) out.push({ text: g.kind === 'any' ? ' or ' : ', ' });
+      out.push(it);
+    });
+    if (g.note) out.push({ text: ` (${g.note})` });
+  });
+  return out;
+}
+const short = (id: string) => (nodeById.get(id)?.name ?? id).replace(/ \(.*$/, '').toLowerCase().replace(/^tak /, 'TAK ');
+// Same call-to-action rules as the map popup.
+function cta(n: (typeof tree.nodes)[number]): { href: string; label: string } | null {
+  if (n.github) return { href: n.github, label: 'See the work on GitHub' };
+  if (n.status !== 'available') return null;
+  if (site.links.techtreeIssues) {
+    const u = new URL(`${site.links.techtreeIssues.replace(/\/$/, '')}/issues/new`);
+    u.searchParams.set('title', `[${n.id}] ${n.name}`);
+    u.searchParams.set('labels', 'techtree');
+    return { href: u.toString(), label: 'Start this on GitHub' };
+  }
+  return { href: nav.apply.href, label: 'Apply to work on this' };
+}
+const counts = {
+  available: tree.nodes.filter((n) => n.status === 'available').length,
+  progress: tree.nodes.filter((n) => n.status === 'in-progress').length,
+  done: tree.nodes.filter((n) => n.status === 'done').length,
+};
+---
+<Base title="Tech tree" description="Every technology OASA plans to build, what each one requires, what it unlocks and which moonshots depend on it. Start with the available nodes.">
+  <header class="page-head">
+    <div class="wrap head-row">
+      <h1>Tech tree</h1>
+      <p class="lede">Finish a node to unlock what depends on it. Blocked by a missing node? That's your next project.</p>
+      <p class="legend">
+        <span class="status" data-s="available">{counts.available} available</span>
+        <span class="status" data-s="in-progress">{counts.progress} in progress</span>
+        <span class="status" data-s="done">{counts.done} done</span>
+        <span class="status" data-s="locked">{tree.nodes.length - counts.available - counts.progress - counts.done} locked</span>
+      </p>
+      <div class="views" role="group" aria-label="View" hidden data-views>
+        <button type="button" aria-pressed="true" data-view-btn="tree">Tree</button>
+        <button type="button" aria-pressed="false" data-view-btn="list">List</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tm-wide"><TreeMap order={ORDER} /></div>
+
+  <div data-listview>
+  <div class="page-head-more">
+    <div class="wrap">
+      <div class="start" id="start-here">
+        <h2>Start here</h2>
+        <ul>
+          {tree.nodes.filter((n) => n.status === 'available').map((n) => (
+            <li><a href={`#${n.id}`}><span class="nid">{n.id}</span> {n.name}</a></li>
+          ))}
+        </ul>
+      </div>
+      <details class="howto" id="how-to-read">
+        <summary>How to read the tree</summary>
+        <div class="howto-body">
+          <p>
+            Example: <a href="#R-COM1"><span class="nid">R-COM1</span></a> ({short('R-COM1')}) and <a href="#R-SEC1"><span class="nid">R-SEC1</span></a> ({short('R-SEC1')}) are both needed for <a href="#R-COM2"><span class="nid">R-COM2</span></a> ({short('R-COM2')}).
+            Finish that, and <a href="#T-MAP1"><span class="nid">T-MAP1</span></a> ({short('T-MAP1')}) is one step closer.
+          </p>
+          <p>Available means nothing is blocking it: members can start now. Locked nodes open up once the nodes they require are done.</p>
+          <p>In <strong>Requires</strong>, commas mean all of these are needed. "A or B" means either one. "two of A, B, C" means any two. Unlocks is worked out from Requires.</p>
+          <h3>ID prefixes</h3>
+          <ul class="prefixes">
+            {tree.prefixes.map((p) => (<li><span class="nid">{p.prefix}</span> {p.area}</li>))}
+          </ul>
+        </div>
+      </details>
+      <section class="critical" id="critical-path" aria-labelledby="cp-h">
+        <h2 id="cp-h">Critical path</h2>
+        <p class="key">The nodes that unlock the most of the tree.</p>
+        <ol>
+          {tree.criticalPath.map((c) => (
+            <li>
+              <span class="cp-ids">{c.ids.map((id, i) => (<>{i > 0 && <span class="arrow" aria-hidden="true"> → </span>}{i > 0 && <span class="visually-hidden"> then </span>}<a href={`#${id}`}><span class="nid">{id}</span></a></>))}</span>
+              {c.label && <span class="cp-label"> ({c.label})</span>}{c.text && <span class="cp-text">: {c.text}</span>}
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
+  </div>
+
+  <div class="wrap layout">
+    <aside class="filters" aria-label="Filter the tech tree" hidden>
+      <label for="q">Search nodes</label>
+      <input id="q" type="search" placeholder="Name, ID or science" autocomplete="off" />
+      <fieldset>
+        <legend>Branches</legend>
+        <button type="button" class="chip" aria-pressed="true" data-branch="all"><span>All</span><span class="count">{tree.nodes.length}</span></button>
+        {branches.map((b) => (<button type="button" class="chip" aria-pressed="false" data-branch={b.slug}><span>{b.name}</span><span class="count">{b.nodes.length}</span></button>))}
+      </fieldset>
+      <label class="check"><input id="only-available" type="checkbox" /> Only show available</label>
+      <button type="button" class="btn btn-ghost clear" hidden>Clear filters</button>
+    </aside>
+
+    <div class="tree">
+      <p class="result-count"></p>
+      <p class="visually-hidden" role="status" aria-live="polite" id="announce"></p>
+      {branches.map((b) => (
+        <section class="branch" data-branch={b.slug} id={b.slug}>
+          <h2>{b.name}</h2>
+          <p class="branch-intro">{INTRO[b.name]}</p>
+          <ul class="nodes">
+            {b.nodes.map((n) => (
+              <li class="node" id={n.id} data-status={n.status} data-text={`${n.id} ${n.name} ${n.sciences}`.toLowerCase()}>
+                <details>
+                  <summary>
+                    <span class="nid">{n.id}</span>
+                    <span class="nname">{n.name}</span>
+                    <span class="ucount">{n.unlocks.length > 0 ? `Unlocks ${n.unlocks.length}` : ''}</span>
+                    <span class="status" data-s={n.status}>{STATUS_LABEL[n.status]}</span>
+                  </summary>
+                  <dl class="meta">
+                    <div><dt>Requires</dt><dd>{n.requiresGroups.length ? requiresParts(n).map((p) => (p.id ? <a href={`#${p.id}`}>{p.id}</a> : p.text)) : 'Nothing. Start here.'}</dd></div>
+                    <div><dt>Unlocks</dt><dd>{n.unlocks.length ? n.unlocks.map((r, i) => (<>{i > 0 && ', '}<a href={`#${r}`}>{r}</a></>)) : 'Nothing yet'}</dd></div>
+                    {n.enables && <div><dt>Enables</dt><dd>{n.enables}</dd></div>}
+                    <div><dt>Needed by</dt><dd>{n.neededBy.total > 0 ? `${n.neededBy.direct} directly, ${n.neededBy.total} in total` : n.neededBy.moonshots.length ? 'No other nodes' : 'Nothing depends on this yet'}</dd></div>
+                    {n.neededBy.moonshots.length > 0 && <div><dt>Moonshots</dt><dd>{n.neededBy.moonshots.map((m, i) => (<>{i > 0 && ', '}<a href={`/moonshots/#${m}`}>{m}</a></>))}</dd></div>}
+                    <div><dt>You'll learn</dt><dd>{n.sciences} · <a href="/docs/academy/">Academy</a></dd></div>
+                  </dl>
+                  {cta(n) && <p class="start-now"><a href={cta(n)!.href}>{cta(n)!.label}</a></p>}
+                </details>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <div class="empty" hidden>
+        <p>No nodes match. Try another search or branch, or {site.links.ideaBoard ? <><a href={site.links.ideaBoard}>propose a new node on the idea board</a>.</> : <>tell us what is missing at <a href={`mailto:${contact('general')}`}>{contact('general')}</a>.</>}</p>
+        <button type="button" class="btn btn-ghost reset">Clear search and filters</button>
+      </div>
+    </div>
+  </div>
+  </div>
+</Base>
+
+<script>
+  // Tree / list toggle. Without JavaScript only the list shows.
+  {
+    const tm = document.querySelector<HTMLElement>('[data-tree]')!;
+    const list = document.querySelector<HTMLElement>('[data-listview]')!;
+    const group = document.querySelector<HTMLElement>('[data-views]')!;
+    const btns = [...group.querySelectorAll<HTMLButtonElement>('[data-view-btn]')];
+    const KEY = 'oasa-techtree-view';
+    const show = (v: string, save = true) => {
+      const tree = v !== 'list';
+      tm.hidden = !tree;
+      list.hidden = tree;
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.viewBtn === (tree ? 'tree' : 'list'))));
+      if (save) { try { localStorage.setItem(KEY, tree ? 'tree' : 'list'); } catch {} }
+      const p = new URLSearchParams(location.search);
+      if (tree) p.delete('view'); else p.set('view', 'list');
+      const qs = p.toString();
+      history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);
+      if (tree) tm.dispatchEvent(new Event('tm:show'));
+    };
+    group.hidden = false;
+    btns.forEach((b) => b.addEventListener('click', () => {
+      show(b.dataset.viewBtn!);
+      // Switching to the list with a #ID in the URL: open that row (the load-time handler skipped it while the map was showing).
+      if (b.dataset.viewBtn === 'list') window.dispatchEvent(new HashChangeEvent('hashchange'));
+    }));
+    let saved: string | null = null;
+    try { saved = localStorage.getItem(KEY); } catch {}
+    const fromUrl = new URLSearchParams(location.search).get('view');
+    show(fromUrl ?? saved ?? 'tree', false);
+    window.addEventListener('hashchange', () => { if (!tm.hidden) tm.dispatchEvent(new Event('tm:hash')); });
+  }
+
+  const q = document.getElementById('q') as HTMLInputElement;
+  const only = document.getElementById('only-available') as HTMLInputElement;
+  const panel = document.querySelector<HTMLElement>('.filters')!;
+  panel.hidden = false;
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.chip')];
+  const sections = [...document.querySelectorAll<HTMLElement>('.branch')];
+  const empty = document.querySelector<HTMLElement>('.empty')!;
+  const resetBtns = [...document.querySelectorAll<HTMLButtonElement>('.reset, .clear')];
+  const clearBtn = document.querySelector<HTMLButtonElement>('.clear')!;
+  const result = document.querySelector<HTMLElement>('.result-count')!;
+  const announce = document.getElementById('announce')!;
+  const total = document.querySelectorAll('.node').length;
+  const slugs = new Set(chips.map((c) => c.dataset.branch!));
+  let branch = 'all';
+  let announceTimer: number | undefined;
+
+  const tokens = () => q.value.toLowerCase().split(/[\s,]+/).filter(Boolean);
+  const matches = (li: HTMLElement, toks: string[]) => toks.every((t) => li.dataset.text!.includes(t));
+
+  function syncUrl() {
+    const p = new URLSearchParams(location.search); // keep other params such as view
+    p.delete('q'); p.delete('branch'); p.delete('avail');
+    if (q.value.trim()) p.set('q', q.value.trim());
+    if (branch !== 'all') p.set('branch', branch);
+    if (only.checked) p.set('avail', '1');
+    const qs = p.toString();
+    history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);
+  }
+
+  function apply() {
+    const toks = tokens();
+    let shown = 0;
+    const perBranch: Record<string, number> = {};
+    let matchAll = 0;
+    for (const s of sections) {
+      const inBranch = branch === 'all' || s.dataset.branch === branch;
+      let visible = 0;
+      let count = 0;
+      for (const li of s.querySelectorAll<HTMLElement>('.node')) {
+        const textOk = matches(li, toks) && (!only.checked || li.dataset.status === 'available');
+        if (textOk) count++;
+        const ok = inBranch && textOk;
+        li.hidden = !ok;
+        if (ok) visible++;
+      }
+      perBranch[s.dataset.branch!] = count;
+      matchAll += count;
+      s.hidden = visible === 0;
+      shown += visible;
+    }
+    for (const c of chips) {
+      const n = c.dataset.branch === 'all' ? matchAll : perBranch[c.dataset.branch!];
+      c.querySelector('.count')!.textContent = String(n);
+    }
+    empty.hidden = shown > 0;
+    const filtered = toks.length > 0 || only.checked || branch !== 'all';
+    clearBtn.hidden = !filtered;
+    // The empty block already says "No nodes match." on screen, so the visible count stays blank then.
+    result.classList.toggle('is-empty', shown === 0);
+    const text = shown === 0 ? 'No nodes match.' : filtered ? `Showing ${shown} of ${total} nodes` : '';
+    result.textContent = shown === 0 ? '' : text;
+    clearTimeout(announceTimer);
+    announceTimer = window.setTimeout(() => { announce.textContent = text; }, 400);
+    syncUrl();
+  }
+
+  function setBranch(slug: string) {
+    branch = slug;
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.branch === slug)));
+  }
+
+  chips.forEach((c) => c.addEventListener('click', () => {
+    setBranch(c.dataset.branch!);
+    apply();
+  }));
+  q.addEventListener('input', apply);
+  only.addEventListener('change', apply);
+  resetBtns.forEach((b) => b.addEventListener('click', () => {
+    q.value = '';
+    only.checked = false;
+    setBranch('all');
+    apply();
+    q.focus();
+  }));
+
+  // Open and reveal a node when linked by #ID. Clear only the filters that hide the target.
+  function openHash() {
+    // The map handles hashes while it shows; do not touch the list filters then.
+    if (document.querySelector<HTMLElement>('[data-listview]')!.hidden) return;
+    const el = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (!el) return;
+    if (el.tagName === 'DETAILS') { (el as HTMLDetailsElement).open = true; return; }
+    if (!el.classList.contains('node')) return;
+    const section = el.closest<HTMLElement>('.branch')!;
+    if (el.hidden || section.hidden) {
+      if (branch !== 'all' && section.dataset.branch !== branch) setBranch('all');
+      if (only.checked && el.dataset.status !== 'available') only.checked = false;
+      if (!matches(el, tokens())) q.value = '';
+      apply();
+    }
+    el.querySelector('details')!.open = true;
+    el.scrollIntoView({ block: 'center' });
+  }
+  window.addEventListener('hashchange', openHash);
+  // A link to the hash we are already on fires no hashchange: handle it here.
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!a || !a.closest('.tree, .start, #critical-path, #how-to-read')) return;
+    if (a.hash === location.hash) openHash();
+  });
+
+  // Read state from the URL first, then honour a #NODE hash.
+  const params = new URLSearchParams(location.search);
+  q.value = params.get('q') ?? '';
+  only.checked = params.get('avail') === '1';
+  const wanted = params.get('branch');
+  if (wanted && slugs.has(wanted)) setBranch(wanted);
+  apply();
+  openHash();
+
+  // Print every node's requirements: open all rows, then restore.
+  let wasClosed: HTMLDetailsElement[] = [];
+  window.addEventListener('beforeprint', () => {
+    wasClosed = [...document.querySelectorAll<HTMLDetailsElement>('.node details')].filter((d) => !d.open);
+    wasClosed.forEach((d) => { d.open = true; });
+  });
+  window.addEventListener('afterprint', () => { wasClosed.forEach((d) => { d.open = false; }); wasClosed = []; });
+</script>
+
+<style>
+  .views { display: inline-flex; border: 2px solid var(--ink); border-radius: var(--radius-md); overflow: hidden; }
+  .views[hidden] { display: none; }
+  .views button { font: inherit; font-weight: var(--weight-ui); min-height: var(--tap); min-width: 6rem; padding: 0 var(--space-4); border: 0; background: var(--white); color: var(--ink); cursor: pointer; }
+  .views button + button { border-left: 2px solid var(--ink); }
+  .views button[aria-pressed='true'] { background: var(--ink); color: var(--white); }
+  .views button:hover:not([aria-pressed='true']) { background: var(--sky); }
+  [data-listview][hidden] { display: none; }
+  .page-head-more { padding-top: var(--space-2); }
+  .legend { display: flex; gap: var(--space-2) var(--space-5); flex-wrap: wrap; margin: 0; }
+  .tm-wide { width: min(100% - 2 * var(--gutter), 100rem); margin-inline: auto; }
+  header.page-head { padding-block: var(--space-4); }
+  .head-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); }
+  .head-row h1 { font-size: var(--step-3); margin: 0; flex: none; }
+  .head-row .lede { font-size: var(--step-0); margin: 0; flex: 1 1 0; min-width: 14rem; }
+  .head-row .views { margin: 0; flex: none; }
+  .head-row .views button { min-width: 4.5rem; }
+  .head-row .legend { flex: none; }
+  @media (max-width: 1100px) {
+    .head-row h1 { order: 1; flex: 1; }
+    .head-row .views { order: 2; }
+    .head-row .lede { order: 3; flex-basis: 100%; }
+    .head-row .legend { order: 4; flex-basis: 100%; }
+  }
+  .key { font-size: var(--step--1); color: var(--ink-muted); }
+  .start { margin-top: var(--space-6); padding: var(--space-4) var(--space-5); background: var(--paper); border: 1px solid var(--contour); border-radius: var(--radius-sm); }
+  .start h2 { font-size: var(--step-1); margin-bottom: var(--space-2); }
+  .start ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-6); }
+  .start a { display: inline-flex; gap: var(--space-2); min-height: var(--tap); align-items: center; text-decoration: none; color: var(--ink); font-weight: var(--weight-bold); }
+  .start a:hover { color: var(--chart-deep); }
+  .start .nid { color: var(--available); }
+  .howto { margin-top: var(--space-4); border: 1px solid var(--contour); border-radius: var(--radius-sm); background: var(--white); }
+  .howto summary { display: block; padding: var(--space-3) var(--space-5); min-height: var(--tap); font-weight: var(--weight-bold); cursor: pointer; }
+  .howto[open] summary { border-bottom: 1px solid var(--contour); }
+  .howto-body { padding: var(--space-3) var(--space-5) var(--space-4); font-size: var(--step--1); }
+  .howto-body h3 { font-size: var(--step-0); margin: var(--space-3) 0 var(--space-2); }
+  .howto .nid, .critical .nid { color: var(--chart-deep); }
+  .prefixes { list-style: none; margin: 0; padding: 0; columns: 2 16rem; column-gap: var(--space-6); }
+  .prefixes li { break-inside: avoid; padding-block: 0.15rem; }
+  .critical { margin-top: var(--space-4); padding: var(--space-4) var(--space-5); border: 1px solid var(--contour); border-radius: var(--radius-sm); background: var(--white); scroll-margin-top: var(--space-4); }
+  .critical h2 { font-size: var(--step-1); margin-bottom: var(--space-1); }
+  .critical ol { margin: var(--space-2) 0 0; padding-left: 1.5rem; display: grid; gap: var(--space-1); font-size: var(--step--1); }
+  .critical a { text-decoration: none; font-weight: var(--weight-bold); }
+  .critical a:hover { text-decoration: underline; }
+  .cp-label { color: var(--ink-muted); }
+  .start-now { margin: 0; padding: 0 var(--space-1) var(--space-4) 6.25rem; font-size: var(--step--1); color: var(--ink-soft); }
+  .clear { justify-self: start; }
+  .clear[hidden] { display: none; }
+  .filters[hidden] { display: none; }
+  .layout:has(.filters[hidden]) { grid-template-columns: minmax(0, 1fr); }
+  .layout { display: grid; grid-template-columns: 15rem 1fr; gap: clamp(var(--space-6), 4vw, var(--space-12)); padding-block: var(--space-8) var(--space-12); align-items: start; }
+
+  .filters { position: sticky; top: var(--space-4); display: grid; gap: var(--space-3); font-size: var(--step--1); }
+  @media (min-width: 861px) { .filters { max-height: calc(100svh - 2 * var(--space-4)); overflow-y: auto; overscroll-behavior: contain; align-content: start; } }
+  .filters label { font-weight: var(--weight-bold); }
+  .filters input[type='search'] { font: inherit; font-size: var(--step-0); padding: var(--space-2) var(--space-3); border: 1px solid var(--line-control); border-radius: var(--radius-md); min-height: var(--tap); background: var(--white); color: var(--ink); width: 100%; }
+  fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: var(--space-1); }
+  legend { font-weight: var(--weight-bold); margin-bottom: var(--space-2); padding: 0; }
+  .chip { font: inherit; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); text-align: left; border: 2px solid transparent; border-radius: var(--radius-md); background: transparent; color: var(--ink-soft); padding: var(--space-1) var(--space-2); min-height: 2rem; cursor: pointer; transition: background-color var(--dur-feedback) var(--ease-out), color var(--dur-feedback) var(--ease-out); }
+  .chip:hover { background: var(--sky); color: var(--ink); }
+  .chip:active { transform: translateY(var(--press-shift)); }
+  .chip .count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed='true'] { background: var(--ink); color: var(--white); font-weight: var(--weight-bold); }
+  .chip[aria-pressed='true'] .count { color: var(--on-dark-muted); }
+  .check { display: flex; gap: var(--space-2); align-items: center; min-height: var(--tap); font-weight: 400 !important; }
+  .check input { width: 1.25rem; height: 1.25rem; margin: 0; flex: none; }
+
+  .result-count { font-size: var(--step--1); color: var(--ink-muted); margin: 0 0 var(--space-3); min-height: 1lh; }
+  .result-count.is-empty { position: absolute; width: 1px; height: 1px; min-height: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .branch { margin-bottom: var(--space-10); scroll-margin-top: var(--space-4); }
+  .branch h2 { font-size: var(--step-2); margin-bottom: 0.2em; }
+  .branch-intro { color: var(--ink-muted); margin-bottom: var(--space-3); }
+  .nodes { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .node { border-bottom: 1px solid var(--contour); scroll-margin-top: 6rem; }
+  summary { display: grid; grid-template-columns: 5.5rem 1fr auto 6.5rem; gap: var(--space-3); align-items: baseline; padding: var(--space-3) var(--space-1); cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover .nname { color: var(--chart-deep); }
+  details[open] summary { background: var(--sky); }
+  .nid { font-family: var(--font-display); font-weight: var(--weight-bold); font-stretch: var(--stretch-condensed); color: var(--chart-deep); white-space: nowrap; }
+  .ucount { font-size: var(--step--1); color: var(--ink-muted); white-space: nowrap; }
+  .node[data-status='available'] .nid { color: var(--available); }
+  .nname { font-weight: var(--weight-bold); }
+  .node:target summary { background: var(--accent-tint); }
+
+  .meta { margin: 0; padding: var(--space-2) var(--space-1) var(--space-4) 6.25rem; display: grid; gap: var(--space-2); font-size: var(--step--1); }
+  .meta div { display: grid; grid-template-columns: 7rem 1fr; gap: var(--space-2); }
+  .meta dt { color: var(--ink-muted); font-weight: var(--weight-bold); }
+  .meta dd { margin: 0; }
+  .empty { color: var(--ink-muted); }
+  .empty .btn { margin-top: var(--space-2); }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .filters { position: static; min-width: 0; }
+    summary { grid-template-columns: auto 1fr auto; row-gap: var(--space-1); }
+    summary .nname { grid-column: 1 / -1; grid-row: 2; }
+    summary .ucount { grid-column: 2; grid-row: 1; justify-self: end; }
+    summary .status { grid-column: 3; grid-row: 1; }
+    fieldset { min-width: 0; display: flex; flex-wrap: nowrap; gap: var(--space-2); overflow-x: auto; margin-inline: calc(-1 * var(--gutter)); padding: var(--space-1) var(--gutter); scroll-padding-inline: var(--gutter); scrollbar-width: thin; }
+    .chip { flex: none; min-height: var(--tap); border-color: var(--line-control); border-radius: var(--radius-pill); padding: 0 var(--space-4); }
+    .chip[aria-pressed='true'] { border-color: var(--ink); }
+    .start-now { padding-left: var(--space-1); }
+    .meta { padding-left: var(--space-1); }
+    .meta div { grid-template-columns: 1fr; gap: 0; }
+  }
+
+  @media (forced-colors: active) {
+    .chip[aria-pressed='true'] { outline: 2px solid currentColor; outline-offset: -2px; }
+  }
+  @media print {
+    [data-listview][hidden] { display: block; } /* print the list even while the map is showing */
+    .filters, .result-count, .empty { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    .node { break-inside: avoid; }
+  }
+</style>

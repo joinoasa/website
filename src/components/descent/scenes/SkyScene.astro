@@ -1,0 +1,53 @@
+---
+import type { Layer } from '../types';
+import { cloud } from '../art';
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { part } = Astro.props;
+
+const clouds = [
+  { c: cloud(95, 312, 210, 44), style: '--delay:-18s', cls: '' },
+  { c: cloud(470, 296, 250, 50), style: '--delay:-40s;--dur:90s', cls: '' },
+  { c: cloud(360, 668, 290, 46), style: '--delay:-5s', cls: '' },
+  { c: cloud(830, 120, 230, 40), style: '--delay:-30s', cls: 'd-only' },
+];
+const fracs: [number, number, string, string][] = [[575, 420, '40', '15'], [520, 700, '40', 'SFC']];
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:#d6e5f4">
+    <g class="d-only">
+      <circle cx="548" cy="-40" r="26" class="sun" />
+      <circle cx="548" cy="-40" r="38" class="sun-ring" />
+    </g>
+    <g mask="url(#fade-sky)">
+      <path d="M-1500 70H700 M-1500 255H700" class="fl-line" />
+      <circle cx="620" cy="980" r="360" class="airspace" />
+      <circle cx="620" cy="980" r="600" class="airspace" />
+    </g>
+    {clouds.map((k) => (
+      <g class:list={['m-drift', k.cls]} style={k.style}>
+        <path d={k.c.base} class="cloud-base" />
+        <path d={k.c.top} class="cloud-top" />
+      </g>
+    ))}
+    <text x="596" y="63" class="cl cl-air" text-anchor="end">FL 450</text>
+    <text x="596" y="248" class="cl cl-air" text-anchor="end">FL 180</text>
+    {fracs.map(([x, y, top, bot]) => (
+      <g transform={`translate(${x} ${y})`}>
+        <text y="0" class="cl cl-airspace" text-anchor="middle">{top}</text>
+        <path d="M-14 6H14" class="frac-rule" />
+        <text y="22" class="cl cl-airspace" text-anchor="middle">{bot}</text>
+      </g>
+    ))}
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .sun { fill: var(--art-sun); }
+  .sun-ring { fill: none; stroke: var(--art-sun); stroke-width: 1.5; opacity: 0.5; }
+  .fl-line { fill: none; stroke: var(--chart); stroke-width: 1; stroke-dasharray: 10 6; opacity: 0.5; }
+  .airspace { fill: none; stroke: var(--airspace); stroke-width: 2; opacity: 0.6; }
+  .cloud-base { fill: var(--art-cloud-base); opacity: 0.9; }
+  .cloud-top { fill: var(--art-cloud); opacity: 0.92; }
+  .frac-rule { fill: none; stroke: var(--airspace); stroke-width: 1.5; }
+</style>

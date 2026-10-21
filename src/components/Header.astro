@@ -1,0 +1,79 @@
+---
+import { nav } from '../config/site';
+
+const links = nav.primary;
+const path = Astro.url.pathname;
+const onJoin = path.startsWith(nav.apply.href);
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="OASA home">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="none">
+        <path d="M16 5 L27 22 L5 22 Z" stroke="#2A5FA8" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="16" cy="5" r="3.2" fill="#13233F"/><circle cx="27" cy="22" r="3.2" fill="#13233F"/>
+        <circle cx="5" cy="22" r="3.2" fill="#13233F"/><circle cx="16" cy="16.5" r="2.4" fill="#A61E6E"/>
+      </svg>
+      <span>OASA</span>
+    </a>
+
+    <nav class="desktop" aria-label="Main">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+        <li><a class="btn btn-primary join" href={nav.apply.href} aria-current={onJoin ? 'page' : undefined}>{nav.apply.label}</a></li>
+      </ul>
+    </nav>
+
+    <div class="mobile">
+      <a class="btn btn-primary join" href={nav.apply.href} aria-current={onJoin ? 'page' : undefined}>{nav.apply.short}</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <nav aria-label="Main">
+          <ul>
+            {links.map((l) => (
+              <li><a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+<style>
+  .site-header { background: var(--white); border-bottom: 1px solid var(--contour); position: relative; z-index: 20; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-2); }
+  .brand { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: var(--weight-display); font-stretch: var(--stretch-brand); font-size: 1.25rem; letter-spacing: 0.02em; }
+  ul { list-style: none; display: flex; align-items: center; gap: 0.25rem 1.25rem; margin: 0; padding: 0; }
+  nav a:not(.btn) { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; color: var(--ink-soft); font-weight: 700; border-bottom: 2px solid transparent; transition: color var(--dur-feedback) var(--ease-out), border-color var(--dur-feedback) var(--ease-out); }
+  nav a:not(.btn):hover, nav a:not(.btn)[aria-current='page'] { color: var(--ink); border-bottom-color: var(--chart); }
+  .join[aria-current='page'] { box-shadow: inset 0 0 0 2px var(--white); outline-offset: 1px; }
+  .join { padding: 0.55em 1em; font-size: 0.95rem; min-height: 44px; display: inline-flex; align-items: center; }
+
+  .mobile { display: none; align-items: center; gap: 0.5rem; }
+  .menu { position: relative; }
+  .menu summary { list-style: none; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; padding: 0 var(--space-4); border: 1px solid var(--line-control); border-radius: var(--radius-md); font-weight: 700; color: var(--ink); transition: background-color var(--dur-feedback) var(--ease-out); }
+  .menu summary:hover { background: var(--sky); }
+  .menu summary:active { background: var(--contour); }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu[open] summary { border-color: var(--chart); }
+  .menu nav { position: absolute; right: 0; top: calc(100% + 0.5rem); background: var(--white); border: 1px solid var(--contour); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-4); min-width: 12rem; box-shadow: var(--shadow-overlay); }
+  .menu ul { flex-direction: column; align-items: stretch; gap: 0; }
+  .menu li + li { border-top: 1px solid var(--contour); }
+  .menu a { width: 100%; }
+
+  @media (max-width: 760px) {
+    .desktop { display: none; }
+    .mobile { display: flex; }
+  }
+</style>
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.site-header .menu');
+  if (menu) {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+    });
+    menu.addEventListener('focusout', (e) => { if (!menu.contains(e.relatedTarget as Node)) menu.open = false; });
+    document.addEventListener('pointerdown', (e) => { if (menu.open && !menu.contains(e.target as Node)) menu.open = false; });
+  }
+</script>

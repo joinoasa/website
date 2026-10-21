@@ -1,0 +1,51 @@
+---
+import type { Layer } from '../types';
+import { wave, smooth } from '../art';
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { part } = Astro.props;
+
+const seaLine = wave(362, 10, 60, -2940, 3600);
+const seaEdge = wave(362, 10, 60, -2940, 3600);
+const shore = smooth([[380, 362], [430, 352], [470, 346], [520, 344], [560, 336], [610, 330], [660, 338], [720, 334], [800, 340], [900, 336], [1200, 342], [3600, 342]]) + ' V362 H380 Z';
+const depth: [number, string, boolean][] = [[404, '2', false], [452, '5', false], [516, '10', true], [600, '20', false], [710, '30', true]];
+const contourD = (idx: boolean) => depth.filter((d) => d[2] === idx).map(([y]) => wave(y, 3 + y / 200, 200)).join(' ');
+const sound: [number, number, string, boolean][] = [
+  [60, 425, '3', false], [440, 440, '4', false], [548, 478, '8', false], [120, 552, '12', false], [356, 560, '14', false],
+  [470, 640, '21', false], [215, 650, '19', false], [70, 676, '26', true], [560, 700, '28', false], [400, 760, '33', true],
+];
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:#b3cfe8">
+    <path d={shore} class="far-shore" />
+    <g mask="url(#fade-sea)">
+      <path d="M-400 362 L-400 300 C-200 296 -80 304 -20 318 C20 328 44 344 76 362 Z" class="headland" />
+    </g>
+    <g>
+      <path d="M15 292 C3 284 -10 285 -16 282 C-10 290 0 295 15 292 Z" class="flare" />
+      <path d="M12 328 L14 296 H22 L24 328 Z" class="lighthouse" />
+      <path d="M11 296 L18 288 L25 296 Z" class="lh-cap" />
+    </g>
+    <g class="m-roll"><path d={`${seaLine} V1800 H-3000 Z`} class="water" /></g>
+    <g mask="url(#fade-sea)"><g class="m-roll"><path d={seaEdge} class="waterline" /></g></g>
+    <g mask="url(#fade-sea)">
+      <path d={contourD(false)} class="depth" />
+      <path d={contourD(true)} class="depth index" />
+    </g>
+    {depth.map(([y, t]) => <text x="388" y={y + 5} text-anchor="middle" class="cl cl-water">{t}</text>)}
+    {sound.map(([x, y, t, minor]) => <text x={x} y={y} text-anchor="middle" class:list={['cl cl-water cl-sounding snd', { 'cl-minor': minor }]}>{t}</text>)}
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .far-shore { fill: var(--art-shore-far); }
+  .headland { fill: var(--art-headland); }
+  .lighthouse { fill: #ffffff; stroke: var(--ink-muted); stroke-width: 1.2; }
+  .lh-cap { fill: var(--art-roof); }
+  .flare { fill: var(--airspace); }
+  .water { fill: var(--art-sea); opacity: 0.85; }
+  .waterline { fill: none; stroke: var(--art-sea-line); stroke-width: 2.5; }
+  .depth { fill: none; stroke: var(--art-sea-line); stroke-width: 1; opacity: 0.35; }
+  .depth.index { stroke: var(--art-water); stroke-width: 1.5; opacity: 0.5; }
+  .snd { --cl-halo: transparent; }
+</style>

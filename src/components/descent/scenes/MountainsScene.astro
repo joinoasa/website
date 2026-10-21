@@ -1,0 +1,50 @@
+---
+import type { Layer } from '../types';
+import { backRidge, frontRidge, snowBack, snowFront, backContours, minorContours, indexContours, trees, pylons, wires, spots } from './mountains-art';
+
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { layer, part } = Astro.props;
+const id = layer.id;
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:#eef3f6">
+    <defs>
+      <clipPath id={`${id}-front`}><path d={frontRidge} /></clipPath>
+    </defs>
+    <path d={backRidge} class="m-ridge-far" />
+    <path d={snowBack} class="m-snow" />
+    <g mask={`url(#fade-${id})`}><path d={backContours} class="m-contour-faint" /></g>
+    <path d={frontRidge} class="m-ridge-near" />
+    <g mask={`url(#fade-${id})`}>
+      <g clip-path={`url(#${id}-front)`}>
+        <path d={minorContours} class="m-contour" />
+        <path d={indexContours} class="m-contour m-index" />
+      </g>
+    </g>
+    <path d={snowFront} class="m-snow" />
+    <path d={trees} class="m-conifer" />
+    <path d={pylons} class="m-pylon" />
+    <path d={wires} class="m-wire" />
+    <path d={spots} class="m-spot" />
+    <text x="436" y="388" class="cl cl-topo">2,874</text>
+    <text x="592" y="404" class="cl cl-topo" text-anchor="end">2,940</text>
+    <text x="232" y="418" class="cl cl-topo" text-anchor="end">2,610</text>
+    <text x="60" y="605" class="cl cl-topo cl-minor" text-anchor="middle">2,400</text>
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .m-ridge-far { fill: var(--art-ridge-far); }
+  .m-ridge-near { fill: var(--art-ridge-near); }
+  .m-snow { fill: var(--art-snow); }
+  .m-contour, .m-contour-faint { fill: none; stroke-width: 1; }
+  .m-contour { stroke: var(--art-land); opacity: 0.28; }
+  .m-contour.m-index { stroke-width: 1.6; opacity: 0.42; }
+  .m-contour-faint { stroke: var(--ink-muted); opacity: 0.16; }
+  .m-conifer { fill: var(--art-conifer); }
+  .m-pylon { fill: none; stroke: var(--art-steel); stroke-width: 1.5; stroke-linejoin: round; }
+  .m-wire { fill: none; stroke: var(--art-steel); stroke-width: 1.25; }
+  .m-spot { fill: var(--art-land); }
+  :global(.descent .layer-mountains .node-body.m-sway) { transform-origin: 50% 0%; --sway: 4deg; --dur: 7s; }
+</style>

@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, contact, mailto } from '../config/site';
+import { stages, applicationQuestions } from '../data/membership';
+
+const emailBody = applicationQuestions.map((q) => `${q}:\n`).join('\n');
+const applyHref = site.apply.formUrl ?? mailto(contact('membership'), 'OASA membership application', emailBody);
+const membershipEmail = contact('membership');
+---
+<Base title="Apply to join" description="How to apply to the Open Autonomous Systems Alliance: who we look for, the six steps from application to onboarding, age rules and answers to common questions.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Apply to join</h1>
+      <p class="lede">We're looking for raw skill, talent and ambition. If you build, code, design, test, teach or lead, and you want to push autonomy forward, we want to hear from you.</p>
+      <a class="btn btn-primary" href={applyHref}>Start your application</a>
+      <p class="hint">
+        {site.apply.formUrl
+          ? 'No portfolio required.'
+          : 'This opens an email with the questions to answer. No portfolio required.'}
+        {' '}Invited by a member? Add their name to your application.
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap section grid">
+    <div>
+      <h2 id="process">The process</h2>
+      <ol class="process">
+        {stages.map((st) => (<li><h3>{st.title}</h3><p>{st.body}</p></li>))}
+      </ol>
+      <div class="cta-strip">
+        <p>Ready to build with us?</p>
+        <a class="btn btn-primary" href={applyHref}>Start your application</a>
+      </div>
+    </div>
+
+    <aside class="facts">
+      <h2>Good to know</h2>
+      <dl>
+        <div><dt>Cost</dt><dd>Free. There are no OASA dues. If you use a makerspace through a chapter, you pay that makerspace's normal dues.</dd></div>
+        <div><dt>Age</dt><dd>15 and up. Members aged 15 to 17 need a parent or guardian's consent. Paid contract work is 18+.</dd></div>
+        <div><dt>Location</dt><dd>Anywhere in the United States. Chapters meet in person; projects are online. No chapter near you? <a href="/chapters/#satellite-groups">See how satellite groups work.</a></dd></div>
+        <div><dt>Time</dt><dd>As much as you can give. Members work on what excites them.</dd></div>
+        <div><dt>Growth</dt><dd>Members move up from Member to Builder, Lead and Core based on what they contribute.</dd></div>
+      </dl>
+      <p>Questions? Email <a href={`mailto:${membershipEmail}`}>{membershipEmail}</a>.</p>
+    </aside>
+  </div>
+
+  <section class="wrap section more" id="your-application">
+    <div class="prose">
+      <h2>Your application</h2>
+      <p>During the founding phase, the founder reads every application personally. We use what you send only to review your application and get in touch. We don't sell it or share it outside the people reviewing it.</p>
+      {site.membership.responseTime && <p>We aim to reply {site.membership.responseTime}.</p>}
+      <p><a class="text-link" href="/privacy/">How we handle information (draft)</a></p>
+    </div>
+  </section>
+
+  <section class="wrap section more" id="faq">
+    <h2>Questions</h2>
+    <dl class="faq">
+      <div>
+        <dt>Does it cost anything?</dt>
+        <dd>No. There are no OASA dues. If you join a chapter, you pay your local makerspace's normal dues.</dd>
+      </div>
+      <div>
+        <dt>How old do I need to be?</dt>
+        <dd>15 or older. Members aged 15 to 17 need a parent or guardian's consent. Youth members work on open member projects, with supervision for tools and testing. Paid contract work is for members 18 and older.</dd>
+      </div>
+      <div>
+        <dt>Do I need a degree or a portfolio?</dt>
+        <dd>No. We look at what you've built or done, and raw ability counts. Share links, photos or anything that shows your work.</dd>
+      </div>
+      <div>
+        <dt>There's no chapter near me.</dt>
+        <dd>Projects are online, so you can take part from anywhere in the United States. You can also start a satellite group with other members near you. <a href="/chapters/#satellite-groups">Read how satellite groups work.</a></dd>
+      </div>
+      <div>
+        <dt>Can my team or class apply together?</dt>
+        <dd>Yes. Any member can invite a whole robotics team or school cohort. Teams apply together and do a team trial.</dd>
+      </div>
+      <div>
+        <dt>Can I get paid?</dt>
+        <dd>Paid contract work runs through OASA Engineering, a separate company. It is opt-in, for members 18 and older, and needs verified ID. Members with strong track records may be invited.</dd>
+      </div>
+      <div>
+        <dt>What if I'm not accepted?</dt>
+        <dd>You'll get feedback and an invitation to reapply.</dd>
+      </div>
+    </dl>
+  </section>
+</Base>
+<style>
+  .page-head .btn { margin-top: var(--space-2); }
+  .hint { margin-top: var(--space-3); font-size: var(--step--1); color: var(--ink-muted); }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); }
+  .process { list-style: none; counter-reset: s; margin: var(--space-6) 0 0; padding: 0; }
+  .process li { counter-increment: s; position: relative; padding: 0 0 var(--space-6) 3.25rem; }
+  .process li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 2.1rem; height: 2.1rem; border-radius: 50%; display: grid; place-items: center; background: var(--chart); color: var(--white); font-family: var(--font-display); font-weight: var(--weight-heading); }
+  .process li:not(:last-child)::after { content: ''; position: absolute; left: 1.05rem; top: 2.4rem; bottom: 0.3rem; border-left: 2px dashed var(--chart); }
+  .process h3 { margin-bottom: var(--space-1); }
+  .process p { color: var(--ink-soft); }
+  .facts { background: var(--white); border: 1px solid var(--contour); padding: var(--space-6); border-radius: var(--radius-sm); align-self: start; }
+  .facts h2 { font-size: var(--step-2); }
+  .facts dl { margin: 0 0 var(--space-4); display: grid; gap: var(--space-3); }
+  .facts dt { font-weight: var(--weight-bold); }
+  .facts dd { margin: 0; color: var(--ink-soft); font-size: var(--step--1); }
+  .more { padding-top: 0; }
+  .more h2 { font-size: var(--step-2); }
+  .faq { margin: var(--space-4) 0 0; max-width: 46rem; border-top: 2px solid var(--ink); }
+  .faq > div { padding-block: var(--space-4); border-bottom: 1px solid var(--contour); }
+  .faq dt { font-weight: var(--weight-bold); margin-bottom: var(--space-1); }
+  .faq dd { margin: 0; color: var(--ink-soft); }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .facts { margin-top: var(--space-6); } }
+</style>

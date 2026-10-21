@@ -1,0 +1,206 @@
+/* joinoasa.org: chart-paper palette */
+:root {
+  /* Colour: existing roles (unchanged values) */
+  --paper: #f6f9fb;
+  --white: #ffffff;
+  --ink: #13233f;
+  --ink-soft: #3b4b66;
+  --ink-muted: #5d6b82;
+  --chart: #2a5fa8;
+  --chart-deep: #1d4683;
+  --airspace: #a61e6e;          /* the one accent */
+  --contour: #d3e0ea;           /* decorative rules only, never a control edge */
+  --sky: #e6f0f8;               /* hover fill */
+  --available: #1f7a4d;
+  --progress: #b7791f;
+  --done: #2a5fa8;
+  --locked: #8e9aad;
+
+  /* Colour: new roles */
+  --line-control: #6f8199;      /* inputs, chips, menu button edges: 3.98 white / 3.76 paper / 3.45 sky */
+  --focus: var(--airspace);     /* focus ring; containers on dark set --focus: var(--focus-on-dark) */
+  --focus-on-dark: #f29ccb;     /* 7.76 on ink, 8.87 on #0b1630 */
+  --accent-on-dark: #f29ccb;    /* replaces #e27ab5 (acoustic lines, gauge marker on dark) */
+  --accent-tint: #f6e4ee;       /* :target highlight; airspace text on it 5.69 */
+  --chart-on-dark: #7fa8de;     /* mesh lines, ghost-button border, list markers on dark */
+  --on-dark: #ffffff;           /* headings and strong text on dark */
+  --on-dark-body: #e3ebf5;      /* body/list text on dark (replaces #e8eef7, #dbe5f2, #dbe7f6) */
+  --on-dark-muted: #c9d6e8;     /* ledes, intros, footer copy, cue (replaces #c9d4df, #b7c8e0): 10.65 on ink */
+  --surface-dark-hover: #1a3360;/* opaque ghost hover on dark; white text 12.45 */
+  --selection: #cddff3;
+
+  /* Type families */
+  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+
+  /* Type scale (~1.25 above body) */
+  --step--1: 0.875rem;                                   /* 14  meta, captions, secondary */
+  --step-0: 1.0625rem;                                   /* 17  body */
+  --step-1: 1.3125rem;                                   /* 21  lede, intro, h3 */
+  --step-2: 1.625rem;                                    /* 26  column/card heading (was 28) */
+  --step-3: clamp(1.75rem, 1.5rem + 1vw, 2.0625rem);     /* 28-33 section h2 (was 40) */
+  --step-4: clamp(2.125rem, 1.7rem + 1.8vw, 2.625rem);   /* 34-42 inner-page h1 */
+  --step-layer: clamp(2.25rem, 4.5vw, 3.4rem);           /* Descent one-word layer names */
+  --step-hero: clamp(2.25rem, min(3.6vw, 6vh), 3.25rem); /* home hero h1 only (was up to 3.9rem) */
+
+  --weight-regular: 400;
+  --weight-ui: 650;       /* buttons, chips, IDs, range labels */
+  --weight-bold: 700;     /* h3, labels, strong (Atkinson ships 400/700 only) */
+  --weight-heading: 750;  /* h2, step numerals, footer name */
+  --weight-display: 800;  /* h1, wordmark */
+
+  --stretch-condensed: 90%;  /* IDs, gauge, range labels */
+  --stretch-ui: 105%;        /* buttons */
+  --stretch-heading: 112%;   /* h1, h2, footer name, cta-strip (retires 108%, 110%) */
+  --stretch-layer: 118%;     /* Descent layer h2 */
+  --stretch-brand: 125%;     /* wordmark */
+
+  --tracking-heading: -0.015em;
+  --leading-body: 1.6;
+  --leading-lede: 1.5;       /* lede, layer intro, examples (retires 1.45) */
+  --leading-heading: 1.1;
+  --measure: 34em;           /* was 66ch: ~70 chars at 17 and 21px */
+
+  /* Space (4px base) */
+  --space-1: 0.25rem;  /*  4 */
+  --space-2: 0.5rem;   /*  8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.25rem;  /* 20 */
+  --space-6: 1.5rem;   /* 24 */
+  --space-8: 2rem;     /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+
+  --tap: 2.75rem;      /* 44px minimum touch target */
+
+  /* Radii */
+  --radius-sm: 4px;     /* panels, tags, cards, menu panel */
+  --radius-md: 6px;     /* buttons, inputs, menu button, desktop chips, gauge */
+  --radius-pill: 999px; /* mobile filter chips only */
+
+  /* Layout (unchanged) */
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --max: 72rem;
+  /* Breakpoints (media queries cannot use vars): 640, 760 (header only; was 720, raised for the About link), 860, 1100 */
+
+  /* Elevation */
+  --shadow-overlay: 0 8px 24px rgb(19 35 63 / 0.12);
+
+  /* Motion */
+  --dur-feedback: 120ms;  /* hover, press, colour */
+  --dur-state: 200ms;     /* gauge show/hide, disclosure */
+  --dur-layout: 360ms;    /* node/link group fade on layers 2-6 */
+  --dur-focal: 800ms;     /* hero choreography items */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --press-shift: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-layout: 120ms; --dur-focal: 0ms; --press-shift: 0px; }
+}
+
+/* Marketing pages are light only; declare it so form controls and scrollbars match. */
+:root { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+main { flex: 1; }
+img, svg { max-width: 100%; display: block; }
+a { color: var(--chart-deep); text-underline-offset: 0.18em; }
+a:hover { color: var(--ink); }
+::selection { background: var(--selection); color: var(--ink); }
+:root { accent-color: var(--chart); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-stretch: var(--stretch-heading);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-4); font-weight: var(--weight-display); }
+h2 { font-size: var(--step-3); font-weight: var(--weight-heading); }
+h3 { font-size: var(--step-1); font-weight: var(--weight-bold); font-stretch: 100%; }
+p { margin: 0 0 1em; max-width: var(--measure); text-wrap: pretty; }
+li, dd { text-wrap: pretty; }
+
+.wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+.lede { font-size: var(--step-1); color: var(--ink-soft); line-height: var(--leading-lede); }
+
+.btn {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: var(--weight-ui);
+  font-stretch: var(--stretch-ui);
+  padding: 0.8em 1.3em;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  border: 2px solid var(--chart);
+  transition: background-color var(--dur-feedback) var(--ease-out), border-color var(--dur-feedback) var(--ease-out), color var(--dur-feedback) var(--ease-out), transform var(--dur-feedback) var(--ease-out);
+}
+.btn:active { transform: translateY(var(--press-shift)); }
+.btn-primary { background: var(--chart); color: var(--white); }
+.btn-primary:hover { background: var(--chart-deep); border-color: var(--chart-deep); color: var(--white); }
+.btn-ghost { color: var(--chart-deep); background: transparent; }
+.btn-ghost:hover { background: var(--sky); color: var(--ink); }
+
+.page-head { padding-block: clamp(2.5rem, 7vw, 4.5rem) var(--space-6); border-bottom: 1px solid var(--contour); background: var(--white); }
+.section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+
+.status { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-soft); white-space: nowrap; }
+.status::before { content: ''; width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--locked); }
+.status[data-s='available']::before { background: var(--available); }
+.status[data-s='in-progress']::before { background: var(--progress); }
+.status[data-s='done']::before { background: var(--done); }
+
+.text-link { display: inline-flex; align-items: center; min-height: var(--tap); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* Shared utilities */
+.cta-strip { --focus: var(--focus-on-dark); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-4); padding: var(--space-5) var(--space-6); background: var(--ink); color: var(--white); border-radius: var(--radius-sm); }
+.cta-strip .actions { margin: 0; }
+.cta-strip .btn-ghost { color: var(--on-dark); border-color: var(--chart-on-dark); }
+.cta-strip .btn-ghost:hover { background: var(--surface-dark-hover); color: var(--on-dark); }
+.cta-strip p { margin: 0; font-family: var(--font-display); font-stretch: var(--stretch-heading); font-weight: var(--weight-heading); font-size: var(--step-1); }
+.prose { max-width: 42rem; }
+.prose h2 { font-size: var(--step-2); margin-top: var(--space-10); }
+.prose h3 { margin-top: var(--space-6); }
+.prose :is(ul, ol) { padding-left: var(--space-6); margin: 0 0 var(--space-4); }
+.prose li + li { margin-top: var(--space-1); }
+.prose table { border-collapse: collapse; width: 100%; margin: 0 0 var(--space-6); font-size: var(--step--1); }
+.prose :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--contour); }
+.prose thead th { border-bottom: 2px solid var(--ink); }
+.table-scroll { overflow-x: auto; }
+.note { border: 1px solid var(--line-control); border-radius: var(--radius-sm); background: var(--white); padding: var(--space-3) var(--space-4); margin: 0 0 var(--space-6); max-width: 42rem; }
+.note-draft { background: var(--accent-tint); border-color: var(--airspace); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media print {
+  /* !important: component-scoped styles in Header and Footer outrank these selectors. */
+  .skip, .site-header nav, .site-header .mobile, .site-footer .cols, .site-footer ul, .cta-strip .btn { display: none !important; }
+  body { background: var(--white); }
+  .page-head, .band { background: none; }
+  .cta-strip { background: none; color: var(--ink); border: 1px solid var(--contour); padding: var(--space-3) 0; border-width: 1px 0; border-radius: 0; }
+  .site-footer { background: none !important; color: var(--ink) !important; padding-block: var(--space-4); }
+  .site-footer :is(a, .name, h2) { color: var(--ink) !important; }
+  .site-footer .base { border-top-color: var(--contour); }
+  a { color: var(--ink); }
+  .btn { border: 0; padding: 0; text-decoration: underline; background: none !important; color: var(--ink) !important; }
+  /* Numbered step markers are white on a fill that printers drop. */
+  :is(.steps, .process) li::before { color: var(--ink) !important; border: 1px solid var(--ink); }
+}

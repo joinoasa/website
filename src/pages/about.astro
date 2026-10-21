@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import tree from '../data/techtree.json';
+import { site, contact, mailto } from '../config/site';
+
+const done = tree.nodes.filter((n) => n.status === 'done').length;
+const engineering = contact('engineering');
+const { founderName, founderBio, board, fiscalSponsor, mailingAddress } = site.org;
+const hasPeople = Boolean(founderName || founderBio || board.length);
+---
+<Base title="About" description="What OASA is building, where it stands today, how its nonprofit and company sides are organized, and how decisions and funding work. Nothing is built yet.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>About OASA</h1>
+      <p class="lede">OASA exists to build autonomous systems that make American communities, and the nation as a whole, better, cleaner and safer.</p>
+    </div>
+  </header>
+
+  <div class="wrap section prose">
+    <h2 class="first">What we're building</h2>
+    <p>An open autonomy stack for every kind of uncrewed system: air, ground, water surface, underwater, lighter-than-air and wind. Every technology in it is meant to be open source and connected through one secure, decentralized network that works at any scale.</p>
+    <p>Small builds lead to big ones. Each piece we finish becomes a part for the next. See how it fits together on the <a href="/techtree/">tech tree</a> and the <a href="/moonshots/">moonshots</a> it leads to.</p>
+
+    <h2>Where we are now</h2>
+    <p>{site.phase}. Nothing is built yet.</p>
+    <p>Our first goal: one drone on an encrypted link, showing up on a TAK map with its battery and status. Tap the map to send it somewhere, and open its camera.</p>
+    <p>We're setting up the basics now: accounts, GitHub, Discord, the application process, the code of conduct and the first chapter in Northern Virginia.</p>
+    <p>The tech tree currently maps {tree.nodes.length} technologies and {tree.moonshots.length} moonshots. {done === 0 ? 'None of them are done yet.' : `${done} ${done === 1 ? 'is' : 'are'} done.`}</p>
+
+    <h2>How OASA is organized</h2>
+    <p>OASA has two sides, kept separate on purpose.</p>
+    <h3>The community (nonprofit)</h3>
+    <ul>
+      <li>Runs this site and the docs, and will run the idea board, GitHub and Discord.</li>
+      <li>Will host open projects and community funding.</li>
+      <li>Stewards open designs, OASA standards and the OASA name.</li>
+      <li>Starts under a fiscal sponsor and plans to become an independent nonprofit later.</li>
+    </ul>
+    <h3>The company (OASA Engineering)</h3>
+    <ul>
+      <li>Takes commissioned, industry and public-agency contracts.</li>
+      <li>Has separate ownership and leadership from the nonprofit.</li>
+      <li>Members can join contract work by choice, if they are 18 or older.</li>
+      <li>Plans to give a share of its profit back to OASA programs under a written agreement. The proposed share is 20%.</li>
+    </ul>
+    <p>Anyone who works on both sides is covered by a conflict-of-interest policy, and major agreements are disclosed.</p>
+    <p class="note note-draft">Our legal structure is being set up with an attorney. This section will change.</p>
+    <p>Public agencies and companies that want contract work should contact OASA Engineering{site.email.engineering ? ':' : ' through our general inbox, and we will pass it on:'} <a href={mailto(engineering)}>{engineering}</a>.</p>
+
+    <h2>How decisions are made</h2>
+    <p>Decision-making grows with the community, in three phases:</p>
+    <ol>
+      <li><strong>Founder-led, now.</strong> The founder decides, with member input.</li>
+      <li><strong>Advisory councils,</strong> once OASA reaches about 25 active members. Councils advise and the founder has the final say.</li>
+      <li><strong>Council-led,</strong> at about 100 members across several chapters. Councils decide in their areas.</li>
+    </ol>
+    <p>Large changes, such as a new standard, a moonshot or a rule change, go through an OASA Proposal: a written plan, about two weeks of open discussion, a council vote, and the decision and reasons published.</p>
+    <p><a class="text-link" href="/docs/governance/">Read about governance</a></p>
+
+    <h2>People</h2>
+    {hasPeople ? (
+      <>
+        {(founderName || founderBio) && (
+          <p>{founderName && <strong>{founderName}</strong>}{founderName && founderBio ? ', ' : ''}{founderBio}</p>
+        )}
+        {board.length > 0 && (
+          <>
+            <p>Nonprofit board:</p>
+            <ul>{board.map((name) => <li>{name}</li>)}</ul>
+          </>
+        )}
+      </>
+    ) : (
+      <p>OASA is in its founding phase. The founder runs day-to-day work, and the nonprofit board is being formed.</p>
+    )}
+
+    <h2>Funding</h2>
+    <p>The community side is designed to be funded by donations, sponsors, bounties, idea crowdfunding and grants. The nonprofit's ledger is planned to be fully public.</p>
+    <p>We are not taking donations yet. We will once our fiscal sponsor is in place.{fiscalSponsor && ` Our fiscal sponsor is ${fiscalSponsor}.`}</p>
+    {site.links.ledger && <p><a class="text-link" href={site.links.ledger}>View the public ledger</a></p>}
+    {mailingAddress && <p>Mailing address: {mailingAddress}</p>}
+
+    <h2>Learn more</h2>
+    <ul class="links">
+      <li><a href="/docs/principles/">Principles</a></li>
+      <li><a href="/docs/governance/">Governance</a></li>
+      <li><a href="/partners/">Partners</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+  </div>
+</Base>
+<style>
+  .prose .first { margin-top: 0; }
+  .links { list-style: none; padding-left: 0; }
+  .links a { display: inline-flex; align-items: center; min-height: var(--tap); }
+</style>

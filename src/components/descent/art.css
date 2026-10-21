@@ -1,0 +1,176 @@
+/* "The Descent" art system. Global stylesheet: every selector starts with .descent
+   so nothing leaks to other pages (the tech tree also uses a .node class). */
+
+.descent {
+  --ease-sine: cubic-bezier(0.37, 0, 0.63, 1);
+
+  /* domain inks: node rims, chart linework and chart labels of that domain */
+  --art-air: var(--chart);
+  --art-air-label: var(--chart-deep);
+  --art-land: #7a4f26;
+  --art-water: #16566a;
+  --art-air-fill: #ffffff;
+  --art-land-fill: #fdf8f1;
+  --art-water-fill: #f0f7fa;
+  /* space */
+  --art-earth: #24508f; --art-limb: #9fc0ea; --art-atmo: #7fa8de; --art-moon: #dfe8f3;
+  /* sky */
+  --art-sun: #fdf0c8; --art-cloud: #ffffff; --art-cloud-base: #dce8f4;
+  /* mountains */
+  --art-ridge-far: #c7d5e3; --art-ridge-near: #b4c3b4; --art-snow: #ffffff; --art-conifer: #6f8a73;
+  --art-steel: var(--ink-soft);
+  /* ground */
+  --art-field: #d7e3cc; --art-field-2: #cddcbf; --art-survey: #8fa67f; --art-survey-label: #445e37;
+  /* chart label inks (darker than node rims so small text clears 4.5:1) */
+  --art-air-text: #123562; --art-airspace-text: #8f1960; --art-topo-text: #5e3c1b;
+  --art-road: #f7f3ea; --art-road-edge: #9d8f74; --art-road-center: #c9b98f;
+  --art-soil: #cbc2b0; --art-strata: #b3a88f; --art-tree: #7f9a6a;
+  --art-wall: #f9fbfc; --art-wall-edge: #9aa8b8; --art-roof: #4f5f78; --art-barn: #a65f48; --art-barn-door: #7e4535;
+  --art-pole: #8a6a4a; --art-groundline: #7c9a6a;
+  --art-pipe: #e3ddd1; --art-pipe-edge: #8c8473; --art-tank: #dfe6ec;
+  /* sea + underwater */
+  --art-sea: #b6d1ea; --art-sea-line: #6f9cc9; --art-shore-far: #c9d8e6; --art-headland: #b4c3b4;
+  --art-seabed: #0e1b33; --art-seabed-line: #1d2d4d; --art-rock: #16264a;
+  --art-kelp: #3f7f70; --art-coral: #c98a7a; --art-coral-2: #e0a99b; --art-fish-school: #9fc0ea;
+}
+
+/* ---------- Chart labels ---------- */
+.descent .cl { font-family: var(--font-display); font-stretch: 82%; font-weight: 600; font-size: 16px;
+  letter-spacing: 0.04em; font-variant-numeric: tabular-nums;
+  paint-order: stroke; stroke: var(--cl-halo, transparent); stroke-width: 4px; stroke-linejoin: round; }
+.descent .cl-air { fill: var(--art-air-text); }
+.descent .cl-airspace { fill: var(--art-airspace-text); }
+.descent .cl-topo { fill: var(--art-topo-text); }
+.descent .cl-water { fill: var(--art-water); }
+.descent .cl-survey { fill: var(--art-survey-label); }
+.descent .cl-dark { fill: var(--on-dark-muted); }
+.descent .cl-sounding { font-weight: 500; font-size: 16px; }
+
+/* ---------- Thread through every hub (drawn inside each scene) ---------- */
+.descent .t-line { fill: none; stroke-width: 3; }
+.descent.js .t-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.descent .t-line.mesh { stroke: var(--chart); }
+.descent .dark .t-line.mesh { stroke: var(--chart-on-dark); }
+.descent .t-line.acoustic { stroke: var(--airspace); stroke-dasharray: 0.006 0.006; }
+.descent.js .t-line.acoustic { stroke-dasharray: 0.006 0.006; stroke-dashoffset: 0; opacity: 0; }
+.descent .dark .t-line.acoustic { stroke: var(--accent-on-dark); }
+.descent .on .t-line { transition: stroke-dashoffset 1.4s var(--ease-out), opacity var(--dur-focal) var(--ease-out); stroke-dashoffset: 0; }
+.descent .on .t-line.acoustic { opacity: 1; }
+.descent .on .t-bottom { transition-delay: 0.4s; }
+
+/* ---------- Links ---------- */
+.descent .link { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.descent.js .link { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.descent .link.mesh { stroke: var(--chart); }
+.descent .dark .link.mesh { stroke: var(--chart-on-dark); }
+.descent .link.laser { stroke: var(--airspace); stroke-width: 2; }
+.descent .dark .link.laser { stroke: var(--accent-on-dark); }
+.descent .link.tether { stroke: var(--ink-soft); stroke-width: 1.8; }
+.descent .link.acoustic { stroke: var(--accent-on-dark); stroke-dasharray: 0.03 0.03; stroke-dashoffset: 0; }
+.descent.js .link.acoustic { opacity: 0; stroke-dasharray: 0.03 0.03; stroke-dashoffset: 0; }
+.descent .layer:not(.dark) .link.acoustic { stroke: var(--airspace); }
+.descent .on .link { transition: stroke-dashoffset var(--dur-focal) var(--ease-out) var(--d, 0s), opacity var(--dur-layout) var(--ease-out) var(--d, 0s); stroke-dashoffset: 0; }
+.descent .on .link.acoustic { opacity: 1; }
+
+/* ---------- Data pulses ---------- */
+.descent .pulse { fill: none; stroke-linecap: round; stroke-dasharray: 0.0001 2; stroke-dashoffset: 0; opacity: 0; }
+.descent .pulse-o { stroke-width: 9; stroke: var(--chart); }
+.descent .dark .pulse-o { stroke: var(--chart-on-dark); }
+.descent .pulse-o.laser { stroke: var(--airspace); }
+.descent .dark .pulse-o.laser { stroke: var(--accent-on-dark); }
+.descent .pulse-o.tether { stroke: var(--ink-soft); }
+.descent .pulse-i { stroke-width: 4; stroke: var(--white); }
+.descent.js .layer:not(.on) .pulse { visibility: hidden; }
+
+/* ---------- Nodes ---------- */
+.descent .node--air   { --nk: var(--art-air);   --nf: var(--art-air-fill); }
+.descent .node--land  { --nk: var(--art-land);  --nf: var(--art-land-fill); }
+.descent .node--water { --nk: var(--art-water); --nf: var(--art-water-fill); }
+.descent .node-disc  { fill: var(--nf); stroke: var(--nk); stroke-width: 3; }
+.descent .hub .node-disc { stroke-width: 4; }
+.descent .node-ticks { stroke: var(--nk); stroke-width: 3; }
+.descent .node-ring2 { fill: none; stroke: var(--nk); stroke-width: 1.25; }
+.descent .node-dots  { fill: none; stroke: var(--nk); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 0 4.5; }
+.descent .dark .node-ring2, .descent .dark .node-dots { stroke: var(--on-dark-muted); }
+.descent .node-halo { fill: none; stroke: var(--chart); stroke-width: 1.75; stroke-dasharray: 4 5; }
+.descent .dark .node-halo { stroke: var(--chart-on-dark); }
+.descent .g-f { fill: var(--ink); }
+.descent .g-k { fill: var(--nf); }
+.descent .g-s { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; }
+
+.descent .label { font-family: var(--font-body); font-size: 20px; font-weight: 700; text-anchor: middle; fill: var(--ink); paint-order: stroke; stroke: var(--white); stroke-width: 5px; stroke-linejoin: round; }
+.descent .dark .label { fill: var(--on-dark); stroke: var(--ink); }
+.descent .tag { fill: var(--white); stroke: var(--chart); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; }
+.descent .dark .tag { fill: var(--ink); stroke: var(--chart-on-dark); }
+.descent .tag + .label { stroke: none; }
+
+/* ---------- Utilities ---------- */
+@media (max-width: 860px) {
+  .descent .d-only { display: none; }
+  .descent .cl { font-size: 21px; }
+  .descent .cl-sounding { font-size: 21px; }
+  .descent .cl-minor { display: none; }
+  .descent .thread { display: none; }
+  .descent .label { font-size: 24px; stroke-width: 6px; }
+  .descent .tag { transform: scale(1.18, 1.22); }
+}
+
+@media (max-width: 640px) {
+  .descent .cl, .descent .cl-sounding { font-size: 24px; }
+}
+/* Smallest phones (360 px): the scene scales to ~0.55 px/unit, so 26 units keeps text at 14 px. */
+@media (max-width: 380px) {
+  .descent .label, .descent .cl, .descent .cl-sounding { font-size: 26px; }
+  .descent .tag { transform: scale(1.28, 1.32); }
+  .descent .cl-xs-hide { display: none; } /* −100 M would touch the Robotic fish node */
+}
+@media (forced-colors: active) {
+  .descent .label, .descent .cl { stroke: none; }
+  .descent .tag { fill: Canvas; stroke: CanvasText; }
+}
+
+/* ---------- Motion ---------- */
+.descent :is(.m-bob, .m-hover, .m-spin, .m-ping, .m-sway) { transform-box: fill-box; transform-origin: center; }
+.descent .m-pass { transform-box: view-box; transform-origin: 300px 2161px; }
+
+@keyframes m-drift { from { transform: translateX(calc(var(--dx, 18px) * -1)); } to { transform: translateX(var(--dx, 18px)); } }
+@keyframes m-bob { 0%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-2.5px) rotate(-1.2deg); } 70% { transform: translateY(2px) rotate(1.2deg); } }
+@keyframes m-hover { from { transform: translateY(-2.5px); } to { transform: translateY(2.5px); } }
+@keyframes m-sway { from { transform: rotate(calc(var(--sway, 3deg) * -1)); } to { transform: rotate(var(--sway, 3deg)); } }
+@keyframes m-spin { to { transform: rotate(360deg); } }
+@keyframes m-roll { to { transform: translateX(-120px); } }
+@keyframes m-pass { 0% { transform: rotate(var(--r0)); opacity: 0; } 10%, 90% { opacity: 1; } 100% { transform: rotate(var(--r1)); opacity: 0; } }
+@keyframes m-ping { from { transform: scale(0.34); opacity: 0.55; } to { transform: scale(1.3); opacity: 0; } }
+@keyframes m-rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translateY(-70px); opacity: 0; } }
+@keyframes pulse-run { 0% { stroke-dashoffset: 0; opacity: 0; } 6% { opacity: 1; } 48% { opacity: 1; } 52% { stroke-dashoffset: -1; opacity: 0; } 100% { stroke-dashoffset: -1; opacity: 0; } }
+
+/* Without JS (or before it runs) no layer is live: every animation sits paused on its first frame. */
+.descent .layer:not(.is-live) :is(.m-ping, .m-rise) { visibility: hidden; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .descent .m-drift { animation: m-drift var(--dur, 70s) var(--ease-sine) var(--delay, 0s) infinite alternate both; }
+  .descent .m-bob { animation: m-bob var(--dur, 5.4s) var(--ease-sine) var(--delay, 0s) infinite; }
+  .descent .m-hover { animation: m-hover var(--dur, 4.6s) var(--ease-sine) var(--delay, 0s) infinite alternate; }
+  .descent .m-sway { animation: m-sway var(--dur, 7s) var(--ease-sine) var(--delay, 0s) infinite alternate; }
+  .descent .m-spin { animation: m-spin 120s linear infinite; }
+  .descent .m-roll { animation: m-roll 10s linear infinite; }
+  .descent .m-pass { animation: m-pass var(--dur) linear var(--delay, 0s) infinite; }
+  .descent .m-ping { animation: m-ping 5s var(--ease-out) var(--delay, 0s) infinite both; }
+  .descent .m-rise { animation: m-rise 6s linear var(--delay, 0s) infinite both; }
+  .descent .pulse { animation: pulse-run 6s var(--ease-sine) calc(1.6s + var(--i, 0) * 1.9s) infinite both; }
+  .descent .layer:not(.is-live) :is(.m-drift, .m-bob, .m-hover, .m-sway, .m-spin, .m-roll, .m-pass, .m-ping, .m-rise, .pulse) { animation-play-state: paused; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .descent :is(.pulse, .m-ping, .m-rise) { display: none; }
+  .descent .m-pass { transform: rotate(var(--r-rest, 0deg)); }
+}
+
+/* ---------- Reveal (must stay last: reduced motion wins over the reveal transitions) ---------- */
+.descent.js .node { opacity: 0; transition: opacity var(--dur-layout) var(--ease-out) var(--d, 0s); }
+.descent .on .node { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .descent.js .node, .descent.js .link, .descent.js .t-line, .descent.js .link.acoustic, .descent.js .t-line.acoustic { transition: none; }
+  .descent.js .node { opacity: 1; }
+  .descent.js .link, .descent.js .t-line { stroke-dashoffset: 0; }
+  .descent.js .link.acoustic, .descent.js .t-line.acoustic { opacity: 1; }
+}

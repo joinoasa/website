@@ -1,0 +1,237 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site, contact, mailto } from '../../config/site';
+import { fields, type Field } from '../../data/application';
+import { applicationQuestions } from '../../data/membership';
+
+const byName = Object.fromEntries(fields.map((f) => [f.name, f])) as Record<string, Field>;
+const groups: { legend: string; names: string[] }[] = [
+  { legend: 'About you', names: ['name', 'email', 'city_state', 'nearest_chapter', 'age_group', 'guardian_email'] },
+  { legend: 'Your work', names: ['skills', 'links', 'interests', 'time_commitment'] },
+  { legend: 'Joining', names: ['why', 'contract_interest', 'invited_by'] },
+];
+const consent = byName.consent;
+
+const membershipEmail = contact('membership');
+const emailHref = mailto(membershipEmail, 'OASA membership application', applicationQuestions.map((q) => `${q}:\n`).join('\n'));
+const siteKey = site.apply.turnstileSiteKey;
+
+/** Text after the label: "optional", or a condition for conditional fields. */
+const flag = (f: Field) =>
+  f.showWhen ? 'only if you are 15 to 17' : f.required || f.kind === 'checkbox' ? '' : 'optional';
+const hintId = (f: Field) => (f.hint ? `${f.name}-hint` : undefined);
+const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean).join(' ');
+---
+<Base title="Application" description="Apply to join the Open Autonomous Systems Alliance. About ten minutes; no portfolio required.">
+  <header class="page-head">
+    <div class="wrap">
+      <p class="crumb"><a href="/join/">Apply to join</a></p>
+      <h1>Your application</h1>
+      <p class="lede">About ten minutes. No portfolio required: tell us what you've built, what you can do and what you want to work on.</p>
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <form id="apply" class="apply" method="post" action="/api/apply">
+      <div class="summary" id="form-summary" role="alert" tabindex="-1" hidden></div>
+
+      {groups.map((g) => (
+        <fieldset class="group">
+          <legend>{g.legend}</legend>
+          {g.names.map((name) => {
+            const f = byName[name];
+            if (f.kind === 'radio') return (
+              <fieldset class="field radios" data-field={f.name} aria-describedby={describedBy(f)}>
+                <legend class="label">{f.label}</legend>
+                {f.hint && <p class="hint" id={hintId(f)}>{f.hint}</p>}
+                {f.options!.map((o) => (
+                  <label class="choice"><input type="radio" name={f.name} value={o.value} required={f.required} /> {o.label}</label>
+                ))}
+                <p class="error" id={`${f.name}-error`} hidden></p>
+              </fieldset>
+            );
+            if (f.kind === 'checkbox') return (
+              <div class="field check" data-field={f.name} data-hide-when={f.hideWhen ? `${f.hideWhen.field}=${f.hideWhen.value}` : undefined}>
+                <label class="choice"><input type="checkbox" name={f.name} value="yes" required={f.required} aria-describedby={describedBy(f)} /> {f.label}</label>
+                {f.hint && <p class="hint" id={hintId(f)}>{f.hint}</p>}
+                <p class="error" id={`${f.name}-error`} hidden></p>
+              </div>
+            );
+            const common = {
+              id: f.name, name: f.name, maxlength: f.max, autocomplete: f.autocomplete ?? 'off',
+              // Conditional fields are checked on the server; the script adds `required` when they apply.
+              required: f.required && !f.showWhen, 'aria-describedby': describedBy(f),
+            };
+            return (
+              <div class="field" data-field={f.name} data-show-when={f.showWhen ? `${f.showWhen.field}=${f.showWhen.value}` : undefined}>
+                <label class="label" for={f.name}>{f.label}{flag(f) && <span class="flag"> ({flag(f)})</span>}</label>
+                {f.hint && <p class="hint" id={hintId(f)}>{f.hint}</p>}
+                {f.kind === 'textarea'
+                  ? <textarea {...common} rows={f.max > 1500 ? 6 : 4}></textarea>
+                  : <input {...common} type={f.kind === 'email' ? 'email' : 'text'} />}
+                <p class="error" id={`${f.name}-error`} hidden></p>
+              </div>
+            );
+          })}
+        </fieldset>
+      ))}
+
+      <div class="group final">
+        <div class="field check" data-field="consent">
+          <label class="choice"><input type="checkbox" name="consent" value="yes" required aria-describedby="consent-hint consent-error" /> {consent.label}</label>
+          <p class="hint" id="consent-hint">Read the <a href="/privacy/#applications" target="_blank" rel="noopener">privacy draft</a> (opens in a new tab). We use your answers only to review your application and contact you.</p>
+          <p class="error" id="consent-error" hidden></p>
+        </div>
+
+        <!-- Spam trap: hidden from people and screen readers. -->
+        <div class="trap" aria-hidden="true">
+          <label for="website">Leave this empty</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        {siteKey && (
+          <>
+            <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light" data-size="flexible"></div>
+            <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+            <noscript><p class="hint">The spam check needs JavaScript. If you can't turn it on, <a href={emailHref}>apply by email</a> instead.</p></noscript>
+          </>
+        )}
+
+        <button class="btn btn-primary" type="submit">Send application</button>
+        <p class="hint">Prefer email? <a href={emailHref}>Send your answers to {membershipEmail}</a>.</p>
+      </div>
+    </form>
+  </div>
+</Base>
+
+<script>
+  const form = document.getElementById('apply');
+  const summary = document.getElementById('form-summary');
+  const submit = form.querySelector('button[type="submit"]');
+
+  // Show the guardian email only for 15 to 17; hide contract interest for them.
+  const age = () => form.querySelector('input[name="age_group"]:checked')?.value ?? '';
+  function sync() {
+    form.querySelectorAll('[data-show-when],[data-hide-when]').forEach((el) => {
+      const rule = el.dataset.showWhen ?? el.dataset.hideWhen;
+      const value = rule.split('=')[1];
+      const on = el.dataset.showWhen ? age() === value : age() !== value;
+      el.hidden = !on;
+      el.querySelectorAll('input, textarea').forEach((input) => {
+        input.disabled = !on;
+        if (el.dataset.showWhen) input.required = on;
+      });
+    });
+    const flag = form.querySelector('[data-field="guardian_email"] .flag');
+    if (flag) flag.hidden = true; // the field only appears when it applies
+  }
+  form.addEventListener('change', (e) => { if (e.target.name === 'age_group') sync(); });
+  sync();
+
+  function clearErrors() {
+    summary.hidden = true;
+    summary.textContent = '';
+    form.querySelectorAll('.error').forEach((p) => { p.hidden = true; p.textContent = ''; });
+    form.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+  }
+
+  function showErrors(message, errors = {}) {
+    const names = Object.keys(errors);
+    summary.innerHTML = '';
+    const p = document.createElement('p');
+    p.textContent = message;
+    summary.append(p);
+    if (names.length) {
+      const ul = document.createElement('ul');
+      names.forEach((name) => {
+        const wrap = form.querySelector(`[data-field="${name}"]`);
+        const label = wrap?.querySelector('.label, .choice')?.textContent?.replace(/\s*\(.*\)\s*$/, '').trim() ?? name;
+        const err = document.getElementById(`${name}-error`);
+        if (err) { err.textContent = errors[name]; err.hidden = false; }
+        wrap?.querySelectorAll('input, textarea').forEach((el) => el.setAttribute('aria-invalid', 'true'));
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${wrap?.querySelector('input, textarea')?.id || name}`;
+        a.textContent = `${label}: ${errors[name]}`;
+        a.addEventListener('click', (ev) => { ev.preventDefault(); wrap?.querySelector('input, textarea')?.focus(); });
+        li.append(a);
+        ul.append(li);
+      });
+      summary.append(ul);
+    }
+    summary.hidden = false;
+    summary.focus();
+  }
+
+  // Use the browser's own checks first, but report them in our summary.
+  function localErrors() {
+    const errors = {};
+    form.querySelectorAll('input, textarea').forEach((el) => {
+      if (el.disabled || el.name === 'website' || el.validity.valid || errors[el.name]) return;
+      errors[el.name] = el.validity.valueMissing
+        ? (el.type === 'checkbox' ? 'Please tick this box.' : el.type === 'radio' ? 'Please choose one.' : 'Please fill this in.')
+        : el.validity.typeMismatch ? 'Please enter a valid email address.' : el.validationMessage;
+    });
+    return errors;
+  }
+
+  form.noValidate = true;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+    const local = localErrors();
+    if (Object.keys(local).length) return showErrors('Please fix these answers.', local);
+
+    submit.disabled = true;
+    submit.textContent = 'Sending…';
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) { window.location.assign(data.redirect || '/join/thanks/'); return; }
+      showErrors(data.message || 'Something went wrong. Please try again.', data.errors);
+    } catch {
+      showErrors('We could not reach the server. Check your connection and try again. Your answers are still here.');
+    }
+    window.turnstile?.reset();
+    submit.disabled = false;
+    submit.textContent = 'Send application';
+  });
+</script>
+
+<style>
+  .crumb { margin: 0 0 var(--space-2); font-size: var(--step--1); }
+  .crumb a { display: inline-flex; align-items: center; min-height: var(--tap); }
+  .crumb a::before { content: '←'; margin-right: 0.4em; }
+  .apply { max-width: 42rem; }
+  .group { border: 0; margin: 0 0 var(--space-10); padding: 0; min-width: 0; }
+  .group > legend { font-family: var(--font-display); font-weight: var(--weight-heading); font-stretch: var(--stretch-heading); letter-spacing: var(--tracking-heading); font-size: var(--step-2); padding: 0 0 var(--space-2); margin-bottom: var(--space-4); border-bottom: 2px solid var(--ink); width: 100%; }
+  .field { margin: 0 0 var(--space-6); border: 0; padding: 0; min-width: 0; }
+  .field[hidden] { display: none; }
+  .label { display: block; font-weight: var(--weight-bold); padding: 0; margin-bottom: var(--space-1); }
+  .flag { font-weight: var(--weight-regular); color: var(--ink-muted); }
+  .hint { margin: 0 0 var(--space-2); font-size: var(--step--1); color: var(--ink-muted); }
+  .check .hint { margin: var(--space-1) 0 0 2rem; }
+  input[type='text'], input[type='email'], textarea {
+    display: block; width: 100%; min-height: var(--tap); padding: 0.6em 0.75em;
+    font: inherit; color: var(--ink); background: var(--white);
+    border: 1px solid var(--line-control); border-radius: var(--radius-md);
+    transition: border-color var(--dur-feedback) var(--ease-out);
+  }
+  textarea { resize: vertical; line-height: var(--leading-body); }
+  input:hover, textarea:hover { border-color: var(--ink-soft); }
+  input:focus-visible, textarea:focus-visible { outline-offset: 1px; border-color: var(--chart); }
+  [aria-invalid='true']:is(input[type='text'], input[type='email'], textarea) { border: 2px solid var(--airspace); }
+  .choice { display: flex; align-items: flex-start; gap: 0.6rem; min-height: var(--tap); padding-block: 0.6rem; cursor: pointer; }
+  .choice input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; flex: none; }
+  .radios .choice { padding-block: 0.35rem; }
+  .error { margin: var(--space-1) 0 0; color: var(--airspace); font-weight: var(--weight-bold); font-size: var(--step--1); }
+  .summary { border: 2px solid var(--airspace); background: var(--accent-tint); border-radius: var(--radius-sm); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-8); }
+  .summary :global(p) { margin: 0; font-weight: var(--weight-bold); }
+  .summary :global(ul) { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
+  .summary :global(a) { color: var(--ink); }
+  .final { margin-bottom: 0; }
+  .final .btn { margin-top: var(--space-2); font-size: var(--step-0); cursor: pointer; }
+  .final .btn:disabled { opacity: 0.7; cursor: progress; }
+  .cf-turnstile { margin: var(--space-2) 0 var(--space-4); }
+  .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+</style>

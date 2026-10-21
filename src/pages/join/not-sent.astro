@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import { contact, mailto } from '../../config/site';
+import { applicationQuestions } from '../../data/membership';
+
+const membershipEmail = contact('membership');
+const emailHref = mailto(membershipEmail, 'OASA membership application', applicationQuestions.map((q) => `${q}:\n`).join('\n'));
+---
+<Base title="Application not sent" description="Your OASA application did not go through." noindex>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Your application wasn't sent</h1>
+      <p class="lede" id="why">Something in the form needs another look.</p>
+    </div>
+  </header>
+
+  <div class="wrap section prose">
+    <p>Use your browser's back button to return to the form. Your answers are usually still there. Check that every required answer is filled in and that the email addresses are complete.</p>
+    <p class="actions"><a class="btn btn-primary" href="/join/apply/">Back to the form</a><a class="btn btn-ghost" href={emailHref}>Apply by email instead</a></p>
+    <p>Still stuck? Email <a href={mailto(membershipEmail)}>{membershipEmail}</a>.</p>
+  </div>
+</Base>
+<script>
+  const reasons: Record<string, string> = {
+    invalid: 'Some answers were missing or not in the right format.',
+    captcha: "The spam check didn't pass. Please try again.",
+    size: 'Your answers were too long. Please shorten them.',
+    not_ready: 'Online applications are not open yet. Please apply by email.',
+    origin: 'The form was sent from somewhere other than joinoasa.org.',
+    server: 'Something went wrong on our side. Please try again in a few minutes.',
+  };
+  const reason = new URLSearchParams(location.search).get('reason') ?? '';
+  const el = document.getElementById('why');
+  if (el && reasons[reason]) el.textContent = reasons[reason];
+</script>
+<style>
+  .actions { margin-block: var(--space-6); }
+</style>

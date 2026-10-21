@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import { contact, mailto } from '../config/site';
+const chaptersEmail = contact('chapters');
+const chapters = [
+  { name: 'OASA Northern Virginia', status: 'Forming', where: 'Northern Virginia', note: 'Our first chapter. We are talking with local makerspaces about a home.' },
+];
+---
+<Base title="Chapters" description="OASA chapters meet inside local makerspaces for build nights, workshops and field tests. See what is forming and how to start one where you live.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Chapters</h1>
+      <p class="lede">Chapters bring OASA into local makerspaces: monthly build nights, Academy workshops, demo days and field tests. OASA doesn't rent space. Members join their local makerspace and run the chapter there.</p>
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <h2>Current chapters</h2>
+    <p>Want a chapter where you live? <a href={mailto(chaptersEmail, 'Chapter interest: [your city]')}>Tell us your city</a> and we'll connect you with members nearby.</p>
+    <ul class="list">
+      {chapters.map((c) => (
+        <li>
+          <h3>{c.name}</h3>
+          <p class="where"><span class="status" data-s="in-progress">{c.status}</span> {c.where}</p>
+          <p>{c.note}</p>
+        </li>
+      ))}
+    </ul>
+
+    <div class="two">
+      <div id="start-a-chapter">
+        <h2>Start a chapter</h2>
+        <p>To start a chapter you need:</p>
+        <ul class="checks">
+          <li>A Lead-tier member as chapter lead. In the founding phase, the founder approves new chapters.</li>
+          <li>A host makerspace that agrees to a partnership.</li>
+          <li>At least three interested members.</li>
+        </ul>
+        <p>New members start at the Member tier. Lead comes from leading projects. <a href="/docs/membership/">See how tiers work.</a></p>
+        <p>We're preparing a chapter kit with starter projects, Academy material, safety guidelines and event templates.</p>
+        <p><a class="btn btn-ghost" href="/docs/start-a-chapter/">Read the chapter guide</a></p>
+      </div>
+      <div>
+        <div id="satellite-groups">
+          <h2>No makerspace nearby?</h2>
+          <p>Members can meet anywhere, such as a garage, school or library, as a satellite group, and grow into a chapter later. Satellite groups follow the same safety basics as chapters: supervision for youth members and testing only at approved sites under FAA and local rules.</p>
+        </div>
+        <h2>For makerspaces</h2>
+        <p>Hosting an OASA chapter is designed to bring an advanced autonomous systems program, new members and public events to your space.</p>
+        <p><a class="btn btn-ghost" href={mailto(chaptersEmail)}>Email {chaptersEmail}</a></p>
+      </div>
+    </div>
+  </div>
+</Base>
+<style>
+  .list { list-style: none; margin: var(--space-4) 0 var(--space-12); padding: 0; border-top: 2px solid var(--ink); }
+  .list li { padding-block: var(--space-4); border-bottom: 1px solid var(--contour); }
+  .list h3 { margin-bottom: var(--space-1); }
+  .where { display: flex; gap: var(--space-4); color: var(--ink-muted); font-size: var(--step--1); margin-bottom: var(--space-2); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); }
+  .two h2 { font-size: var(--step-2); }
+  .two > div { border-top: 2px solid var(--ink); padding-top: var(--space-4); }
+  .two div + h2, .two p + h2 { margin-top: var(--space-8); }
+  .checks { list-style: none; margin: 0 0 var(--space-4); padding: 0; }
+  .checks li { position: relative; padding: var(--space-2) 0 var(--space-2) 2rem; border-bottom: 1px solid var(--contour); }
+  .checks li::before { content: ''; position: absolute; left: 0.2rem; top: 0.9rem; width: 0.9rem; height: 0.9rem; border: 2px solid var(--chart); border-radius: 2px; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+</style>

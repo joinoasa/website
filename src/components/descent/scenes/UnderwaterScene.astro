@@ -1,0 +1,82 @@
+---
+import type { Layer } from '../types';
+import { smooth } from '../art';
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { part } = Astro.props;
+
+const depthLines: [number, string][] = [[120, '−50 M'], [250, '−100 M'], [470, '−150 M']];
+const fish = Array.from({ length: 7 }, (_, i) => {
+  const x = 520 + (i % 4) * 16 + (i > 3 ? 8 : 0), y = 70 + (i > 3 ? 12 : 0) + (i % 2) * 4;
+  return `M${x} ${y} l7 -3 v6 Z M${x + 7} ${y} l3 -2 v4 Z`;
+}).join(' ');
+const bed = smooth([[-3000, 706], [-400, 706], [-200, 700], [-100, 680], [-40, 648], [0, 622], [60, 606], [130, 612], [200, 596], [290, 620], [380, 610], [470, 600], [560, 612], [640, 600], [800, 616], [3600, 610]]) + ' V1800 H-3000 Z';
+const strata = smooth([[-200, 680], [100, 668], [300, 684], [500, 670], [800, 682]]) + ' ' + smooth([[-200, 740], [150, 728], [400, 744], [800, 732]]);
+const rocks = 'M232 604 Q240 590 256 594 Q266 600 262 610 H230 Z M600 606 Q610 592 628 598 L632 610 H598 Z';
+
+// Branching coral A; B is A moved (+70,+4) and scaled 0.8 about its base (504,606).
+const coralA = 'M500 606 L498 580 L488 566 L492 564 L500 576 L502 556 L506 556 L506 574 L516 560 L520 562 L508 582 L508 606 Z';
+const coralB = coralA.replace(/(-?[\d.]+) (-?[\d.]+)/g, (_, x, y) =>
+  `${Math.round((574 + (+x - 504) * 0.8) * 10) / 10} ${Math.round((610 + (+y - 606) * 0.8) * 10) / 10}`);
+const coral = `${coralA} ${coralB} M352 616 L350 598 L344 590 L348 588 L353 595 L356 584 L360 585 L358 600 L360 616 Z`;
+const coral2 = 'M528 610 C522 590 526 574 540 566 C552 574 556 592 548 610 Z M594 610 Q600 594 614 594 Q626 596 626 610 Z';
+
+const kelp = ([[24, 608, 230], [48, 604, 190], [72, 606, 250], [566, 610, 120]] as [number, number, number][]).map(([x, y, h], i) => {
+  const pts: [number, number][] = [];
+  for (let k = 0; k <= 6; k++) pts.push([Math.round((x + Math.sin(k * 1.1 + i) * 7) * 10) / 10, y - (h * k) / 6]);
+  const leaves = pts.slice(1, -1).map(([px, py], k) => {
+    const s = k % 2 ? 1 : -1;
+    return `M${px} ${py} q${12 * s} -8 ${4 * s} -18 q${-2 * s} 9 ${-4 * s} 18Z`;
+  }).join(' ');
+  return { stem: smooth(pts), leaves, delay: -(i * 1.7).toFixed(1) };
+});
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:transparent">
+    <path d="M120 -400 L170 -400 L330 1000 L200 1000 Z" class="ray" />
+    <path d="M380 -400 L420 -400 L560 1000 L460 1000 Z" class="ray" />
+    <g mask="url(#fade-underwater)">
+      <path d={depthLines.map(([y]) => `M-1500 ${y}H700`).join(' ')} class="depth-line" />
+    </g>
+    {depthLines.map(([y, t], i) => <text x="596" y={y - 7} text-anchor="end" class={i === 1 ? 'cl cl-dark cl-xs-hide' : 'cl cl-dark'}>{t}</text>)}
+    <g class="m-drift" style="--dx:30px;--dur:60s"><path d={fish} class="school" /></g>
+    <path d={bed} class="seabed" />
+    <g mask="url(#fade-underwater)"><path d={strata} class="strata" /></g>
+    <path d={rocks} class="rock" />
+    <path d={coral} class="coral" />
+    <path d={coral2} class="coral coral-2" />
+    {kelp.map((k) => (
+      <g class="m-sway kelp" style={`--sway:2.5deg;--delay:${k.delay}s`}>
+        <path d={k.stem} class="kelp-stem" />
+        <path d={k.leaves} class="kelp-leaf" />
+      </g>
+    ))}
+    <path d="M125 -1500 V200" class="tether-line" />
+    <text x="250" y="652" text-anchor="middle" class="cl cl-dark cl-sounding">208</text>
+    <text x="420" y="645" text-anchor="middle" class="cl cl-dark cl-sounding">204</text>
+    <text x="80" y="660" text-anchor="middle" class="cl cl-dark cl-sounding cl-minor">211</text>
+    <circle cx="300" cy="350" r="100" class="ping m-ping" style="--delay:0s" />
+    <circle cx="300" cy="350" r="100" class="ping m-ping" style="--delay:-2.5s" />
+    <circle cx="318" cy="316" r="2" class="bubble m-rise" style="--delay:0s" />
+    <circle cx="322" cy="322" r="2.5" class="bubble m-rise" style="--delay:-2s" />
+    <circle cx="314" cy="326" r="1.6" class="bubble m-rise" style="--delay:-4s" />
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .ray { fill: #ffffff; opacity: 0.06; }
+  .depth-line { fill: none; stroke: var(--chart-on-dark); stroke-width: 1; stroke-dasharray: 10 6; opacity: 0.35; }
+  .school { fill: var(--art-fish-school); opacity: 0.6; }
+  .seabed { fill: var(--art-seabed); }
+  .strata { fill: none; stroke: var(--art-seabed-line); stroke-width: 1.5; }
+  .rock { fill: var(--art-rock); }
+  .coral { fill: var(--art-coral); }
+  .coral-2 { fill: var(--art-coral-2); }
+  .scene .kelp.kelp { transform-origin: 50% 100%; }
+  .kelp-stem { fill: none; stroke: var(--art-kelp); stroke-width: 3; }
+  .kelp-leaf { fill: var(--art-kelp); }
+  .tether-line { stroke: #dbe7f6; stroke-width: 2; stroke-dasharray: 3 5; }
+  .ping { fill: none; stroke: var(--accent-on-dark); stroke-width: 1.5; }
+  .bubble { fill: var(--on-dark-body); opacity: 0.8; }
+  @media (max-width: 860px) { .tether-line, .ray { display: none; } }
+</style>

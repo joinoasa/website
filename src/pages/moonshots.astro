@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import tree from '../data/techtree.json';
+import { nav } from '../config/site';
+const nodeById = new Map(tree.nodes.map((n) => [n.id, n]));
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const STATUS_LABEL: Record<string, string> = { available: 'available', locked: 'locked', 'in-progress': 'in progress', done: 'done' };
+type Shot = (typeof tree.moonshots)[number];
+const needsLabel = (m: Shot, starshot: boolean) => {
+  if (starshot) return 'Builds on';
+  const parts = [`Needs ${plural(m.needs.nodes.length, 'node')}`];
+  if (m.needs.moonshots.length) parts.push(`and ${plural(m.needs.moonshots.length, 'moonshot')}`);
+  return parts.join(' ');
+};
+---
+<Base title="Moonshots" description="The big goals OASA is working toward, from a regional encrypted mesh to wildfire watch networks, and the tech tree nodes each one needs.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Moonshots</h1>
+      <p class="lede">Dream big, ship small. Every moonshot is reached by finishing smaller nodes on the tech tree. Each one below lists the nodes it needs.</p>
+      <p>Not sure where to start? <a href="/techtree/#start-here">Begin with the nodes members can build now.</a></p>
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <ol class="shots">
+      {tree.moonshots.map((m) => (
+        <li id={m.id}>
+          <span class="sid">{m.id}</span>
+          <div>
+          <h2 class="shot-title">{m.title}</h2>
+          {m.summary && <p>{cap(m.summary)}.</p>}
+          {(m.needs.nodes.length > 0 || m.needs.moonshots.length > 0) && (
+            <div class="needs">
+              <span class="needs-label">{needsLabel(m, false)}</span>
+              <ul>
+                {m.needs.nodes.map((b) => (<li><a class="chipnode" href={`/techtree/#${b}`} data-s={nodeById.get(b)?.status}><span class="dot" aria-hidden="true"></span>{b}<span class="visually-hidden"> ({STATUS_LABEL[nodeById.get(b)?.status ?? 'locked']})</span></a></li>))}
+                {m.needs.moonshots.map((b) => (<li><a href={`#${b}`}>{b}</a></li>))}
+              </ul>
+            </div>
+          )}
+          {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
+          {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
+          {m.startWith.length > 0 && (
+            <div class="needs start">
+              <span class="needs-label">Start with:</span>
+              <ul>{m.startWith.map((b) => (<li><a class="chipnode" href={`/techtree/#${b}`} data-s="available"><span class="dot" aria-hidden="true"></span>{b}</a></li>))}</ul>
+            </div>
+          )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="beyond">Starshots</h2>
+    <p class="lede">Farther than a moonshot and not expected soon. Each one is reached through the moonshots and nodes listed below.</p>
+    <ol class="shots star">
+      {tree.starshots.map((m) => (
+        <li id={m.id}>
+          <span class="sid">{m.id}</span>
+          <div>
+          <h3 class="shot-title">{m.title}</h3>
+          {m.summary && <p>{cap(m.summary)}.</p>}
+          {(m.needs.nodes.length > 0 || m.needs.moonshots.length > 0) && (
+            <div class="needs">
+              <span class="needs-label">{needsLabel(m, true)}</span>
+              <ul>
+                {m.needs.nodes.map((b) => (<li><a class="chipnode" href={`/techtree/#${b}`} data-s={nodeById.get(b)?.status}><span class="dot" aria-hidden="true"></span>{b}<span class="visually-hidden"> ({STATUS_LABEL[nodeById.get(b)?.status ?? 'locked']})</span></a></li>))}
+                {m.needs.moonshots.map((b) => (<li><a href={`#${b}`}>{b}</a></li>))}
+              </ul>
+            </div>
+          )}
+          {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
+          {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
+          {m.startWith.length > 0 && (
+            <div class="needs start">
+              <span class="needs-label">Start with:</span>
+              <ul>{m.startWith.map((b) => (<li><a class="chipnode" href={`/techtree/#${b}`} data-s="available"><span class="dot" aria-hidden="true"></span>{b}</a></li>))}</ul>
+            </div>
+          )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="cta-strip">
+      <p>Pick an available node and build it with us.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={nav.apply.href}>{nav.apply.label}</a>
+        <a class="btn btn-ghost" href="/techtree/?avail=1">See available nodes</a>
+      </div>
+    </div>
+  </div>
+</Base>
+<style>
+  .shots { list-style: none; margin: 0 0 var(--space-12); padding: 0; border-top: 2px solid var(--ink); }
+  .shots > li { display: grid; grid-template-columns: 6rem 1fr; gap: var(--space-6); padding-block: var(--space-6); border-bottom: 1px solid var(--contour); scroll-margin-top: var(--space-4); }
+  .shots > li:target { background: var(--accent-tint); margin-inline: calc(-1 * var(--space-3)); padding-inline: var(--space-3); }
+  .sid { font-family: var(--font-display); font-weight: var(--weight-heading); font-stretch: var(--stretch-condensed); font-size: var(--step-1); color: var(--chart-deep); }
+  .shot-title { font-size: var(--step-2); font-stretch: var(--stretch-heading); font-weight: var(--weight-heading); margin-bottom: var(--space-1); }
+  .shots p { color: var(--ink-soft); margin-bottom: var(--space-3); }
+  .needs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); font-size: var(--step--1); }
+  .needs-label { color: var(--ink-muted); font-weight: var(--weight-bold); }
+  .needs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .needs a { display: inline-flex; align-items: center; min-height: 2rem; white-space: nowrap; padding: 0 var(--space-2); border: 1px solid var(--line-control); border-radius: var(--radius-sm); background: var(--white); text-decoration: none; font-family: var(--font-display); font-stretch: var(--stretch-condensed); font-weight: var(--weight-ui); color: var(--chart-deep); transition: border-color var(--dur-feedback) var(--ease-out), color var(--dur-feedback) var(--ease-out); }
+  .needs a:active { transform: translateY(var(--press-shift)); }
+  .needs a:hover { border-color: var(--chart); color: var(--ink); }
+  .needs + .needs, .needs-text + .progress, .progress + .needs { margin-top: var(--space-2); }
+  .needs-text { font-size: var(--step--1); margin-bottom: var(--space-2); }
+  .progress { font-size: var(--step--1); color: var(--ink-muted) !important; margin-bottom: 0; }
+  .chipnode { gap: var(--space-2); }
+  .dot { width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--locked); flex: none; }
+  .chipnode[data-s='available'] .dot { background: var(--available); }
+  .chipnode[data-s='in-progress'] .dot { background: var(--progress); }
+  .chipnode[data-s='done'] .dot { background: var(--done); }
+  .beyond { margin-top: var(--space-4); }
+  .star { border-top-color: var(--airspace); }
+  .star .sid { color: var(--airspace); }
+  @media (max-width: 640px) { .shots > li { grid-template-columns: 1fr; gap: var(--space-1); } }
+</style>

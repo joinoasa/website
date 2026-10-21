@@ -1,0 +1,1005 @@
+{
+  "$comment": "Per-node details for the tech tree popups, keyed by node or moonshot ID. Fields: brief (1-2 sentences), github (https://github.com/... issue, project or repo), lead (name or handle), team (list). Briefs are drafts: review and edit freely. Leave github/lead empty until a project exists.",
+  "R-COM1": {
+    "brief": "The simplest starting point for talking to a vehicle: a ready-made radio pair. Nearly everything else in the tree needs some kind of link, so this is where comms begin.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-COM2": {
+    "brief": "Adds encryption on top of a basic radio link so nobody else can read or hijack the traffic. It is the secure foundation for the TAK bridge, the mesh and sensor nodes.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-COM3": {
+    "brief": "Wired links made from copper or fiber cable. They are hard to jam, carry lots of data, and enable tethered drones, ROVs and crawlers that can't rely on radio.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-COM4": {
+    "brief": "Uses beams of light to send encrypted data between vehicles, even while they move. Its hard part is pointing and tracking the beam in flight.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-SEC1": {
+    "brief": "Gives every device a unique identity and secret keys, and a safe way to pair it with the network. Without it, nothing in OASA can tell trusted devices from strangers.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-SEC2": {
+    "brief": "Lets the network swap out old keys and kick out lost or stolen devices. This keeps a mesh safe over time, and it is needed before the first encrypted mesh.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-PWR1": {
+    "brief": "Safe battery packs with a battery management system that watches charge, heat and health. Every vehicle and node needs power, so this is the base for the rest of the power branch.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-PWR2": {
+    "brief": "Charging batteries from sunlight. It lets nodes, boats and aircraft run far longer without a human swapping batteries.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-PWR3": {
+    "brief": "Harvesting energy from wind, including kites that fly in the wind. It supports remote nodes and longer-running systems where sun is not enough.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-PWR4": {
+    "brief": "Sending electrical power along a cable to a vehicle, so it can stay aloft or underwater as long as the cable is connected. Pairs with data links in the same tether.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-PWR5": {
+    "brief": "Sending power through the air to a vehicle in flight using a laser or microwaves. It could someday keep aircraft up without landing, and it needs strong safety engineering.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-CTL1": {
+    "brief": "A human flies, drives or steers the vehicle by hand over a radio link. It is the first control mode and the safe fallback for later autonomy.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-CTL2": {
+    "brief": "Vehicles follow a list of waypoints on their own, using flight controller software like PX4 or ArduPilot. This unlocks the reference drones, rovers and boats.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-NAV1": {
+    "brief": "Using satellite signals (GPS and similar) to know where a vehicle is. Autonomous control, maps and timing all depend on it.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-NAV2": {
+    "brief": "A correction method that sharpens satellite positioning to a much finer level. It lets docks, mapping and ground robots know exactly where they are.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-NAV3": {
+    "brief": "Finding your way when satellite signals are blocked, using cameras and motion sensors. Needed for caves, tunnels and underwater missions.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-TIME1": {
+    "brief": "A shared clock across all OASA devices. Matching timestamps let video, direction finding and sound sensors line up their data.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-TIME2": {
+    "brief": "A backup way to tell time and position using the mesh itself when GPS fails or is blocked. It helps communities stay connected in bad situations.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-1": {
+    "brief": "Getting a camera feed from a vehicle to a screen. Video feeds AI, mapping and GPS-free navigation.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-MAP1": {
+    "brief": "Shows OASA vehicles on the TAK map (ATAK, Cursor-on-Target) with their position, battery and status. It connects OASA to tools responders already use.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-MAP2": {
+    "brief": "Tap a spot on the TAK map and a vehicle goes there. It turns the map from a display into a control surface.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NET1": {
+    "brief": "A first encrypted mesh of three to five nodes that pass traffic for each other. It proves the network design that everything bigger grows from.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NET2": {
+    "brief": "Teaches the mesh to choose the best route for data and send urgent messages first. This keeps control and video usable when the network is busy.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NET3": {
+    "brief": "Lets control of a vehicle pass smoothly between ground stations and operators. It makes teams and long missions possible.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NET4": {
+    "brief": "Growing the encrypted mesh to 100 or more nodes without it falling over. This is the step toward a regional network that sustains itself.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NET5": {
+    "brief": "A secure gateway connecting OASA to Meshtastic and LoRa networks. It lets cheap, low-power radios and community networks share messages with OASA.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-PAY1": {
+    "brief": "A common mechanical and electrical plug for payloads like cameras, sensors and arms. The aim is one payload design that fits many vehicles.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-LOG1": {
+    "brief": "A flight-recorder style log format for every OASA device. Good logs help find failures, improve designs and prove what happened.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-AI1": {
+    "brief": "A small computer module on the vehicle that runs AI, like spotting objects in video. It enables detection, inspection and smarter missions without a cloud connection.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-AI2": {
+    "brief": "Type or say a goal such as \"survey the north field, find hogs\" and the system turns it into a mission plan. It makes fleets easier for non-experts to use.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-AI3": {
+    "brief": "Steer a mission in the field by voice, with commands like \"closer\" or \"go further north.\" It builds on sentence-based missions and the TAK map.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-VID1": {
+    "brief": "Video that is sent only when someone asks for it, so it doesn't clog the mesh. It lets operators look through a vehicle's camera when it matters.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-TSK1": {
+    "brief": "Vehicles report whether they are busy or idle, accept tasks, and hand them off to each other. This is the basis for fleets and teams.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-TSK2": {
+    "brief": "A carrier vehicle launches a small scout, which flies out and returns with information about where to go next. A first step toward vehicles working as teams.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-DOCK1": {
+    "brief": "A vehicle lands accurately on a dock using precise positioning and sensors. It is the first step toward missions that start and end with no human.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-DOCK2": {
+    "brief": "A dock that charges vehicles by itself once they land. Combined with precision landing, it allows repeated missions without human help.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-SIM1": {
+    "brief": "A software copy of vehicles and environments where designs and missions can be tested safely. It lets contributors work and train without hardware.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH1": {
+    "brief": "Standard test rigs and software for checking that parts and builds work as promised. It keeps quality up as more chapters build the same designs.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-RF1": {
+    "brief": "Scans the radio spectrum to see which signals are around. Helps find clear channels and spot interference.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-RF2": {
+    "brief": "Using several antennas to find which direction a radio signal comes from, then drawing bearings on the TAK map. Useful for tracking down interference.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-RF3": {
+    "brief": "Combining antennas to aim radio energy toward a target. It gives longer, stronger links and is needed for laser links and high-altitude platforms.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NODE1": {
+    "brief": "A portable, backpack-sized mesh node kit with radio, battery and encryption. Anyone can carry it to extend the network.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-NODE2": {
+    "brief": "Weatherproof node kits for towers, vehicles and homes, with solar power. They give the mesh a fixed backbone and wider coverage.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-1": {
+    "brief": "A low-cost quadcopter that everyone can build and fly. It is the main aircraft many branches build on, from inspection to rescue.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-2": {
+    "brief": "A standard fixed-wing airplane design. Generally covers more distance on less power than quads, which suits surveys and long-range work.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-3": {
+    "brief": "An aircraft that takes off like a quad and flies like a plane, combining both reference designs. It brings long range without needing a runway.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-4": {
+    "brief": "A drone held up by a cable that supplies power, so it can hover for a long time. Useful as a high relay or camera point.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-5": {
+    "brief": "A fixed-wing aircraft with solar panels that gain energy while flying. It is the step toward very long flights.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-6": {
+    "brief": "A solar-powered glider designed to fly at high altitude for a long time. It could act as a relay or camera platform, a \"poor man's satellite\" for coverage.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-7": {
+    "brief": "A drone that flies between others and the ground station to pass their radio traffic along. It extends the range of small drones.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-8": {
+    "brief": "Aircraft that use rising air, ridge winds and wind gradients to stay up while saving energy, like birds do. Smart energy-aware control makes flights much longer.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-9": {
+    "brief": "An ultralight solar aircraft built to stay aloft for long periods, using sun by day and stored energy and soaring by night. A design study toward an atmospheric satellite.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "A-10": {
+    "brief": "A robot that flies by flapping wings, like a bird or insect, and builds on the reference quad. Aims at quiet wildlife monitoring.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-1": {
+    "brief": "A kite that carries sensors or radios aloft using wind. It is the base for the solar kite, the kite generator and the tethered aerostat.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-2": {
+    "brief": "A kite with lightweight solar panels that powers sensors up in the air. It gives a long-running overhead sensing point.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-3": {
+    "brief": "A kite that makes electricity from wind high above the ground. Could power remote nodes and charging stations.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-4": {
+    "brief": "A gas-filled balloon held by a cable, giving a stable high platform for radios and cameras. The cable can carry power and data.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-5": {
+    "brief": "A solar-powered blimp that can steer and hold its position. It can stay over an area for long periods as a sensor or relay.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-6": {
+    "brief": "A large blimp that lifts heavier sensors and mesh repeaters over an area. Meant for emergencies where ground networks are down.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "L-7": {
+    "brief": "A large blimp that carries smaller drones, launching and recovering them in the air. It extends their reach and lets one platform run many missions.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-1": {
+    "brief": "A basic ground robot on wheels or tracks. It is the main ground reference platform for hauling payloads, inspecting and exploring.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-2": {
+    "brief": "A robot that walks on legs, so it can cross stairs and rough ground that wheels can't. Needs strong navigation, often built with ROS 2.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-3": {
+    "brief": "A robot that spots and picks up litter in a city, using an arm and AI vision. It helps keep streets clean without constant human effort.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-4": {
+    "brief": "A ground vehicle that carries drones and charges them. It moves the dock to where the work is.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-5": {
+    "brief": "A robot that explores caves, tunnels and collapsed buildings and builds a 3D map on its own. It drops relay nodes as it goes to keep a link home.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-6": {
+    "brief": "A robot that clears snow and ice from sidewalks first and later streets. It helps neighbors who can't easily clear their own paths.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "G-7": {
+    "brief": "A robot that helps elderly and disabled neighbors by guiding them or delivering items. It needs to be safe and easy to use around people.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-1": {
+    "brief": "A boat for surveying lakes, rivers and coasts. It is the base for water sampling, cleanup and carrier boats.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-2": {
+    "brief": "A floating buoy that is a mesh node and weather station. It extends the network onto the water and reports local conditions.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-3": {
+    "brief": "A boat powered by solar panels. It can work for long periods without refueling or frequent recharging.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-4": {
+    "brief": "A sensor kit for collecting and testing water samples from a boat. It supports river surveys and water quality checks.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-5": {
+    "brief": "A boat that collects algae and floating debris with AI to spot it. Helps keep waterways clean.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-6": {
+    "brief": "A boat that serves as a floating base for drones, which can land on it while it moves. It extends drone reach over water.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-1": {
+    "brief": "A small underwater robot connected to the surface by a cable, built on the open ArduSub software. The tether gives power and a reliable control link.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-2": {
+    "brief": "A tough, lightweight fiber tether carrying power and data to an underwater vehicle.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-3": {
+    "brief": "A modem that sends encrypted data through water using sound, since radio doesn't travel well underwater. Lets vehicles talk without a cable.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-4": {
+    "brief": "A buoy or boat that links underwater vehicles to the surface network. It translates between sound or cable and radio.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-5": {
+    "brief": "A submarine that navigates and works on its own, without a tether. It builds on the surface gateway and navigation without GPS.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-6": {
+    "brief": "A fish-shaped sub that swims with body movement instead of propellers. It may be quieter and gentler on wildlife.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "U-7": {
+    "brief": "A robot that works underwater to replant coral and remove invasive species. It supports reef and wetland recovery.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-2": {
+    "brief": "A heat camera that sees warmth instead of light. It works at night and helps find people, animals and hot spots.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-3": {
+    "brief": "A lightweight, open laser scanner that measures distance to build 3D shapes. Used for mapping, navigation and surveys.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-4": {
+    "brief": "A compact radar that senses objects using radio waves, even in fog or darkness. It adds another way for vehicles to see their surroundings.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-5": {
+    "brief": "Using several microphones to find where a sound came from by comparing arrival times. Needs shared timing, and enables sound-based detection.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-6": {
+    "brief": "Turning many photos or scans into maps and 3D models, using tools like OpenDroneMap. Maps support surveys, inspections and monitoring.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-7": {
+    "brief": "Combining any two or more of thermal, LiDAR and radar into one clearer picture with AI. Several sensors together beat any single sensor.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-8": {
+    "brief": "Many vehicles mapping an area together and merging results into one map. Covers ground faster than one vehicle alone can.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-1": {
+    "brief": "A robotic arm or claw that grabs and collects objects. It enables cleanup, repair and recovery jobs.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-2": {
+    "brief": "A way to catch or recover a vehicle in flight, rather than landing it. It lets motherships bring their drones back aboard.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-3": {
+    "brief": "A payload that releases items from a vehicle, like supplies or seeds. Useful for delivery, rescue and planting.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-4": {
+    "brief": "A speaker payload that plays sounds or voice. It can scare animals away or let rescuers talk to people from a distance.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-5": {
+    "brief": "A mechanism that drops small mesh nodes along a robot's path. It keeps a communication chain connected in places like tunnels.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "M-6": {
+    "brief": "A launcher on shore that sends a self-inflating flotation device out to someone in the water. A fast way to get help to a swimmer.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-1": {
+    "brief": "A live map showing where the OASA mesh reaches and where it is weak. It helps plan where to place new nodes.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-2": {
+    "brief": "Small, solar-friendly sensor nodes that run for a long time on very little power. Basis for weather, environment and city sensing.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-3": {
+    "brief": "Weather stations on the network that tell operators whether it is safe to fly or sail. A simple go or no-go answer helps prevent accidents.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-4": {
+    "brief": "Tools to manage many vehicles at once: where they are, what they're doing, and who charges next. Needed to run larger fleets.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-5": {
+    "brief": "Using thermal cameras and AI to detect feral hogs, and speakers to scare them away. Gives farms early warning of hog activity.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-6": {
+    "brief": "A truck and trailer that carries docks, vehicles and a mesh node. A mobile base you can drive to where it is needed.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-7": {
+    "brief": "A solar blimp that watches for wildfires with thermal and smoke detection. Like a fire tower in the sky that spots fires early.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-8": {
+    "brief": "A mobile station that prints replacement parts and swaps them into vehicles in the field. It keeps a fleet running far from a workshop.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-9": {
+    "brief": "A facility that fixes damaged devices with minimal human work. It scales up the field repair idea.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-10": {
+    "brief": "Vehicles that carry broken devices to repair centers and bring parts back out. It closes the loop of a self-repairing fleet.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-11": {
+    "brief": "Using thermal imagery, maps and AI to spot dry vegetation and fuel buildup near communities. It shows where fires could spread.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-12": {
+    "brief": "Helping fire agencies plan and monitor controlled burns using risk maps and drops. Humans and agencies stay in charge.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-13": {
+    "brief": "Planting seeds from the air and tracking how the land recovers over time using maps. It supports reforestation after fires.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-14": {
+    "brief": "A network of connected sensors across a city that share data with each other and the map. The base of a living model of the city.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-15": {
+    "brief": "Cameras and microphones watching for signs of someone struggling in water, like movement or screams. An early warning to alert lifeguards.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-16": {
+    "brief": "A set of tools to support lifeguards: shore launcher, drone-dropped flotation and a two-way speaker. Comes in budget tiers, and supports rather than replaces lifeguards.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-17": {
+    "brief": "A shore base where cleanup boats unload, recharge and relaunch on their own. It keeps ocean cleanup running continuously.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-18": {
+    "brief": "Sensors on utility poles that measure air quality, weather and mosquitoes, powered by solar and linked by radio. Planned with utilities as partners.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-19": {
+    "brief": "Mapping standing water where mosquitoes breed and dropping larvicide, working with county programs. It targets treatment where it counts.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-20": {
+    "brief": "Patrolling land and water to spot invasive plants and animals using AI vision. Early detection makes removal easier.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-21": {
+    "brief": "Helping ski patrol watch slopes, search for beacons and drop supplies. Support for trained patrollers, not a replacement.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-22": {
+    "brief": "Sensor kits that anyone can host, feeding a shared open map. Connects to Meshtastic so community networks can join in.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-1": {
+    "brief": "A small robot that crawls through pipes and sewers with a camera and cable or mesh link. It inspects places people can't safely go.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-2": {
+    "brief": "A drone and a line-crawling robot that check power lines for damage. Reduces risky climbing and inspection by hand.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-3": {
+    "brief": "Drones with cameras and LiDAR that check bridges and structures for cracks and wear. Gets close to hard-to-reach spots.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-4": {
+    "brief": "A robot designed to cross steep, rocky or uneven land. Combines legged mobility with navigation that doesn't need GPS.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-5": {
+    "brief": "Software that turns inspection data into clear reports and uses AI to flag defects. Makes inspections useful to the people who fix things.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-6": {
+    "brief": "Drones that survey roads for potholes and wear, and flag clogged storm drains and culverts. Helps cities fix problems early.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-7": {
+    "brief": "Acoustic sensors placed along water mains that listen for leaks. Catching leaks early limits water loss and repair work.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-8": {
+    "brief": "Mapping the power grid ahead of time, then using robots to inspect lines and substations on their own. Builds on powerline inspection.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "I-9": {
+    "brief": "Sensors and autonomous or assisted inspections that keep watch on dams and levees. Catching changes early helps keep communities safe.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "C-1": {
+    "brief": "A drone that flies over a roof and checks it automatically for damage, without anyone climbing up.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "C-2": {
+    "brief": "Regular drone mapping of a building site to track how much has been built. Shows progress against the plan.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "C-3": {
+    "brief": "A heavy-lift drone that pressure-washes buildings and other hard-to-reach surfaces, with a physical cable link to the ground.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "C-4": {
+    "brief": "Robots that survey a site and monitor how the build matches plans. Combines ground robots with progress tracking.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "C-5": {
+    "brief": "A kit that checks roofs, chimneys and foundations for a home inspection. Builds on automatic roof inspection.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-9": {
+    "brief": "A team of vehicles with thermal cameras that sweep an area in a planned pattern to find people. Speeds up search and rescue.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-10": {
+    "brief": "A drone that drops lines or flotation devices to people stranded in floodwater. Gets help to them fast while rescuers get there.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-11": {
+    "brief": "Drones that detect avalanche beacon signals to help rescue teams find buried people. Supports ski patrol and search.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-12": {
+    "brief": "LiDAR maps terrain and sees through tree cover for archaeology and land survey. Reveals shapes hidden under forests.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "X-13": {
+    "brief": "Sensors like LiDAR, a magnetometer and ground-penetrating radar, plus AI, to find buried hazards on former military sites and abandoned mines. Detection and mapping only.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "SP-1": {
+    "brief": "A balloon that carries sensors and an OASA radio link to near space and is recovered afterward. A low-cost way to test high-altitude systems.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "SP-2": {
+    "brief": "A small satellite carrying OASA's encrypted link and a laser comms test. The first OASA hardware in orbit.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "SP-3": {
+    "brief": "Testing robots in places like deserts, caves and ice that resemble other planets. Teaches how to work in extreme environments.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "SP-4": {
+    "brief": "Concept designs for vehicles that operate in thin air or low gravity, like on Mars and the Moon. Tested first in simulation.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "SP-5": {
+    "brief": "Autonomy that keeps working when messages take a long time and no human can step in. Required for far-away missions.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-1": {
+    "brief": "A regional mesh network that keeps itself running, with private networks traveling encrypted inside it. Brings together towers, relays and nodes into shared infrastructure.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-2": {
+    "brief": "A response system where a mobile hive truck launches drones that map, search with thermal cameras, drop supplies and set up a temporary mesh. Designed for emergencies.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-3": {
+    "brief": "A farm that watches itself with sensors, scouts fields, tracks hogs and uses rovers and docks. Helps farmers see problems early.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-4": {
+    "brief": "Robots and boats that survey rivers, take samples and clean up trash on water and streets. Helps keep communities healthy.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-5": {
+    "brief": "Air, ground, surface and underwater vehicles working on a single mission. Shows that different robots can work as one team.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-6": {
+    "brief": "A solar aircraft or balloon that provides coverage and imaging from above, like a low-cost satellite. Reaches areas where ground networks don't.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-7": {
+    "brief": "The open baseline software and hardware standards that everyone can build on. A shared foundation so projects work together.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-8": {
+    "brief": "Any local chapter can build any OASA design from open plans and standard parts. Makes the community truly distributed.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-9": {
+    "brief": "High-up sensors watching for fires, like modern fire towers, plus mapping and search once a fire starts. Early warning helps firefighters.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-10": {
+    "brief": "A goal for solar aircraft that stay aloft indefinitely, using sun by day and stored energy and soaring by night. They would act as relays, cameras and sensor platforms.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-11": {
+    "brief": "A fleet that fixes itself: field cells print and swap parts, and logistics vehicles carry damaged devices to automated repair centers.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-12": {
+    "brief": "Mapping fire risk around communities, supporting controlled burns with fire agencies, and planting and tracking regrowth. Helps prevent fires and heal land.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-13": {
+    "brief": "Fleets of autonomous boats and subs clearing waterways and restoring reefs and wetlands. Cleanup and recovery at larger scale.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-14": {
+    "brief": "A living model of a city built from smart sensors that talk to each other and the world around them. Helps cities understand and respond to what is happening.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-15": {
+    "brief": "Tools that support lifeguards, never replace them: detection, shore launchers, drone drops and two-way speakers. Comes in tiers for every budget.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-16": {
+    "brief": "Robots that map collapsed buildings, caves and tunnels in 3D on their own. They go where people can't safely go.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-17": {
+    "brief": "Vehicles that aim lasers at each other in flight to share encrypted data and power. A long-term goal that builds on laser links and power beaming.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-18": {
+    "brief": "Plan a mission from one typed or spoken sentence, then steer it by voice. A long-term goal that makes a fleet easier for anyone to direct.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-19": {
+    "brief": "OASA systems tested in planetary-like environments and near space. A stepping stone toward work beyond Earth.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-20": {
+    "brief": "A self-sustaining encrypted mesh with backup comms, timing and power that keeps communities connected when other networks fail.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-21": {
+    "brief": "Roads, storm drains, water mains, the grid, dams and levees checked by autonomous systems. Helps catch problems before they become failures.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-22": {
+    "brief": "Finding buried hazards like unexploded ordnance on former U.S. military sites and abandoned mines. The same LiDAR tools can also map archaeological sites.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "MS-23": {
+    "brief": "Anyone can host a sensor and add to a shared open map, bridged with Meshtastic. Brings everyday people into building the network.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "ST-1": {
+    "brief": "A group of OASA CubeSats that extend the encrypted mesh into space. A long-term goal beyond the first test satellite.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "ST-2": {
+    "brief": "Air, ground and underground robots exploring the Moon or Mars together. Takes multi-domain teamwork off Earth.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "ST-3": {
+    "brief": "Autonomous robots that survey asteroids and moons. Far from help, they must handle problems on their own.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "ST-4": {
+    "brief": "Off-world bases where robots build, repair and power themselves. A far-future goal for lasting presence away from Earth.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "ST-5": {
+    "brief": "Contributing open autonomy, comms and power ideas toward probes that leave the solar system. A very long-range dream for the community.",
+    "github": null,
+    "lead": null,
+    "team": []
+  }
+}

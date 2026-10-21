@@ -1,0 +1,50 @@
+---
+import { site, nav, contact, socialLinks } from '../config/site';
+
+const email = contact('general');
+const extra = [...socialLinks, ...(site.links.newsletter ? [{ label: 'Newsletter', href: site.links.newsletter }] : [])];
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="intro">
+      <p class="name">{site.name}</p>
+      <p class="small">Building autonomous systems to make American communities better, cleaner and safer. Every link encrypted by design, and designs open by default.</p>
+    </div>
+    <div class="cols">
+      {nav.footer.map((col) => (
+        <nav aria-label={col.heading}>
+          <h2>{col.heading}</h2>
+          <ul>
+            {col.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          </ul>
+        </nav>
+      ))}
+    </div>
+    <div class="base">
+      <p class="small">Contact: <a href={`mailto:${email}`}>{email}</a></p>
+      {extra.length > 0 && (
+        <ul class="social" aria-label="OASA elsewhere">
+          {extra.map((l) => <li><a href={l.href} rel="noopener">{l.label}</a></li>)}
+        </ul>
+      )}
+    </div>
+  </div>
+</footer>
+<style>
+  .site-footer { --focus: var(--focus-on-dark); background: var(--ink); color: var(--on-dark-muted); padding-block: var(--space-10); margin-top: var(--space-8); }
+  .name { font-family: var(--font-display); font-stretch: var(--stretch-heading); font-weight: var(--weight-heading); color: var(--on-dark); font-size: 1.15rem; margin-bottom: var(--space-2); }
+  .small { font-size: var(--step--1); }
+  .intro { margin-bottom: var(--space-8); }
+  .cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6) var(--space-8); }
+  h2 { font-family: var(--font-display); font-stretch: var(--stretch-condensed); font-size: var(--step--1); font-weight: var(--weight-ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-dark); margin: 0 0 var(--space-2); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  li a { display: inline-flex; align-items: center; min-height: var(--tap); }
+  a { color: var(--on-dark-body); }
+  a:hover { color: var(--on-dark); }
+  .base { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--surface-dark-hover); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-6); }
+  .base p { margin: 0; }
+  .base a { display: inline-flex; align-items: center; min-height: var(--tap); }
+  .social { display: flex; flex-wrap: wrap; gap: 0 var(--space-5); }
+  @media (max-width: 860px) { .cols { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .cols { grid-template-columns: 1fr; } }
+</style>

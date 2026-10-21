@@ -1,0 +1,409 @@
+// Parses source/OASA-techtree.md into src/data/techtree.json.
+// Run by `npm run techtree`, and by the nightly GitHub Action.
+// Government (company-track) sections are excluded from the public site.
+//
+// Data model: the Requires column is the single source of truth.
+//   - commas and "+" separate terms; every term is required
+//   - "A or B" in a term: any one of them (alternatives may be free text)
+//   - "two of A/B/C": at least N of the listed IDs
+//   - a parenthetical after an ID is a note: "A-1 (heavy-lift)"
+// Unlocks is derived (inverse of Requires, plus moonshots whose key-node list names the node).
+// Status: 🟡 and ✅ are set by hand; 🟢 and 🔒 are computed from Requires.
+// This script never writes the source document. `scripts/sync-techtree.mjs` does that.
+
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+
+export const SRC = new URL('../source/OASA-techtree.md', import.meta.url);
+const OUT_DIR = new URL('../src/data/', import.meta.url);
+const OUT = new URL('techtree.json', OUT_DIR);
+// Optional per-node details: brief, GitHub link, lead and team. Keyed by node or moonshot ID.
+const DETAILS = new URL('../source/techtree-details.json', import.meta.url);
+const DETAIL_KEYS = ['brief', 'github', 'lead', 'team'];
+
+/** Merge source/techtree-details.json into nodes and moonshots. Returns warnings. */
+export function mergeDetails(json, details) {
+  const warnings = [];
+  const items = new Map([...json.nodes, ...json.moonshots, ...json.starshots].map((x) => [x.id, x]));
+  for (const x of items.values()) Object.assign(x, { brief: '', github: null, lead: null, team: [] });
+  if (!details || typeof details !== 'object' || Array.isArray(details)) return ['details: file must contain an object keyed by ID'];
+  for (const [id, d] of Object.entries(details)) {
+    if (id.startsWith('$')) continue; // "$comment" and friends
+    const item = items.get(id);
+    if (!item) { warnings.push(`details: unknown ID ${id}`); continue; }
+    if (!d || typeof d !== 'object' || Array.isArray(d)) { warnings.push(`details: ${id} must be an object`); continue; }
+    for (const k of Object.keys(d)) if (!DETAIL_KEYS.includes(k)) warnings.push(`details: ${id} has unknown field "${k}"`);
+    if (typeof d.brief === 'string') item.brief = d.brief.trim();
+    if (d.github) {
+      if (typeof d.github === 'string' && /^https:\/\/github\.com\/[^/\s]+\/[^/\s]+/.test(d.github.trim())) item.github = d.github.trim();
+      else warnings.push(`details: ${id} github must look like https://github.com/<owner>/<repo>`);
+    }
+    if (d.lead) item.lead = String(d.lead).trim() || null;
+    if (d.team !== undefined && d.team !== null && !Array.isArray(d.team)) warnings.push(`details: ${id} team must be a list of names`);
+    if (Array.isArray(d.team)) {
+      if (d.team.some((t) => t !== null && t !== '' && typeof t !== 'string')) warnings.push(`details: ${id} team entries must be strings`);
+      item.team = d.team.filter((t) => typeof t === 'string' && t.trim()).map((t) => t.trim());
+    }
+  }
+  return warnings;
+}
+
+const STATUS = { '🟢': 'available', '🔒': 'locked', '🟡': 'in-progress', '✅': 'done' };
+export const EMOJI = { available: '🟢', locked: '🔒', 'in-progress': '🟡', done: '✅' };
+const EXCLUDE_HEADINGS = [/government/i];
+
+const BRANCH_BY_PREFIX = {
+  R: 'Roots', T: 'Trunk', A: 'Air', L: 'Lighter-than-air & wind', G: 'Ground',
+  S: 'Surface water', U: 'Underwater', X: 'Sensing', M: 'Manipulation',
+  O: 'Operations', I: 'Infrastructure inspection', C: 'Commercial services', SP: 'Space',
+};
+
+const NUM_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5 };
+const ID_SRC = '[A-Z]{1,3}-[A-Z]*\\d+';
+const ID_RE = new RegExp(`^${ID_SRC}$`);
+const IDS_RE = new RegExp(`\\b${ID_SRC}\\b`, 'g');
+
+const clean = (s) => s.replace(/\*\*/g, '').trim();
+const idsIn = (s) => s.match(IDS_RE) ?? [];
+const isId = (s) => ID_RE.test(s);
+const isMs = (id) => id.startsWith('MS-');
+const isSt = (id) => id.startsWith('ST-');
+const num = (id) => Number(id.replace(/\D+/g, ''));
+
+/** Split on a separator, ignoring separators inside parentheses. */
+function splitTop(s, sep) {
+  const out = [];
+  let depth = 0;
+  let cur = '';
+  for (const ch of s) {
+    if (ch === '(') depth++;
+    if (ch === ')') depth = Math.max(0, depth - 1);
+    if (ch === sep && depth === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out.filter(Boolean);
+}
+
+/** Parse a Requires cell into groups. Errors are pushed to `errors`. */
+export function parseRequires(cell, where, errors) {
+  const text = clean(cell);
+  if (!text || text === '—' || text === '-') return { text: '', groups: [], ids: [], note: undefined };
+  const groups = [];
+  const notes = [];
+  // Notes: "A-1 (heavy-lift)" -> note on A-1.
+  const noteFor = new Map();
+  const stripped = text.replace(new RegExp(`(${ID_SRC})\\s*\\(([^)]*)\\)`, 'g'), (_, id, note) => {
+    noteFor.set(id, note.trim());
+    notes.push(note.trim());
+    return id;
+  });
+  for (const term of stripped.split(/\s*[,+]\s*/).filter(Boolean)) {
+    const atLeast = term.match(/^(one|two|three|four|five|\d+) of (.+)$/i);
+    if (atLeast) {
+      const n = NUM_WORDS[atLeast[1].toLowerCase()] ?? Number(atLeast[1]);
+      const list = atLeast[2].split(/\s*\/\s*/).map((s) => s.trim());
+      if (!list.every(isId)) errors.push(`${where}: "${term}" must list IDs`);
+      groups.push({ kind: 'atLeast', n, ids: list.filter(isId) });
+      continue;
+    }
+    const alts = term.split(/\s+or\s+/i).map((s) => s.trim()).filter(Boolean);
+    if (alts.length > 1) {
+      const g = { kind: 'any', ids: alts.filter(isId), text: alts.filter((a) => !isId(a)) };
+      const note = g.ids.map((i) => noteFor.get(i)).filter(Boolean).join('; ');
+      groups.push(note ? { ...g, note } : g);
+    } else if (isId(alts[0])) {
+      const g = { kind: 'all', ids: [alts[0]] };
+      groups.push(noteFor.has(alts[0]) ? { ...g, note: noteFor.get(alts[0]) } : g);
+    } else {
+      errors.push(`${where}: cannot parse Requires term "${term}"`);
+    }
+  }
+  const ids = [...new Set(groups.flatMap((g) => g.ids))];
+  return { text, groups, ids, note: notes.length ? notes.join('; ') : undefined };
+}
+
+/** Parse a moonshot / starshot key-node cell. */
+export function parseNeeds(cell, where, errors) {
+  const nodes = [];
+  const moonshots = [];
+  const texts = [];
+  for (const term of splitTop(clean(cell), ',')) {
+    let m;
+    if ((m = term.match(new RegExp(`^(${ID_SRC}) to (${ID_SRC})$`)))) {
+      const [a, b] = [m[1], m[2]];
+      const pa = a.slice(0, a.lastIndexOf('-') + 1);
+      const pb = b.slice(0, b.lastIndexOf('-') + 1);
+      if (pa !== pb) { errors.push(`${where}: range "${term}" mixes prefixes`); continue; }
+      for (let i = num(a); i <= num(b); i++) nodes.push(`${pa}${i}`);
+    } else if ((m = term.match(/^((?:MS|ST)-\d+)(?: nodes)?$/))) {
+      moonshots.push(m[1]);
+    } else if (new RegExp(`^${ID_SRC}(?:\\s*/\\s*${ID_SRC})*$`).test(term)) {
+      nodes.push(...term.split(/\s*\/\s*/));
+    } else {
+      texts.push(term);
+    }
+  }
+  return { nodes: [...new Set(nodes)], moonshots: [...new Set(moonshots)], text: texts.join(', ') };
+}
+
+/** Parse the markdown into raw records. Pure. */
+export function parseTechtree(md) {
+  const lines = md.split('\n');
+  const out = { nodes: [], moonshots: [], starshots: [], prefixes: [], criticalPath: [], errors: [] };
+  let h2 = '';
+  let h3 = '';
+  let header = null;
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li].trim();
+    if (line.startsWith('## ')) { h2 = line.slice(3); h3 = ''; header = null; continue; }
+    if (line.startsWith('### ')) { h3 = line.slice(4); header = null; continue; }
+    const section = `${h2} ${h3}`;
+
+    if (/critical path/i.test(h2)) {
+      const m = line.match(/^\d+\.\s+\*\*(.+?)\*\*\s*(?:\(([^)]*)\))?\s*:?\s*(.*)$/);
+      if (m) out.criticalPath.push({ ids: idsIn(m[1]), label: (m[2] ?? '').trim(), text: m[3].trim() });
+      continue;
+    }
+    if (!line.startsWith('|')) { header = null; continue; }
+
+    const cells = line.slice(1, -1).split('|').map((c) => c.trim());
+    if (cells.every((c) => /^:?-+:?$/.test(c))) continue;
+    if (!header) { header = cells.map((c) => c.toLowerCase()); continue; }
+    if (EXCLUDE_HEADINGS.some((r) => r.test(section))) continue;
+
+    if (header[0] === 'prefix') {
+      const prefix = cells[0].replace(/`/g, '');
+      if (/^[A-Z]{1,3}-$/.test(prefix)) out.prefixes.push({ prefix, area: clean(cells[1]) });
+      continue;
+    }
+
+    const id = cells[0];
+    if (!ID_RE.test(id)) continue;
+    const where = `line ${li + 1} (${id})`;
+
+    if (header.includes('requires')) {
+      const unlocksRaw = clean(cells[3]);
+      const emoji = cells[5].trim();
+      if (!(emoji in STATUS)) { out.errors.push(`${where}: unknown status "${emoji}"`); continue; }
+      const req = parseRequires(cells[2], where, out.errors);
+      const prefix = id.split('-')[0];
+      out.nodes.push({
+        id, line: li, cells,
+        name: clean(cells[1]),
+        requiresParsed: req,
+        unlocksRaw,
+        crossRef: unlocksRaw.startsWith('(see'),
+        sciences: clean(cells[4]),
+        statusSource: STATUS[emoji],
+        branch: BRANCH_BY_PREFIX[prefix] ?? 'Other',
+      });
+    } else if (isMs(id) || isSt(id)) {
+      const [title, ...rest] = cells[1].split(' — ');
+      const item = { id, title: clean(title), summary: clean(rest.join(' — ')), needs: parseNeeds(cells[2], where, out.errors) };
+      (isMs(id) ? out.moonshots : out.starshots).push(item);
+    }
+  }
+  return out;
+}
+
+/** Derive unlocks, status, downstream views. Pure. */
+export function deriveTree(parsed) {
+  const errors = [...parsed.errors];
+  const warnings = [];
+
+  // Duplicate IDs: a "(see Roots)" cross-reference row is skipped; anything else is an error.
+  const seen = new Set();
+  const nodes = [];
+  for (const n of parsed.nodes) {
+    if (n.crossRef) continue;
+    if (seen.has(n.id)) { errors.push(`duplicate node ID ${n.id} (line ${n.line + 1})`); continue; }
+    seen.add(n.id);
+    nodes.push(n);
+  }
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const shots = [...parsed.moonshots, ...parsed.starshots];
+  const shotById = new Map(shots.map((s) => [s.id, s]));
+  const known = (id) => byId.has(id) || shotById.has(id);
+
+  for (const n of nodes) for (const id of n.requiresParsed.ids) if (!known(id)) errors.push(`${n.id}: unknown ID ${id} in Requires`);
+  for (const s of shots) {
+    for (const id of s.needs.nodes) if (!byId.has(id)) errors.push(`${s.id}: unknown node ${id} in key nodes`);
+    for (const id of s.needs.moonshots) if (!shotById.has(id)) errors.push(`${s.id}: unknown moonshot ${id}`);
+  }
+
+  const order = new Map(nodes.map((n, i) => [n.id, i]));
+  const bySource = (a, b) => order.get(a) - order.get(b);
+
+  // Unlocks = inverse of Requires.
+  const unlocks = new Map(nodes.map((n) => [n.id, []]));
+  for (const n of nodes) for (const r of n.requiresParsed.ids) unlocks.get(r)?.push(n.id);
+  for (const list of unlocks.values()) list.sort(bySource);
+
+  // Direct moonshot / starshot links come from the key lists.
+  const directMs = new Map(nodes.map((n) => [n.id, []]));
+  const directSt = new Map(nodes.map((n) => [n.id, []]));
+  for (const s of parsed.moonshots) for (const id of s.needs.nodes) directMs.get(id)?.push(s.id);
+  for (const s of parsed.starshots) for (const id of s.needs.nodes) directSt.get(id)?.push(s.id);
+
+  // Status: 🟡 and ✅ by hand; 🟢 / 🔒 computed. Free-text alternatives never count as satisfied.
+  const done = new Set(nodes.filter((n) => n.statusSource === 'done').map((n) => n.id));
+  const satisfied = (g) =>
+    g.kind === 'all' ? g.ids.every((i) => done.has(i))
+    : g.kind === 'any' ? g.ids.some((i) => done.has(i))
+    : g.ids.filter((i) => done.has(i)).length >= g.n;
+  const status = new Map();
+  for (const n of nodes) {
+    if (n.statusSource === 'done' || n.statusSource === 'in-progress') status.set(n.id, n.statusSource);
+    else status.set(n.id, n.requiresParsed.groups.every(satisfied) ? 'available' : 'locked');
+  }
+
+  // Ancestors (everything a node needs) and descendants (everything that needs it).
+  const ancMemo = new Map();
+  const ancestors = (id, trail = new Set()) => {
+    if (ancMemo.has(id)) return ancMemo.get(id);
+    if (trail.has(id)) { errors.push(`Requires cycle through ${id}`); return new Set(); }
+    trail.add(id);
+    const set = new Set();
+    for (const r of byId.get(id).requiresParsed.ids) {
+      if (!byId.has(r)) continue;
+      set.add(r);
+      for (const a of ancestors(r, trail)) set.add(a);
+    }
+    trail.delete(id);
+    ancMemo.set(id, set);
+    return set;
+  };
+  for (const n of nodes) ancestors(n.id);
+  const descendants = new Map(nodes.map((n) => [n.id, new Set()]));
+  for (const n of nodes) for (const a of ancMemo.get(n.id)) descendants.get(a).add(n.id);
+
+  // Full requirement set of a moonshot/starshot: key nodes, their ancestors, and dependent moonshots' sets.
+  const closureMemo = new Map();
+  const closure = (sid, trail = new Set()) => {
+    if (closureMemo.has(sid)) return closureMemo.get(sid);
+    if (trail.has(sid)) { errors.push(`Moonshot cycle through ${sid}`); return new Set(); }
+    trail.add(sid);
+    const s = shotById.get(sid);
+    const set = new Set();
+    for (const id of s.needs.nodes) {
+      if (!byId.has(id)) continue;
+      set.add(id);
+      for (const a of ancMemo.get(id)) set.add(a);
+    }
+    for (const m of s.needs.moonshots) if (shotById.has(m)) for (const x of closure(m, trail)) set.add(x);
+    trail.delete(sid);
+    closureMemo.set(sid, set);
+    return set;
+  };
+  for (const s of shots) closure(s.id);
+
+  // Derived Unlocks cell text: node IDs, direct moonshots, direct starshots, then preserved non-ID text.
+  const preserved = (raw) => (raw === '—' || raw.startsWith('(see') ? [] : splitTop(raw, ',').filter((t) => !isId(t)));
+  const unlocksCell = (n) => {
+    const parts = [...unlocks.get(n.id), ...directMs.get(n.id), ...directSt.get(n.id), ...preserved(n.unlocksRaw)];
+    return parts.length ? parts.join(', ') : '—';
+  };
+
+  // Stale-source warnings.
+  const stale = [];
+  for (const n of nodes) {
+    const want = unlocksCell(n);
+    const have = n.unlocksRaw || '—';
+    if (want !== have) stale.push(`${n.id} Unlocks: "${have}" -> "${want}"`);
+    const wantEmoji = EMOJI[status.get(n.id)];
+    const haveEmoji = n.cells[5].trim();
+    if (wantEmoji !== haveEmoji) stale.push(`${n.id} Status: ${haveEmoji} -> ${wantEmoji}`);
+  }
+  if (stale.length) {
+    warnings.push(`${stale.length} source cell(s) are out of date. Run npm run techtree:sync`);
+    warnings.push(...stale.map((s) => `  ${s}`));
+  }
+
+  const outNodes = nodes.map((n) => {
+    const id = n.id;
+    const desc = descendants.get(id);
+    const enables = preserved(n.unlocksRaw).join(', ');
+    const msAll = shots.filter((s) => isMs(s.id) && closureMemo.get(s.id).has(id)).map((s) => s.id);
+    const node = {
+      id,
+      name: n.name,
+      branch: n.branch,
+      sciences: n.sciences,
+      status: status.get(id),
+      requires: n.requiresParsed.ids,
+      requiresText: n.requiresParsed.text,
+      requiresGroups: n.requiresParsed.groups,
+    };
+    if (n.requiresParsed.note) node.note = n.requiresParsed.note;
+    node.unlocks = unlocks.get(id);
+    node.unlocksText = unlocksCell(n);
+    node.enables = enables;
+    node.moonshots = directMs.get(id);
+    node.starshots = directSt.get(id);
+    node.neededBy = { direct: unlocks.get(id).length, total: desc.size, moonshots: msAll };
+    return node;
+  });
+
+  const statusOf = (id) => status.get(id);
+  const outShot = (s) => {
+    const cl = closureMemo.get(s.id);
+    const progress = { total: s.needs.nodes.length, done: 0, inProgress: 0, available: 0, locked: 0 };
+    for (const id of s.needs.nodes) {
+      const st = statusOf(id);
+      if (st === 'done') progress.done++;
+      else if (st === 'in-progress') progress.inProgress++;
+      else if (st === 'available') progress.available++;
+      else progress.locked++;
+    }
+    return {
+      id: s.id,
+      title: s.title,
+      summary: s.summary,
+      builds: [...s.needs.nodes, ...s.needs.moonshots],
+      needs: s.needs,
+      progress,
+      startWith: [...cl].filter((id) => statusOf(id) === 'available').sort(bySource),
+    };
+  };
+
+  const branches = [...new Set(nodes.map((n) => n.branch))];
+  const json = {
+    branches,
+    nodes: outNodes,
+    moonshots: parsed.moonshots.map(outShot),
+    starshots: parsed.starshots.map(outShot),
+    prefixes: parsed.prefixes,
+    criticalPath: parsed.criticalPath,
+  };
+
+  // Details for the sync script.
+  const rows = nodes.map((n) => ({
+    id: n.id, line: n.line, cells: n.cells,
+    oldUnlocks: n.unlocksRaw || '—', newUnlocks: unlocksCell(n),
+    oldEmoji: n.cells[5].trim(), newEmoji: EMOJI[status.get(n.id)],
+    oldIds: idsIn(n.unlocksRaw), newIds: [...unlocks.get(n.id), ...directMs.get(n.id), ...directSt.get(n.id)],
+  }));
+  return { json, errors, warnings, rows };
+}
+
+function main() {
+  const md = readFileSync(SRC, 'utf8');
+  const { json, errors, warnings } = deriveTree(parseTechtree(md));
+  if (errors.length) {
+    console.error(`techtree: ${errors.length} error(s)`);
+    for (const e of errors) console.error(`  ${e}`);
+    process.exit(1);
+  }
+  if (existsSync(DETAILS)) warnings.push(...mergeDetails(json, JSON.parse(readFileSync(DETAILS, 'utf8'))));
+  else {
+    mergeDetails(json, {});
+    warnings.push(`source/techtree-details.json is missing: every brief, lead and team is blank`);
+  }
+  if (warnings.length) for (const w of warnings) console.error(`techtree warning: ${w}`);
+  mkdirSync(OUT_DIR, { recursive: true });
+  writeFileSync(OUT, JSON.stringify(json, null, 2) + '\n');
+  const available = json.nodes.filter((n) => n.status === 'available').length;
+  console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

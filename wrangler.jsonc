@@ -1,0 +1,44 @@
+// Cloudflare Worker for joinoasa.org: serves the built site in ./dist, and runs
+// worker/index.ts for /api/* only (the application form).
+// Deployed by .github/workflows/deploy.yml (or `npm run deploy` locally).
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "joinoasa",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-10-01",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS",
+		// Only the API runs code; every page is served as a static file first.
+		"run_worker_first": [
+			"/api/*"
+		],
+		// Unknown URLs get /404.html with a real 404 status.
+		"not_found_handling": "404-page",
+		// /techtree serves /techtree/index.html and redirects to the trailing slash.
+		"html_handling": "auto-trailing-slash"
+	},
+	// Application storage (Cloudflare D1). Tables: migrations/ (npm run db:migrate).
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "oasa-applications",
+			"database_id": "23ec3866-6f77-4a0e-ac1c-0aee330b43e8",
+			"migrations_dir": "migrations"
+		}
+	],
+	// Error logs from the Worker (dashboard → Workers & Pages → joinoasa → Logs).
+	"observability": {
+		"enabled": true
+	},
+	"routes": [
+		{
+			"pattern": "joinoasa.org",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.joinoasa.org",
+			"custom_domain": true
+		}
+	]
+}

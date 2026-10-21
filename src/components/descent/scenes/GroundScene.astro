@@ -1,0 +1,76 @@
+---
+import type { Layer } from '../types';
+import { rays, rows, parcels, strata, walls, roofs, trees } from './ground-art';
+
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { layer, part } = Astro.props;
+const id = layer.id;
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:var(--art-field)">
+    <defs>
+      <clipPath id={`${id}-plane`}><rect x="-3000" y="372" width="6600" height="160" /></clipPath>
+    </defs>
+    <rect x="-3000" y="372" width="6600" height="160" class="soil-top" />
+    <path d={parcels} class="field-2" />
+    <g mask={`url(#fade-${id})`}>
+      <path d={`${rays} ${rows}`} class="g-survey" clip-path={`url(#${id}-plane)`} />
+      <path d="M-3000 446 H3600 V460 H-3000 Z" class="g-casing" />
+      <path d="M-3000 448 H3600 V458 H-3000 Z" class="g-road" />
+      <path d="M-3000 453 H3600" class="g-center" />
+    </g>
+    <path d="M293 372 L307 372 L352 532 L248 532 Z" class="g-casing" />
+    <path d="M295 372 L305 372 L348 532 L252 532 Z" class="g-road" />
+    <path d="M300 372 L300 532" class="g-center" />
+    <rect x="-3000" y="532" width="6600" height="1300" class="soil" />
+    <g mask={`url(#fade-${id})`}>
+      <path d={strata} class="g-strata" />
+      <path d="M-3000 532H3600" class="g-cut" />
+      <path d="M-3000 372H3600" class="g-groundline" />
+    </g>
+    <rect x="320" y="562" width="1800" height="46" rx="23" class="g-pipe" />
+    <path d="M380 562 v46 M560 562 v46 M740 562 v46 M920 562 v46" class="g-pipe-joint" />
+    <path d="M362 532 v30 M376 532 v30" class="g-shaft" />
+    <path d="M420 372 V180" class="g-pole" />
+    <path d="M420 206 Q520 250 640 214" class="g-wire" />
+    <path d={trees} class="g-tree" />
+    <path d={walls} class="g-wall" />
+    <path d={roofs} class="g-roof" />
+    <path d="M172 372 V340 L180 328 H210 L218 340 V372 Z" class="g-barn" />
+    <path d="M166 342 L180 326 H210 L224 342 L218 344 L208 332 H182 L172 344 Z" class="g-roof" />
+    <path d="M188 372 V354 H202 V372 Z" class="g-door" />
+    <path d="M226 372 V322 Q233 312 240 322 V372 Z" class="g-silo" />
+    <path d="M572 372 L578 320 M598 372 L592 320 M574 352 L596 336 M596 352 L574 336" class="g-legs" />
+    <path d="M566 320 Q566 298 585 296 Q604 298 604 320 Z M570 298 L585 284 L600 298 Z" class="g-tank" />
+    <text x="155" y="506" class="cl cl-survey" text-anchor="middle">14</text>
+    <text x="430" y="506" class="cl cl-survey" text-anchor="middle">15</text>
+    <text x="-20" y="476" class="cl cl-survey cl-minor" text-anchor="middle">13</text>
+    <text x="560" y="444" class="cl cl-survey" text-anchor="middle">CR 12</text>
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .soil-top { fill: var(--art-field); }
+  .field-2 { fill: var(--art-field-2); }
+  .g-survey { fill: none; stroke: var(--art-survey); stroke-width: 1; opacity: 0.6; }
+  .g-casing { fill: var(--art-road-edge); }
+  .g-road { fill: var(--art-road); }
+  .g-center { fill: none; stroke: var(--art-road-center); stroke-width: 1; stroke-dasharray: 6 6; }
+  .soil { fill: var(--art-soil); }
+  .g-strata { fill: none; stroke: var(--art-strata); stroke-width: 1.5; }
+  .g-cut { stroke: var(--art-road-edge); stroke-width: 2; }
+  .g-groundline { stroke: var(--art-groundline); stroke-width: 3; }
+  .g-pipe { fill: var(--art-pipe); stroke: var(--art-pipe-edge); stroke-width: 2; }
+  .g-pipe-joint, .g-shaft { stroke: var(--art-pipe-edge); stroke-width: 2; }
+  .g-pole { stroke: var(--art-pole); stroke-width: 4; }
+  .g-wire { fill: none; stroke: var(--art-steel); stroke-width: 1.25; }
+  .g-tree { fill: var(--art-tree); }
+  .g-wall { fill: var(--art-wall); stroke: var(--art-wall-edge); stroke-width: 1; }
+  .g-roof { fill: var(--art-roof); }
+  .g-barn { fill: var(--art-barn); }
+  .g-door { fill: var(--art-barn-door); }
+  .g-silo { fill: var(--art-tank); stroke: var(--art-wall-edge); stroke-width: 1; }
+  .g-legs { stroke: var(--ink-muted); stroke-width: 2; fill: none; }
+  .g-tank { fill: var(--art-tank); stroke: var(--ink-muted); stroke-width: 1.5; }
+</style>

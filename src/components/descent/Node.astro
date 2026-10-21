@@ -1,0 +1,31 @@
+---
+// One network node drawn as a chart symbol: domain rim around a solid vehicle silhouette.
+// Position lives on .node; motion goes on .node-body (never both on one element).
+import { glyphs } from './glyphs';
+import type { SceneNode } from './types';
+
+interface Props { node: SceneNode; delay?: string; index: number }
+const { node: n, delay, index } = Astro.props;
+
+const R = n.hub ? 34 : 27;
+const above = n.labelAbove ?? n.y < 350;
+const y = above ? (n.hub ? -58 : -40) : (n.hub ? 72 : 52);
+const dx = n.labelDx ?? 0;
+const w = n.label.length * 11.5 + 28;
+---
+<g transform={`translate(${n.x} ${n.y})`} class:list={['node', `node--${n.domain}`, { hub: n.hub }]} style={delay ? `--d:${delay}` : undefined}>
+  <g class:list={['node-body', n.motion && `m-${n.motion}`]} style={n.motion ? `--delay:-${(index * 1.3).toFixed(1)}s` : undefined}>
+    {n.hub && <circle r="44" class="node-halo m-spin" />}
+    {!n.hub && n.domain === 'land' && <circle r="31.5" class="node-ring2" />}
+    {!n.hub && n.domain === 'water' && <circle r="31.5" class="node-dots" />}
+    <circle r={R} class="node-disc" />
+    {n.domain === 'air' && <path d={`M${R + 1.5} 0H${R + 7}M${-R - 1.5} 0H${-R - 7}M0 ${R + 1.5}V${R + 7}M0 ${-R - 1.5}V${-R - 7}`} class="node-ticks" />}
+    <g class="glyph" transform={n.hub ? 'scale(1.15)' : undefined}>
+      {glyphs[n.icon].map(([t, d, sw]) => t === 's'
+        ? <path d={d} class="g-s" style={`stroke-width:${sw}`} />
+        : <path d={d} class={t === 'f' ? 'g-f' : 'g-k'} />)}
+    </g>
+  </g>
+  {n.hub && <rect x={dx - w / 2} y={y - 21} width={w} height="30" rx="6" class="tag" />}
+  <text x={dx} y={y} class="label">{n.label}</text>
+</g>

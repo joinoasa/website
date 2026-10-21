@@ -1,0 +1,60 @@
+---
+import type { Layer } from '../types';
+import { rand, circ, arcOffset } from '../art';
+interface Props { layer: Layer; part: 'back' | 'front' }
+const { part } = Astro.props;
+
+const EC: [number, number] = [300, 2161];
+const ER = 1421;
+const stars = Array.from({ length: 70 }, (_, i) => {
+  const x = rand(i + 1) * 680 - 20, y = rand(i + 101) * 800 - 160, r = rand(i + 201) > 0.85 ? 1.8 : 1.1;
+  return circ(Math.round(x), Math.round(y), r);
+}).join('');
+const shellY = (r: number, x: number) => (EC[1] - Math.sqrt(r * r - (x - EC[0]) ** 2)).toFixed(1);
+const shell = (r: number) => `M-300 ${shellY(r, -300)} A${r} ${r} 0 0 1 900 ${shellY(r, 900)}`;
+const off = (r: number, x: number) => arcOffset(r, EC[0], -300, x).toFixed(0);
+const grat =
+  [60, 140, 250].map((dy) => `M-1200 ${EC[1]} A${ER - dy} ${ER - dy} 0 0 1 1800 ${EC[1]}`).join(' ') + ' ' +
+  [-900, -420, -60, 300, 660, 1020, 1500].map((x) => `M300 -900 L${x} 2000`).join(' ');
+const sat = 'M-3 -3h6v6h-6Z M-12 -2h8v4h-8Z M4 -2h8v4h-8Z';
+---
+{part === 'back' && (
+  <g class="scene scene-back" aria-hidden="true" style="--cl-halo:#13284f">
+    <path d={stars} class="star" />
+    <g class="d-only">
+      <path d="M548 -72 A20 20 0 1 0 548 -32 A14 20 0 1 1 548 -72 Z" class="moon" />
+      <circle cx="548" cy="-52" r="20" class="moon-ghost" />
+    </g>
+    <g mask="url(#fade-space)">
+      <circle cx={EC[0]} cy={EC[1]} r={ER + 290} class="atmo" />
+      <circle cx={EC[0]} cy={EC[1]} r={ER + 90} class="atmo" />
+      <path id="space-shell-550" d={shell(ER + 579)} class="orbit far" />
+      <path id="space-shell-400" d={shell(ER + 390)} class="orbit" />
+      <path id="space-shell-100" d={shell(ER + 290)} class="karman" />
+    </g>
+    <g class="m-pass" style="--r0:10deg;--r1:-6deg;--dur:48s;--delay:-12s;--r-rest:-4deg"><path transform={`translate(300 ${EC[1] - ER - 579})`} d={sat} class="decor-sat" /></g>
+    <g class="m-pass" style="--r0:10deg;--r1:-6deg;--dur:34s;--delay:-26s;--r-rest:-4deg"><path transform={`translate(300 ${EC[1] - ER - 390})`} d={sat} class="decor-sat" /></g>
+    <circle cx={EC[0]} cy={EC[1]} r={ER} class="earth" />
+    <clipPath id="space-earthclip"><circle cx={EC[0]} cy={EC[1]} r={ER} /></clipPath>
+    <g mask="url(#fade-space)"><path d={grat} class="graticule" clip-path="url(#space-earthclip)" /></g>
+    <circle cx={EC[0]} cy={EC[1]} r={ER} class="earth limb" />
+    <text class="cl cl-dark" dy="-7"><textPath href="#space-shell-100" startOffset={off(ER + 290, 520)} text-anchor="middle">KÁRMÁN LINE  100 KM</textPath></text>
+    <text class="cl cl-dark" dy="-7"><textPath href="#space-shell-400" startOffset={off(ER + 390, 545)} text-anchor="middle">LEO  400 KM</textPath></text>
+    <text class="cl cl-dark" dy="-7"><textPath href="#space-shell-550" startOffset={off(ER + 579, 575)} text-anchor="middle">550 KM</textPath></text>
+  </g>
+)}
+{part === 'front' && <g class="scene scene-front" aria-hidden="true" />}
+
+<style>
+  .star { fill: #ffffff; opacity: 0.75; }
+  .moon { fill: var(--art-moon); }
+  .moon-ghost { fill: none; stroke: var(--art-moon); stroke-width: 1; opacity: 0.35; }
+  .atmo { fill: var(--art-atmo); opacity: 0.08; }
+  .orbit { fill: none; stroke: var(--chart-on-dark); stroke-width: 1.25; opacity: 0.55; }
+  .orbit.far { stroke-dasharray: 6 8; opacity: 0.35; }
+  .karman { fill: none; stroke: var(--art-limb); stroke-width: 1.25; stroke-dasharray: 2 6; stroke-linecap: round; opacity: 0.8; }
+  .decor-sat { fill: var(--art-moon); }
+  .earth { fill: var(--art-earth); }
+  .graticule { fill: none; stroke: var(--art-limb); stroke-width: 1; opacity: 0.22; }
+  .earth.limb { fill: none; stroke: var(--art-limb); stroke-width: 3; }
+</style>

@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, contact, mailto } from '../config/site';
+
+const partners = contact('partners');
+const engineering = contact('engineering');
+
+const types = [
+  ['Makerspaces', 'Advanced program, members, events', 'Space, tools, scheduled time'],
+  ['Vendors and manufacturers', 'Exposure, certification, feedback, joint development', 'Parts, discounts, sponsorship'],
+  ['Universities and schools', 'Student projects, research partners, outreach', 'Researchers, students, facilities, test ranges'],
+  ['Public safety (fire, rescue, EMS)', 'Systems, training, real-world tools', 'Field testing, feedback, real needs'],
+  ['Utilities and infrastructure', 'Inspection and sensing pilots', 'Access, pole sites, data, funding'],
+  ['Government agencies', 'Company services and pilots', 'Contracts, test ranges, grants'],
+  ['Other open source projects', 'Integration, contributors', 'Integration, shared standards'],
+];
+---
+<Base title="Partners" description="How organizations can work with the Open Autonomous Systems Alliance: partner types, the three tiers, ground rules and where public agencies should start.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Partners</h1>
+      <p class="lede">OASA wants to work with makerspaces, schools, manufacturers, utilities and others who want open, encrypted autonomous systems to succeed.</p>
+    </div>
+  </header>
+
+  <div class="wrap section prose">
+    <h2 class="first">Who we work with</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Type</th><th scope="col">What they get</th><th scope="col">What they give</th></tr></thead>
+        <tbody>
+          {types.map(([t, get, give]) => (<tr><th scope="row">{t}</th><td>{get}</td><td>{give}</td></tr>))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Partner tiers</h2>
+    <ul>
+      <li><strong>Community partner.</strong> Listed publicly and works with OASA. No money required.</li>
+      <li><strong>Supporting partner.</strong> Sponsors OASA or donates parts.</li>
+      <li><strong>Strategic partner.</strong> Joint development under a long-term agreement.</li>
+    </ul>
+
+    <h2>Ground rules</h2>
+    <ul>
+      <li>Partners never control OASA standards or direction.</li>
+      <li>Partnerships are listed publicly.</li>
+      <li>Supporting and strategic partners sign a simple written agreement.</li>
+    </ul>
+
+    <h2>U.S. vendors</h2>
+    <p>We plan to map U.S. suppliers for every part category: radios, flight controllers, motors, batteries and sensors. If you make parts in the United States, we'd like to hear from you. Where gaps exist, OASA designs are meant to fill them.</p>
+
+    <h2>Public agencies</h2>
+    <p>Work for public agencies runs through OASA Engineering, our company side. Start with <a href={mailto(engineering)}>{engineering}</a>{site.email.engineering ? '' : ' and we will pass your message on'}.</p>
+
+    <h2>Current partners</h2>
+    <p>None yet. Partners will be listed here once an agreement is in place.</p>
+
+    <div class="cta-strip">
+      <p>Want to partner with OASA?</p>
+      <a class="btn btn-primary" href={mailto(partners, 'OASA partnership')}>Email {partners}</a>
+    </div>
+  </div>
+</Base>
+<style>
+  .prose .first { margin-top: 0; }
+  .prose .cta-strip { margin-top: var(--space-10); }
+</style>

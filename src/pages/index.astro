@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import Descent from '../components/descent/Descent.astro';
+import tree from '../data/techtree.json';
+import { stages } from '../data/membership';
+import { nav } from '../config/site';
+
+const available = tree.nodes.filter((n) => n.status === 'available');
+
+const principles = [
+  ['Encrypted, always', 'Every link, wired or wireless, is encrypted. We never set a standard that broadcasts to the world.'],
+  ['Decentralized', 'No single server, company or person is required for the system to work.'],
+  ['Works at every scale', 'The same system serves one person, a small team or a whole fleet.'],
+  ['Affordable', 'Anyone can take part without multimillion-dollar gear.'],
+  ['Sustainable', 'Designs are repairable, documented and built to keep running for years.'],
+  ['Made in America', 'Designed and built in the U.S., with designs and security reviews published so anyone can check our work.'],
+];
+
+
+---
+<Base title="Home" description="OASA is a member-built alliance designing open, encrypted drones, robots, boats and the mesh network that links them, for American communities.">
+  <Descent />
+
+  <section class="section band">
+    <div class="wrap two">
+      <div>
+        <h2>How we work</h2>
+        <p>These principles shape every project, standard and line of code.</p>
+        <p><a class="text-link" href="/docs/principles/">Read all principles</a></p>
+      </div>
+      <ul class="principles">
+        {principles.map(([t, b]) => (<li><strong>{t}.</strong> {b}</li>))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap two">
+      <div>
+        <h2>Start at the roots</h2>
+        <p>The tech tree maps {tree.nodes.length} technologies and {tree.moonshots.length} moonshots. Each one unlocks the next. These are open for members to build right now:</p>
+        <p><a class="btn btn-ghost" href="/techtree/">See the full tree</a></p>
+      </div>
+      <ul class="open-nodes">
+        {available.map((n) => (
+          <li><a href={`/techtree/#${n.id}`}><span class="nid">{n.id}</span> {n.name}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="wrap">
+      <h2>How membership works</h2>
+      <ol class="steps">
+        {stages.map((st) => (<li><h3>{st.title}</h3><p>{st.body}</p></li>))}
+      </ol>
+      <a class="btn btn-primary" href={nav.apply.href}>{nav.apply.label}</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap two">
+      <div>
+        <h2>Chapters</h2>
+        <p>OASA chapters meet inside local makerspaces for build nights, workshops and field tests. Our first chapter is forming in Northern Virginia.</p>
+        <p><a class="text-link" href="/chapters/">Find or start a chapter</a></p>
+      </div>
+      <div>
+        <h2>Moonshots</h2>
+        <p>Small builds lead to big ones: a self-sustaining regional mesh, autonomous disaster response, clean rivers and streets, and aircraft that stay aloft for weeks.</p>
+        <p><a class="text-link" href="/moonshots/">See the moonshots</a></p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="cta-strip">
+        <p>Ready to build with us?</p>
+        <a class="btn btn-primary" href={nav.apply.href}>{nav.apply.label}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .band { background: var(--white); border-block: 1px solid var(--contour); }
+
+
+  .two { display: grid; grid-template-columns: 1fr 1.25fr; gap: clamp(var(--space-6), 5vw, var(--space-16)); }
+  .principles { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .principles li { padding-block: var(--space-3); border-top: 1px solid var(--contour); }
+  .principles li:last-child { border-bottom: 1px solid var(--contour); }
+
+  .open-nodes { list-style: none; margin: 0; padding: 0; columns: 2 16rem; column-gap: var(--space-8); }
+  .open-nodes li { padding: 0; border-bottom: 1px solid var(--contour); break-inside: avoid; }
+  .open-nodes a { display: flex; align-items: center; gap: var(--space-2); min-height: var(--tap); padding-block: var(--space-1); text-decoration: none; color: var(--ink); }
+  .open-nodes a:hover { color: var(--chart-deep); }
+  .nid { font-family: var(--font-display); font-weight: var(--weight-bold); font-stretch: var(--stretch-condensed); color: var(--available); margin-right: 0; white-space: nowrap; min-width: 4.5rem; }
+
+  .steps { list-style: none; counter-reset: s; margin: var(--space-8) 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--space-8); }
+  .steps li { counter-increment: s; position: relative; padding-top: 2.75rem; }
+  .steps li::before {
+    content: counter(s); position: absolute; top: 0; left: 0;
+    width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center;
+    background: var(--chart); color: var(--white); font-family: var(--font-display); font-weight: var(--weight-heading);
+  }
+  .steps li:not(:last-child)::after { content: ''; position: absolute; top: 1rem; left: 2.5rem; right: calc(-1 * var(--space-8) + 0.5rem); border-top: 2px dashed var(--contour); }
+  .steps li:nth-child(3n)::after { display: none; }
+  .steps h3 { margin-bottom: var(--space-1); }
+  .steps p { color: var(--ink-soft); font-size: var(--step--1); }
+
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .steps li::after { display: none; } }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+</style>

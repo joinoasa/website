@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, contact, mailto, socialLinks } from '../config/site';
+
+const rows: { who: string; note?: string; address: string; extra?: { href: string; label: string } }[] = [
+  { who: 'General questions', address: contact('general') },
+  { who: 'Membership and applications', address: contact('membership') },
+  { who: 'Chapters and makerspaces', address: contact('chapters') },
+  { who: 'Partnerships', address: contact('partners') },
+  { who: 'Public agencies and contract work', note: 'Handled by OASA Engineering, our company side.', address: contact('engineering') },
+  { who: 'Press', address: contact('press') },
+  { who: 'Security reports', address: contact('security'), extra: { href: '/security/', label: 'How to report a vulnerability' } },
+];
+const general = contact('general');
+---
+<Base title="Contact" description="Who to email at the Open Autonomous Systems Alliance: general questions, membership, chapters, partners, public agencies, press and security reports.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Contact</h1>
+      <p class="lede">Pick the address that fits. It helps the right person see your message.</p>
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <dl class="who">
+      {rows.map((r) => (
+        <div>
+          <dt>{r.who}</dt>
+          <dd>
+            {r.note && <span class="note-line">{r.note}</span>}
+            <a href={mailto(r.address)}>{r.address}</a>
+            {r.extra && <a class="more" href={r.extra.href}>{r.extra.label}</a>}
+          </dd>
+        </div>
+      ))}
+      <div>
+        <dt>Conduct concerns</dt>
+        <dd class="plain">Tell your project or chapter lead, or email <a href={mailto(general, 'Conduct')}>{general}</a> with "Conduct" in the subject.</dd>
+      </div>
+      {site.org.mailingAddress && (
+        <div><dt>Mailing address</dt><dd>{site.org.mailingAddress}</dd></div>
+      )}
+      {socialLinks.length > 0 && (
+        <div>
+          <dt>Community and social</dt>
+          <dd class="social">{socialLinks.map((l) => <a href={l.href} rel="noopener">{l.label}</a>)}</dd>
+        </div>
+      )}
+    </dl>
+  </div>
+</Base>
+<style>
+  .who { margin: 0; max-width: 46rem; border-top: 2px solid var(--ink); }
+  .who > div { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-4); padding-block: var(--space-4); border-bottom: 1px solid var(--contour); }
+  .who dt { font-weight: var(--weight-bold); }
+  .who dd { margin: 0; color: var(--ink-soft); display: grid; gap: var(--space-1); justify-items: start; }
+  .who a { display: inline-flex; align-items: center; min-height: var(--tap); overflow-wrap: anywhere; }
+  .who dd.plain { display: block; }
+  .who dd.plain a { display: inline; min-height: 0; }
+  .note-line { font-size: var(--step--1); }
+  .more { font-size: var(--step--1); }
+  .social { display: flex !important; flex-wrap: wrap; gap: var(--space-4); }
+  @media (max-width: 640px) { .who > div { grid-template-columns: 1fr; gap: var(--space-1); } }
+</style>
