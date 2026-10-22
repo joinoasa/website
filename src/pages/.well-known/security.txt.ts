@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
-import { site } from '../../config/site';
+import { site, contact } from '../../config/site';
 
 export const GET: APIRoute = () =>
   new Response(
     [
-      `Contact: mailto:${site.email.security}`,
+      `Contact: mailto:${contact('security')}`,
       `Expires: ${site.security.securityTxtExpires}`,
       `Policy: ${site.url}/security/`,
       'Preferred-Languages: en',

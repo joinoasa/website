@@ -48,7 +48,7 @@ npm run check:launch             # lists every open value (and warns when securi
 npm run check:launch -- --strict # same, but exits 1 while anything is open
 ```
 
-Set these before launch: the production domain (`site.url`), the four mailboxes (and make sure they are live), the Turnstile site key (`apply.turnstileSiteKey`, see Applications below), and the GitHub org (`links.github`, `links.websiteRepo`). Renew `security.securityTxtExpires` at least once a year; the deploy log warns when it is within 60 days.
+Set these before launch: the production domain (`site.url`), the inbox (`email.general`; the other addresses fall back to it), the Turnstile site key (`apply.turnstileSiteKey`, see Applications below), and the GitHub org (`links.github`, `links.websiteRepo`). Renew `security.securityTxtExpires` at least once a year; the deploy log warns when it is within 60 days.
 
 ## Updating the tech tree
 
@@ -159,7 +159,7 @@ The site is static files served by **Cloudflare Workers static assets**. GitHub 
 6. **Attach the domain:** uncomment the `routes` block in `wrangler.jsonc` and push. Or, in the dashboard: Workers & Pages → `joinoasa` → Settings → Domains & Routes → Add → Custom domain, for both `joinoasa.org` and `www.joinoasa.org`.
 7. **www to apex:** Rules → Redirect Rules → use the **Redirect from WWW to root** template (301, keep path and query string).
 8. **HTTPS:** SSL/TLS → Edge Certificates → turn on **Always Use HTTPS**. HSTS is already sent by `public/_headers`; don't enable HSTS preload yet.
-9. **Email forwarding (free):** Email → Email Routing → enable, then add `hello@`, `membership@`, `chapters@` and `security@` (and any others in `src/config/site.ts`) forwarding to your own inbox. This only receives mail. To *send* as these addresses, add a mail provider later (Google Workspace, Proton, etc.).
+9. **Email:** joinoasa.org mail is a Proton custom domain (MX, SPF, three DKIM CNAMEs set to DNS only, and DMARC in Cloudflare DNS). There is one address, `hello@joinoasa.org`, and it is the catch-all, so mail to any other @joinoasa.org address also lands there. Don't turn on Cloudflare Email Routing; it would replace Proton's MX records.
 
 ### Headers and caching
 
