@@ -12,7 +12,8 @@
 // This script never writes the source document. `scripts/sync-techtree.mjs` does that.
 //
 // Live status: in GitHub Actions (GITHUB_ACTIONS=true) or with TECHTREE_GITHUB=1, issue labels and
-// assignees from joinoasa/techtree are merged in (see fetchGithubNodes / applyGithub). A failure only warns.
+// assignees from joinoasa/techtree are merged in (see fetchGithubNodes / applyGithub), and ideas from
+// joinoasa/ideas are linked to the nodes they were sorted onto (src/data/ideas.json). A failure only warns.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
@@ -453,6 +454,74 @@ export function applyGithubPeople(json, gh) {
   }
 }
 
+// ---------- Ideas (joinoasa/ideas) ----------
+const IDEAS_REPO = 'joinoasa/ideas';
+const IDEAS_OUT = new URL('ideas.json', OUT_DIR);
+const OUTCOMES = ['on-tree', 'expands-node', 'new-node', 'connects-nodes', 'operations', 'parked'];
+
+/** One idea from an ideas-repo issue, or null for pull requests. Pure. */
+export function parseIdea(i) {
+  if (i.pull_request) return null;
+  const labels = (i.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name));
+  const outcome = OUTCOMES.find((o) => labels.includes(`outcome:${o}`)) ?? null;
+  let nodes = [];
+  const m = (i.body ?? '').match(/<!-- oasa-triage (\{.*?\}) -->/s);
+  if (m) {
+    try {
+      const t = JSON.parse(m[1]);
+      if (Array.isArray(t.nodes)) nodes = t.nodes.filter((n) => typeof n === 'string' && /^[A-Z]+-[A-Z]*\d+$/.test(n));
+    } catch { /* ignore a malformed block */ }
+  }
+  return {
+    n: i.number,
+    id: `IDEA-${String(i.number).padStart(4, '0')}`,
+    title: String(i.title ?? '').replace(/^\s*IDEA-\d+\s*[:·-]\s*/i, '').trim(),
+    url: i.html_url,
+    open: i.state === 'open',
+    outcome,
+    nodes,
+    // Imported ideas keep the date they were first noted; others use the day they were posted.
+    date: (i.body ?? '').match(/First noted (\d{4}-\d{2}-\d{2})/)?.[1] ?? String(i.created_at ?? '').slice(0, 10),
+  };
+}
+
+/** Read every idea (open and closed) from GitHub. Throws on any failure. */
+export async function fetchIdeas({ fetchFn = fetch, repo = IDEAS_REPO, token = process.env.GITHUB_TOKEN, timeoutMs = 10_000 } = {}) {
+  const out = [];
+  const headers = { accept: 'application/vnd.github+json', 'user-agent': 'joinoasa-website-build' };
+  if (token) headers.authorization = `Bearer ${token}`;
+  for (let page = 1; page <= 50; page++) {
+    const res = await fetchFn(`https://api.github.com/repos/${repo}/issues?state=all&per_page=100&page=${page}&sort=created&direction=asc`, {
+      headers, signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!res.ok) throw new Error(`GitHub answered ${res.status}`);
+    const items = await res.json();
+    if (!Array.isArray(items)) throw new Error('unexpected GitHub response');
+    for (const i of items) { const x = parseIdea(i); if (x) out.push(x); }
+    if (items.length < 100) break;
+  }
+  return out.sort((a, b) => a.n - b.n);
+}
+
+/** Each node and moonshot lists the ideas sorted onto it. Pure. Run after mergeDetails. */
+export function applyIdeas(json, ideas) {
+  const by = new Map();
+  for (const x of ideas) for (const n of x.nodes) {
+    if (!by.has(n)) by.set(n, []);
+    by.get(n).push({ id: x.id, title: x.title, url: x.url });
+  }
+  for (const item of [...json.nodes, ...json.moonshots, ...json.starshots]) item.ideas = by.get(item.id) ?? [];
+}
+
+async function loadIdeas() {
+  if (process.env.GITHUB_ACTIONS !== 'true' && process.env.TECHTREE_GITHUB !== '1') return { ideas: [], fetched: false, warning: null };
+  try {
+    return { ideas: await fetchIdeas(), fetched: true, warning: null };
+  } catch (e) {
+    return { ideas: [], fetched: false, warning: `could not read ideas from GitHub (${e.message})` };
+  }
+}
+
 async function loadGithub() {
   if (process.env.GITHUB_ACTIONS !== 'true' && process.env.TECHTREE_GITHUB !== '1') return { gh: new Map(), warning: null };
   try {
@@ -480,11 +549,18 @@ async function main() {
     warnings.push(`source/techtree-details.json is missing: every brief, lead and team is blank`);
   }
   applyGithubPeople(json, gh);
+  const { ideas, fetched, warning: ideasWarning } = await loadIdeas();
+  if (ideasWarning) warnings.push(ideasWarning);
+  // Only public tree IDs: an idea pointing at a hidden (government) node isn't linked from the site.
+  const known = new Set([...json.nodes, ...json.moonshots, ...json.starshots].map((x) => x.id));
+  const publicIdeas = ideas.map((x) => ({ ...x, nodes: x.nodes.filter((n) => known.has(n)) }));
+  applyIdeas(json, publicIdeas);
   if (warnings.length) for (const w of warnings) console.error(`techtree warning: ${w}`);
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(OUT, JSON.stringify(json, null, 2) + '\n');
+  writeFileSync(IDEAS_OUT, JSON.stringify({ fetched, repo: IDEAS_REPO, ideas: publicIdeas }, null, 2) + '\n');
   const available = json.nodes.filter((n) => n.status === 'available').length;
-  console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
+  console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${fetched ? `${ideas.length} ideas, ` : ''}${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

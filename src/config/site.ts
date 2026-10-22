@@ -33,6 +33,8 @@ export const site = {
     github: 'https://github.com/joinoasa' as string | null,
     websiteRepo: 'https://github.com/joinoasa/website' as string | null, // turns on docs "Edit page"
     ideaBoard: 'https://github.com/orgs/joinoasa/discussions' as string | null,
+    ideas: 'https://github.com/joinoasa/ideas' as string | null, // numbered idea inbox; /ideas/ lists it
+    ideaForm: 'https://github.com/joinoasa/ideas/issues/new?template=idea.yml' as string | null,
     techtreeIssues: 'https://github.com/joinoasa/techtree' as string | null, // node popups link to a prefilled new issue here when a node has no issue yet
     discord: 'https://discord.gg/v6vTxaKV3' as string | null, // permanent invite; set to never expire in Discord
     ledger: null as string | null, // TODO(owner): public ledger (e.g. Open Collective) once the fiscal sponsor is set
@@ -97,6 +99,7 @@ export const nav = {
   primary: [
     { href: '/techtree/', label: 'Tech tree' },
     { href: '/moonshots/', label: 'Moonshots' },
+    { href: '/ideas/', label: 'Ideas' },
     { href: '/chapters/', label: 'Chapters' },
     { href: '/about/', label: 'About' },
     { href: '/docs/', label: 'Docs' },
@@ -104,7 +107,7 @@ export const nav = {
   apply: { href: '/join/', label: 'Apply to join', short: 'Apply' },
   footer: [
     { heading: 'Explore', links: [
-      { href: '/techtree/', label: 'Tech tree' }, { href: '/moonshots/', label: 'Moonshots' }, { href: '/chapters/', label: 'Chapters' } ] },
+      { href: '/techtree/', label: 'Tech tree' }, { href: '/moonshots/', label: 'Moonshots' }, { href: '/ideas/', label: 'Ideas' }, { href: '/chapters/', label: 'Chapters' } ] },
     { heading: 'Join', links: [
       { href: '/join/', label: 'Apply to join' }, { href: '/docs/membership/', label: 'How membership works' }, { href: '/docs/code-of-conduct/', label: 'Code of conduct' } ] },
     { heading: 'Learn', links: [
