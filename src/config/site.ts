@@ -34,7 +34,7 @@ export const site = {
     websiteRepo: 'https://github.com/joinoasa/website' as string | null, // turns on docs "Edit page"
     ideaBoard: 'https://github.com/orgs/joinoasa/discussions' as string | null,
     techtreeIssues: 'https://github.com/joinoasa/techtree' as string | null, // node popups link to a prefilled new issue here when a node has no issue yet
-    discord: null as string | null, // TODO(owner): Discord invite URL
+    discord: 'https://discord.gg/v6vTxaKV3' as string | null, // permanent invite; set to never expire in Discord
     ledger: null as string | null, // TODO(owner): public ledger (e.g. Open Collective) once the fiscal sponsor is set
     newsletter: null as string | null, // TODO(owner): newsletter signup URL
   },
