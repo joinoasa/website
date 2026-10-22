@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site, contact, mailto } from '../config/site';
+import { youthOpen } from '../data/application';
 import { collectedLabels } from '../data/application';
 
 const general = contact('general');
+const membership = contact('membership');
 ---
 <Base title="Privacy" description="A plain-language draft of how the Open Autonomous Systems Alliance handles information on this website, in applications and for members. Pending legal review.">
   <header class="page-head">
@@ -27,16 +29,23 @@ const general = contact('general');
     <h2 id="applications">Applications</h2>
     <p>When you apply, you share the answers to these questions:</p>
     <ul>{collectedLabels.map((q) => <li>{q}</li>)}</ul>
+    <p>The Discord and GitHub usernames are optional. If you apply, we may also record what happens next, privately and only for reviewing you:</p>
+    <ul>
+      <li>the date and status of your application as it moves through review, interview, trial and decision;</li>
+      <li>notes from reading your application and from your interview, including a score from 1 to 5 for each of skill, talent, ambition, initiative and collaboration;</li>
+      <li>the dates of your interview and 30-day trial.</li>
+    </ul>
+    <p>We do not record video interviews.</p>
+    <p><strong>Applications are open to adults (18 or older) for now.</strong> The form does not ask for a parent or guardian, and we do not accept applications from people under 18 yet.</p>
     <p>During the founding phase, the founder reads every application. We use what you send only to review your application and get in touch. We don't sell it or share it outside the people reviewing it.</p>
     <ul>
       <li><strong>Where it's stored:</strong> in a private database on Cloudflare, our hosting provider. Only the people reviewing applications can open it.</li>
-      <li><strong>Alerts:</strong> when an application arrives, a short note goes to a private OASA Discord channel for reviewers. It includes your application number, name, city and a short preview of your skills, never your email address. For applicants aged 15 to 17, it includes only the application number.</li>
+      <li><strong>Alerts:</strong> when an application arrives, a short note goes to a private OASA Discord channel for reviewers. It includes your application number, name, city and a short preview of your skills, never your email address, Discord username or GitHub username.{youthOpen ? ' For applicants aged 15 to 17, it includes only the application number.' : ''}</li>
       <li><strong>Spam check:</strong> the form may use Cloudflare Turnstile to tell people from bots. It does not use cookies for tracking.</li>
-      <li><strong>Parents and guardians:</strong> if you're 15 to 17, we use your parent or guardian's email only to ask for their consent and keep them informed.</li>
     </ul>
 
-    <h2>Youth members</h2>
-    <p>Members aged 15 to 17 need a parent or guardian's consent. Youth profiles show a handle only, with no photo or location.</p>
+    <h2>Youth members (planned)</h2>
+    <p>Membership for ages 15 to 17 is not open yet; we plan to open it later. When it does, members aged 15 to 17 will need a parent or guardian's consent, we will use the parent or guardian's email only to ask for that consent and keep them informed, and youth profiles will show a handle only, with no photo or location. We will update this page before it opens.</p>
 
     <h2>Member profiles</h2>
     <p>Members choose whether their profile is public or private.</p>
@@ -48,7 +57,12 @@ const general = contact('general');
     <p>We use Cloudflare (hosting, the application database and the spam check), Discord and GitHub. Each has its own privacy policy.</p>
 
     <h2>How long we keep things</h2>
-    <p>Retention periods will be set with our attorney. Until then, you can ask us to delete your application at any time by emailing the address below.</p>
+    <p>These are our interim periods, which our attorney will review:</p>
+    <ul>
+      <li><strong>Declined or withdrawn applications:</strong> deleted 12 months after the decision, together with the notes, scores and history, and the copy in our private Discord alerts (name, city and a skills preview).</li>
+      <li><strong>Members:</strong> we keep your application information while you are a member, and delete it, and its Discord alert copy, within 90 days of your leaving.</li>
+    </ul>
+    <p>You can ask us to delete your application at any time. Email <a href={mailto(membership, 'Delete my OASA application')}>{membership}</a> with your application number if you have it. Copies in our private Discord alerts (name, city and a skills preview) are deleted too.</p>
 
     <h2>Questions</h2>
     <p>Email <a href={mailto(general)}>{general}</a>.</p>

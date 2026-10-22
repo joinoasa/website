@@ -1,7 +1,7 @@
 ---
 title: How membership works
-description: Joining OASA, member tiers, youth safeguards and staying active.
-lastUpdated: 2026-10-20
+description: Joining OASA, member tiers, planned youth safeguards and staying active.
+lastUpdated: 2026-10-22
 ---
 
 OASA looks for raw skill, talent and ambition. Membership is free.
@@ -38,15 +38,21 @@ Any member can invite anyone, including whole teams.
 
 ## Age
 
-Minimum age is 15. Contract work is 18+.
+Membership is open to adults (18 or older) for now. Youth membership (15 to 17) is planned and will open later, once the safeguards below are in place. Contract work is 18+.
 
-## Youth members (15 to 17)
+## Youth members (15 to 17): planned
+
+Not open yet. This is the policy we plan to follow when it opens:
 
 - A parent or guardian consents.
 - No private one-to-one chats between an adult and a minor. Use group channels, or have a second adult present.
 - Tools and testing are supervised.
 - Youth members join open member projects only.
 - Public profiles show a handle only: no photo, no location.
+
+## Your application data
+
+Declined and withdrawn applications are deleted 12 months after the decision. For members, the application is kept while you are a member and deleted within 90 days of your leaving. You can ask for deletion at any time. The full list is on the [privacy page](/privacy/#applications).
 
 ## Identity checks
 

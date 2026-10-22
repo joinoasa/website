@@ -16,6 +16,12 @@
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "apps:list": "wrangler d1 execute DB --remote --command \"SELECT id, created_at, status, name, city_state, age_group, guardian_consent FROM applications ORDER BY id DESC LIMIT 50\"",
     "apps:show": "node scripts/apps-show.mjs",
+    "apps:set": "node scripts/apps-set.mjs",
+    "apps:note": "node scripts/apps-note.mjs",
+    "apps:score": "node scripts/apps-score.mjs",
+    "apps:interview": "node scripts/apps-interview.mjs",
+    "apps:due": "node scripts/apps-due.mjs",
+    "apps:purge": "node scripts/apps-purge.mjs",
     "discord:setup": "node scripts/discord/setup.mjs"
   },
   "dependencies": {
