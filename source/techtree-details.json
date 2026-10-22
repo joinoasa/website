@@ -1127,5 +1127,23 @@
     "github": null,
     "lead": null,
     "team": []
+  },
+  "T-DOCK3": {
+    "brief": "Landing reliably on a deck that pitches and heaves with the waves, like a buoy or a boat. Anything that launches drones from the water needs it.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "S-7": {
+    "brief": "A moored buoy that keeps a drone dry, charged and ready to launch offshore, close to where swimmers get into trouble. It doubles as a mesh and weather node.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "O-26": {
+    "brief": "The beach rescue mission: when a swimmer is flagged, the buoy's drone launches, drops a float, hovers as a marker and alerts the lifeguard on TAK. The lifeguard can abort or take control at any time.",
+    "github": null,
+    "lead": null,
+    "team": []
   }
 }
