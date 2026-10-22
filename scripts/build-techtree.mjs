@@ -10,6 +10,9 @@
 // Unlocks is derived (inverse of Requires, plus moonshots whose key-node list names the node).
 // Status: 🟡 and ✅ are set by hand; 🟢 and 🔒 are computed from Requires.
 // This script never writes the source document. `scripts/sync-techtree.mjs` does that.
+//
+// Live status: in GitHub Actions (GITHUB_ACTIONS=true) or with TECHTREE_GITHUB=1, issue labels and
+// assignees from joinoasa/techtree are merged in (see fetchGithubNodes / applyGithub). A failure only warns.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
@@ -207,7 +210,7 @@ export function parseTechtree(md) {
 }
 
 /** Derive unlocks, status, downstream views. Pure. */
-export function deriveTree(parsed) {
+export function deriveTree(parsed, overrides = new Map()) {
   const errors = [...parsed.errors];
   const warnings = [];
 
@@ -246,14 +249,15 @@ export function deriveTree(parsed) {
   for (const s of parsed.starshots) for (const id of s.needs.nodes) directSt.get(id)?.push(s.id);
 
   // Status: 🟡 and ✅ by hand; 🟢 / 🔒 computed. Free-text alternatives never count as satisfied.
-  const done = new Set(nodes.filter((n) => n.statusSource === 'done').map((n) => n.id));
+  const done = new Set(nodes.filter((n) => (overrides.get(n.id) ?? n.statusSource) === 'done').map((n) => n.id));
   const satisfied = (g) =>
     g.kind === 'all' ? g.ids.every((i) => done.has(i))
     : g.kind === 'any' ? g.ids.some((i) => done.has(i))
     : g.ids.filter((i) => done.has(i)).length >= g.n;
   const status = new Map();
   for (const n of nodes) {
-    if (n.statusSource === 'done' || n.statusSource === 'in-progress') status.set(n.id, n.statusSource);
+    const hand = overrides.get(n.id) ?? n.statusSource; // GitHub can only raise a status, never lower it
+    if (hand === 'done' || hand === 'in-progress') status.set(n.id, hand);
     else status.set(n.id, n.requiresParsed.groups.every(satisfied) ? 'available' : 'locked');
   }
 
@@ -312,7 +316,8 @@ export function deriveTree(parsed) {
     if (want !== have) stale.push(`${n.id} Unlocks: "${have}" -> "${want}"`);
     const wantEmoji = EMOJI[status.get(n.id)];
     const haveEmoji = n.cells[5].trim();
-    if (wantEmoji !== haveEmoji) stale.push(`${n.id} Status: ${haveEmoji} -> ${wantEmoji}`);
+    // With GitHub overrides the doc is expected to differ, so only check statuses on offline builds.
+    if (!overrides.size && wantEmoji !== haveEmoji) stale.push(`${n.id} Status: ${haveEmoji} -> ${wantEmoji}`);
   }
   if (stale.length) {
     warnings.push(`${stale.length} source cell(s) are out of date. Run npm run techtree:sync`);
@@ -386,9 +391,84 @@ export function deriveTree(parsed) {
   return { json, errors, warnings, rows };
 }
 
-function main() {
+// ---- Live status from GitHub ----------------------------------------------------------------------
+const GH_REPO = 'joinoasa/techtree';
+const RANK = { locked: 0, available: 0, 'in-progress': 1, done: 2 };
+
+/**
+ * Read the node issues (open and closed) from GitHub.
+ * Returns Map(nodeId -> { labels: string[], assignees: string[] }). Throws on any failure.
+ */
+export async function fetchGithubNodes({ fetchFn = fetch, repo = GH_REPO, token = process.env.GITHUB_TOKEN, timeoutMs = 10_000 } = {}) {
+  const map = new Map();
+  const headers = { accept: 'application/vnd.github+json', 'user-agent': 'joinoasa-website-build' };
+  if (token) headers.authorization = `Bearer ${token}`;
+  for (let page = 1; page <= 20; page++) { // 20 pages x 100 = 2000 issues, far above the ~140 nodes
+    const res = await fetchFn(`https://api.github.com/repos/${repo}/issues?state=all&per_page=100&page=${page}`, {
+      headers, signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!res.ok) throw new Error(`GitHub answered ${res.status}`);
+    const items = await res.json();
+    if (!Array.isArray(items)) throw new Error('unexpected GitHub response');
+    for (const i of items) {
+      if (i.pull_request) continue; // the issues API also lists pull requests
+      const m = (i.body ?? '').match(/<!-- oasa-node:([A-Z0-9-]+) -->/);
+      if (!m) continue;
+      map.set(m[1], {
+        labels: (i.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name)),
+        assignees: (i.assignees ?? []).map((a) => a.login),
+      });
+    }
+    if (items.length < 100) break;
+  }
+  return map;
+}
+
+/**
+ * Effective status = the stronger of the doc and the issue (status:in-progress / status:done;
+ * an assignee on an unfinished node also counts as in progress, as in sync-issues). Pure.
+ * Returns Map(nodeId -> 'in-progress' | 'done') for nodes GitHub raises.
+ */
+export function githubStatusOverrides(nodes, gh) {
+  const out = new Map();
+  for (const n of nodes) {
+    const g = gh.get(n.id);
+    if (!g) continue;
+    let st = n.statusSource;
+    if (g.labels.includes('status:done')) st = 'done';
+    else if (RANK[st] < 1 && (g.labels.includes('status:in-progress') || g.assignees.length)) st = 'in-progress';
+    if (RANK[st] > RANK[n.statusSource]) out.set(n.id, st);
+  }
+  return out;
+}
+
+/** Team = details team plus issue assignees; lead = details lead, else the first assignee. Pure. Run after mergeDetails. */
+export function applyGithubPeople(json, gh) {
+  for (const n of json.nodes) {
+    const a = gh.get(n.id)?.assignees ?? [];
+    if (!a.length) continue;
+    const have = new Set(n.team.map((t) => t.toLowerCase()));
+    n.team = [...n.team, ...a.filter((x) => !have.has(x.toLowerCase()))];
+    n.lead ??= a[0];
+  }
+}
+
+async function loadGithub() {
+  if (process.env.GITHUB_ACTIONS !== 'true' && process.env.TECHTREE_GITHUB !== '1') return { gh: new Map(), warning: null };
+  try {
+    return { gh: await fetchGithubNodes(), warning: null };
+  } catch (e) {
+    return { gh: new Map(), warning: `could not read GitHub issues, using the doc only (${e.message})` };
+  }
+}
+
+async function main() {
   const md = readFileSync(SRC, 'utf8');
-  const { json, errors, warnings } = deriveTree(parseTechtree(md));
+  const parsed = parseTechtree(md);
+  const { gh, warning: ghWarning } = await loadGithub();
+  const overrides = githubStatusOverrides(parsed.nodes.filter((n) => !n.crossRef), gh);
+  const { json, errors, warnings } = deriveTree(parsed, overrides);
+  if (ghWarning) warnings.push(ghWarning);
   if (errors.length) {
     console.error(`techtree: ${errors.length} error(s)`);
     for (const e of errors) console.error(`  ${e}`);
@@ -399,6 +479,7 @@ function main() {
     mergeDetails(json, {});
     warnings.push(`source/techtree-details.json is missing: every brief, lead and team is blank`);
   }
+  applyGithubPeople(json, gh);
   if (warnings.length) for (const w of warnings) console.error(`techtree warning: ${w}`);
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(OUT, JSON.stringify(json, null, 2) + '\n');
@@ -406,4 +487,4 @@ function main() {
   console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

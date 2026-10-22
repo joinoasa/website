@@ -276,7 +276,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
       <div><dt data-p-req-label>Requires</dt><dd data-p-req></dd></div>
       <div data-p-unl-row><dt>Unlocks</dt><dd data-p-unl></dd></div>
     </dl>
-    <p class="tm-pop-actions"><a class="btn btn-primary" data-p-link></a><a class="tm-more" data-p-more></a></p>
+    <p class="tm-pop-actions"><a class="btn btn-primary" data-p-link></a><a class="tm-more" data-p-more></a><a class="tm-more" data-p-how href="/docs/claim-a-node/" hidden>How claiming works</a></p>
   </div>
     </div>
   </div>
@@ -555,6 +555,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
       const link = $('p-link') as HTMLAnchorElement, more = $('p-more') as HTMLAnchorElement;
       const firstUnmet = it.req.find((p): p is { id: string } => typeof p !== 'string' && items[p.id]?.kind === 'node' && items[p.id].status !== 'done');
       more.hidden = false;
+      ($('p-how') as HTMLElement).hidden = !(it.kind === 'node' && it.status === 'available'); // claiming guide, only where /claim applies
       if (it.kind === 'moonshot') {
         link.href = `/moonshots/#${id}`; link.textContent = 'Read about this moonshot';
         if (it.github) { more.href = it.github; more.textContent = 'See the work on GitHub'; } else more.hidden = true;

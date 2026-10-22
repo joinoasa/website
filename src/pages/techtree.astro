@@ -167,7 +167,7 @@ const counts = {
                     {n.neededBy.moonshots.length > 0 && <div><dt>Moonshots</dt><dd>{n.neededBy.moonshots.map((m, i) => (<>{i > 0 && ', '}<a href={`/moonshots/#${m}`}>{m}</a></>))}</dd></div>}
                     <div><dt>You'll learn</dt><dd>{n.sciences} · <a href="/docs/academy/">Academy</a></dd></div>
                   </dl>
-                  {cta(n) && <p class="start-now"><a href={cta(n)!.href}>{cta(n)!.label}</a></p>}
+                  {cta(n) && <p class="start-now"><a href={cta(n)!.href}>{cta(n)!.label}</a>{n.status === 'available' && <> · <a href="/docs/claim-a-node/">How claiming works</a></>}</p>}
                 </details>
               </li>
             ))}
