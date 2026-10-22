@@ -38,7 +38,7 @@ It covers what OASA brings, what the makerspace provides, safety and insurance, 
 
 - Store and charge lithium batteries by the makerspace's rules.
 - Test flights and vehicles only at approved sites, following FAA and local rules.
-- Supervise youth members around tools and testing.
+- Supervise any young visitors around tools and testing (membership is 18+ for now).
 - Report incidents.
 
 ## Reporting
