@@ -174,7 +174,7 @@ When upgrading `wrangler`, keep `compatibility_date` in `wrangler.jsonc` at or b
 
 ## Applications
 
-`/join/apply/` posts to `worker/index.ts`, which checks the answers, saves them in a Cloudflare **D1** database (free plan) and posts a short alert to a private Discord channel. Only `/api/*` runs code; every page is still a static file. Applicants aged 15 to 17 must give a parent or guardian email; their row is saved with `guardian_consent = pending` and their Discord alert shows only the application number.
+`/join/apply/` posts to `worker/index.ts`, which checks the answers, saves them in a Cloudflare **D1** database (free plan) and posts a short alert to a private Discord channel. Only `/api/*` runs code; every page is still a static file. **Adults only for now (18+).** The form offers only "18 or older" and the Worker rejects `15-17`. The youth code (guardian email, `guardian_consent`, number-only alert) is still there but switched off by `membership.youthOpen = false` in `src/config/site.ts`. Do not set it to `true` until the youth consent steps in `docs/membership` are built. The optional Discord and GitHub usernames are saved but never put in the Discord alert.
 
 ### One-time setup (from the project folder)
 
@@ -182,7 +182,7 @@ When upgrading `wrangler`, keep `compatibility_date` in `wrangler.jsonc` at or b
 npx wrangler login
 npx wrangler d1 create oasa-applications --location enam
 # paste the database_id it prints into wrangler.jsonc (replace REPLACE_WITH_DATABASE_ID)
-npm run db:migrate                                # creates the applications table
+npm run db:migrate                                # creates the database tables
 npx wrangler secret put DISCORD_WEBHOOK_URL       # optional: paste the channel webhook URL
 npm run deploy
 ```
@@ -191,22 +191,34 @@ npm run deploy
 
 **Spam check (optional, free):** Cloudflare dashboard → Turnstile → Add widget, hostname `joinoasa.org`, mode Managed. Put the **site key** in `apply.turnstileSiteKey` in `src/config/site.ts`, run `npx wrangler secret put TURNSTILE_SECRET` with the **secret key**, then deploy. Set both or neither. The form also has a hidden spam-trap field and ignores a second submission from the same email within a day.
 
-### Reading applications
+### Reviewing applications
 
 ```bash
-npm run apps:list            # newest 50: number, date, status, name, city, age group, guardian consent
-npm run apps:show -- 12      # one application in full
-npx wrangler d1 execute DB --remote --command "UPDATE applications SET status = 'interview' WHERE id = 12"
-npx wrangler d1 execute DB --remote --command "UPDATE applications SET guardian_consent = 'received' WHERE id = 13"
+npm run apps:list                                     # newest 50: number, date, status, name, city
+npm run apps:show -- 12                               # one application in full, with its history
+npm run apps:set -- 12 reviewing                      # move to a new status (history entry written)
+npm run apps:set -- 12 interview "Booked for Friday"  # optional note after the status
+npm run apps:interview -- 12 2026-11-05T18:30         # record the interview date (shown by apps:due)
+npm run apps:score -- 12 4 3 5 4 4                    # rubric 1-5: skill talent ambition initiative collaboration
+npm run apps:note -- 12 "Strong CAD; ask about time"  # private note
+npm run apps:due                                      # interviews, trials ending in 7 days or overdue, applications waiting > 7 days
+npm run apps:purge                                    # dry run: declined/withdrawn applications past 12 months
+npm run apps:purge -- --apply                         # delete them
 ```
 
-Statuses: `new`, `reviewing`, `interview`, `trial`, `accepted`, `declined`, `withdrawn`. A review page (behind Cloudflare Access) is planned. You can also browse the table in the dashboard: Storage & Databases → D1 → `oasa-applications`.
+Statuses: `new`, `reviewing`, `interview`, `trial`, `accepted`, `declined`, `withdrawn`. Entering `trial` sets the trial start to today and the end 30 days later. Accepted, declined and withdrawn record `decision_at`, which starts the retention clock. Every script takes `--local` (wrangler dev's database) and `--dry` (print the SQL, run nothing). Text you type is escaped before it reaches SQL, and wrangler is run without a shell. A review page (behind Cloudflare Access) is planned. You can also browse the table in the dashboard: Storage & Databases → D1 → `oasa-applications`.
 
-**Adding a question:** add it to `src/data/application.ts`, add a migration (`migrations/0002_….sql` with `ALTER TABLE applications ADD COLUMN …`), run `npm run db:migrate`, then deploy.
+Run `apps:due` weekly. Guardian consent (youth, when it opens) can still be set by hand: `npx wrangler d1 execute DB --remote --command "UPDATE applications SET guardian_consent = 'received' WHERE id = 13"`.
 
-**Test locally:** `npm run build && npm run db:migrate:local && npx wrangler dev`, then use `npm run apps:show -- 1 --local`. For local Discord tests, put `DISCORD_WEBHOOK_URL=...` in a `.dev.vars` file (git-ignored).
+**Retention (interim, on the privacy page):** declined and withdrawn applications are deleted 12 months after the decision (`apps:purge`); a member's application is kept while they are a member and deleted within 90 days of their leaving (`DELETE FROM application_events WHERE app_id = N; DELETE FROM applications WHERE id = N`).
 
-**Deleting an application on request:** `npx wrangler d1 execute DB --remote --command "DELETE FROM applications WHERE id = 12"`.
+**Migrations** run automatically in `.github/workflows/deploy.yml` before each deploy (`wrangler d1 migrations apply DB --remote`); run `npm run db:migrate` yourself only for a manual deploy.
+
+**Adding a question:** add it to `src/data/application.ts`, add a migration (`migrations/0003_….sql` with `ALTER TABLE applications ADD COLUMN …`), then deploy (the workflow applies it).
+
+**Test locally:** `npm run build && npm run db:migrate:local && npx wrangler dev`, then use `npm run apps:show -- 1 --local` (all `apps:*` commands accept `--local`). For local Discord tests, put `DISCORD_WEBHOOK_URL=...` in a `.dev.vars` file (git-ignored).
+
+**Deleting an application on request:** `npx wrangler d1 execute DB --remote --command "DELETE FROM application_events WHERE app_id = 12; DELETE FROM applications WHERE id = 12"`. Also delete the Discord alert message.
 
 ### Yearly chores
 

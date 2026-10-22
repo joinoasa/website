@@ -10,7 +10,7 @@
 //   DISCORD_WEBHOOK_URL   secret, optional: private Discord channel webhook for alerts
 //   TURNSTILE_SECRET      secret, optional: Cloudflare Turnstile secret key (spam check)
 
-import { fields, YOUTH, type Field } from '../src/data/application';
+import { fields, youthOpen, YOUTH, type Field } from '../src/data/application';
 
 interface D1Result { meta: { last_row_id: number } }
 interface D1Statement {
@@ -33,6 +33,8 @@ const EMAIL_RE = /^[^\s@<>()[\],;:"]+@[^\s@<>()[\],;:"]+\.[^\s@<>()[\],;:"]{2,}$
 
 type Values = Record<string, string>;
 type Errors = Record<string, string>;
+
+export { validate, clean };
 
 export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
@@ -90,7 +92,7 @@ async function apply(request: Request, env: Env, ctx: Ctx): Promise<Response> {
   ).bind(values.email).first<{ id: number }>();
   if (recent) return reply(request, 200, { ok: true, redirect: THANKS });
 
-  const youth = values.age_group === YOUTH;
+  const youth = youthOpen && values.age_group === YOUTH;
   const columns = fields.map((f) => f.name);
   const params = fields.map((f) => (f.kind === 'checkbox' ? (values[f.name] ? 1 : 0) : values[f.name] || null));
   columns.push('guardian_consent');
@@ -120,6 +122,12 @@ function validate(form: FormData): { values: Values; errors: Errors } {
     if (v.length > f.max) errors[f.name] = `Please keep this under ${f.max} characters.`;
     else if (f.kind === 'email' && !EMAIL_RE.test(v)) errors[f.name] = 'Please enter a valid email address.';
     else if (f.kind === 'radio' && !f.options?.some((o) => o.value === v)) errors[f.name] = 'Please choose one.';
+    else if (f.pattern && !new RegExp(`^(?:${f.pattern.source})$`).test(v)) errors[f.name] = f.pattern.message;
+  }
+
+  // Belt and braces: the age options already exclude 15-17 while youth membership is paused.
+  if (!youthOpen && values.age_group === YOUTH) {
+    errors.age_group = 'Membership for ages 15 to 17 is not open yet. It is planned and will open later.';
   }
 
   if (values.guardian_email && values.guardian_email.toLowerCase() === values.email.toLowerCase()) {
@@ -141,7 +149,8 @@ function clean(raw: string, f: Field): string {
   // Drop control characters except newlines and tabs in long answers.
   v = v.replace(f.kind === 'textarea' ? /[\u0000-\u0008\u000B-\u001F\u007F]/g : /[\u0000-\u001F\u007F]/g, '');
   v = v.trim();
-  if (f.kind === 'email') v = v.toLowerCase();
+  if (f.stripAt) v = v.replace(/^@/, '');
+  if (f.kind === 'email' || f.name === 'discord_handle') v = v.toLowerCase();
   return v;
 }
 
@@ -161,7 +170,7 @@ async function turnstile(secret: string, token: string, ip: string | null): Prom
   return data.success === true;
 }
 
-/** Short alert for the private Discord channel. No email addresses; youth applicants stay anonymous. */
+/** Short alert for the private Discord channel. No email addresses, and no Discord or GitHub usernames; youth applicants stay anonymous. */
 async function notify(webhook: string, id: number, v: Values): Promise<void> {
   const cut = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
   const youth = v.age_group === YOUTH;

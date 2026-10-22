@@ -56,6 +56,10 @@ export const site = {
 
   membership: {
     responseTime: null as string | null, // TODO(owner): e.g. 'within two weeks'; null hides the line
+    // Owner decision: adult members (18+) only for now. Set true to open 15 to 17 again:
+    // the form then offers the age choice and guardian field, and the Worker accepts them.
+    // The youth consent steps in docs/membership are still planned, not built; do not flip this before they are.
+    youthOpen: false,
   },
 
   security: {

@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { site, contact, mailto } from '../../config/site';
-import { fields, type Field } from '../../data/application';
+import { fields, youthOpen, type Field } from '../../data/application';
 import { applicationQuestions } from '../../data/membership';
 
 const byName = Object.fromEntries(fields.map((f) => [f.name, f])) as Record<string, Field>;
 const groups: { legend: string; names: string[] }[] = [
-  { legend: 'About you', names: ['name', 'email', 'city_state', 'nearest_chapter', 'age_group', 'guardian_email'] },
+  { legend: 'About you', names: ['name', 'email', 'city_state', 'nearest_chapter', 'age_group', 'guardian_email', 'discord_handle', 'github_username'] },
   { legend: 'Your work', names: ['skills', 'links', 'interests', 'time_commitment'] },
   { legend: 'Joining', names: ['why', 'contract_interest', 'invited_by'] },
 ];
@@ -28,6 +28,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
       <p class="crumb"><a href="/join/">Apply to join</a></p>
       <h1>Your application</h1>
       <p class="lede">About ten minutes. No portfolio required: tell us what you've built, what you can do and what you want to work on.</p>
+      {!youthOpen && <p class="lede">Membership is for adults (18 or older) for now. Membership for ages 15 to 17 is planned and will open later.</p>}
     </div>
   </header>
 
@@ -38,7 +39,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
       {groups.map((g) => (
         <fieldset class="group">
           <legend>{g.legend}</legend>
-          {g.names.map((name) => {
+          {g.names.filter((name) => byName[name]).map((name) => {
             const f = byName[name];
             if (f.kind === 'radio') return (
               <fieldset class="field radios" data-field={f.name} aria-describedby={describedBy(f)}>
@@ -59,6 +60,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
             );
             const common = {
               id: f.name, name: f.name, maxlength: f.max, autocomplete: f.autocomplete ?? 'off',
+              pattern: f.pattern?.source, title: f.pattern?.message, spellcheck: f.pattern ? 'false' : undefined, autocapitalize: f.pattern ? 'off' : undefined,
               // Conditional fields are checked on the server; the script adds `required` when they apply.
               required: f.required && !f.showWhen, 'aria-describedby': describedBy(f),
             };
@@ -170,7 +172,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
       if (el.disabled || el.name === 'website' || el.validity.valid || errors[el.name]) return;
       errors[el.name] = el.validity.valueMissing
         ? (el.type === 'checkbox' ? 'Please tick this box.' : el.type === 'radio' ? 'Please choose one.' : 'Please fill this in.')
-        : el.validity.typeMismatch ? 'Please enter a valid email address.' : el.validationMessage;
+        : el.validity.typeMismatch ? 'Please enter a valid email address.' : el.validity.patternMismatch && el.title ? el.title : el.validationMessage;
     });
     return errors;
   }
