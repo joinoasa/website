@@ -23,3 +23,7 @@ If you're an AI assistant helping someone with an OASA idea, start with the brai
 - [Claim a node](https://joinoasa.org/docs/claim-a-node/): how members pick up tech tree work
 - [Standards](https://joinoasa.org/docs/standards/)
 - [Membership](https://joinoasa.org/docs/membership/)
+
+## Working in the code
+
+Each repo has an `AGENTS.md` for AI coding agents: [website](https://github.com/joinoasa/website/blob/main/AGENTS.md) (site and tech tree source), [techtree](https://github.com/joinoasa/techtree/blob/main/AGENTS.md) (node issues), [ideas](https://github.com/joinoasa/ideas/blob/main/AGENTS.md) (idea inbox), [brand](https://github.com/joinoasa/brand/blob/main/AGENTS.md) (art and documents).
