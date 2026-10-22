@@ -10,6 +10,8 @@ Every [tech tree](/techtree/) node has an issue in the [techtree repository](htt
 
 Members at Trial level and above. Not a member yet? [Apply](/join/). Membership is open to adults (18+) for now.
 
+Make your OASA organisation membership public (your GitHub profile → the organisation → Public) so `/claim` can recognise you as a member.
+
 You also need a GitHub account, and you need to be in the OASA GitHub organization. The founder invites you when your trial starts.
 
 ## Which nodes

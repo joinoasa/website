@@ -153,7 +153,7 @@ The site is static files served by **Cloudflare Workers static assets**. GitHub 
 
 1. **Account:** create a free Cloudflare account.
 2. **Domain:** add `joinoasa.org` to Cloudflare (Free plan). Register it with Cloudflare Registrar, or keep your registrar and switch its nameservers to the two Cloudflare gives you.
-3. **API token:** My Profile → API Tokens → Create Token → use the **Edit Cloudflare Workers** template, limited to your account. Copy the token. Copy your **Account ID** from the dashboard overview.
+3. **API token:** My Profile → API Tokens → Create Token → use the **Edit Cloudflare Workers** template, limited to your account, then add the permission **Account → D1 → Edit** (the deploy applies database migrations). Copy the token. Copy your **Account ID** from the dashboard overview.
 4. **GitHub secrets** (repo → Settings → Secrets and variables → Actions): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 5. **First deploy:** push to `main` (or run the workflow by hand). The site appears at `https://joinoasa.<your-subdomain>.workers.dev`.
 6. **Attach the domain:** uncomment the `routes` block in `wrangler.jsonc` and push. Or, in the dashboard: Workers & Pages → `joinoasa` → Settings → Domains & Routes → Add → Custom domain, for both `joinoasa.org` and `www.joinoasa.org`.
