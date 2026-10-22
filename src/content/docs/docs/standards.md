@@ -1,7 +1,7 @@
 ---
 title: Standards
 description: How OASA standards are made, versioned and certified.
-lastUpdated: 2026-10-20
+lastUpdated: 2026-10-22
 ---
 
 OASA adopts or extends existing standards (MAVLink, Cursor-on-Target (CoT), DroneCAN, ROS 2, Meshtastic) before writing new ones. Where no good standard exists, OASA publishes its own open spec. Standards use proven encryption methods; OASA defines how to apply them to drone links, not new encryption math.
@@ -41,6 +41,9 @@ A standard editor and a working group. During the founding phase the founder app
 | OASA-DOCK | Dock, landing and charging |
 | OASA-RF | Antenna and radio test procedures |
 | OASA-SENSE | Low-power sensor nodes |
+| OASA-SITE | Site survey data robots can share (maps, terrain, work zones) |
+| OASA-SAFE | Safety rules for robots that carry tools |
+| OASA-LEARN | How robots ask for help and learn from the answer |
 
 Build order for the first six: SEC, MAP, NET, PAY, LOG, TIME.
 
