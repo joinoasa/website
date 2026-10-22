@@ -112,7 +112,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, O-3, MS-7 | CoT, geospatial data | 🔒 |
+| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
 | T-MAP2 | Tap-to-control from TAK | T-MAP1, R-CTL2 | T-NET3, T-AI3, T-TSK1, T-LEARN1 | Mission control, UX | 🔒 |
 | T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, S-2, I-1 | Mesh networking | 🔒 |
 | T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
@@ -127,8 +127,9 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-VID1 | On-demand video over mesh | T-NET2, X-1, R-TIME1 | MS-2, MS-5, MS-7 | Video compression, streaming | 🔒 |
 | T-TSK1 | Tasking, idle status, task handoff | T-MAP2, T-NET2 | T-AI2, T-TSK2, T-SITE3, X-8, O-4, I-8, C-2, X-9, MS-5 | Scheduling, operations | 🔒 |
 | T-TSK2 | Deploy-scout-return (a carrier launches a scout that comes back with where to go next) | T-TSK1, T-DOCK1 | MS-5 | Cooperative autonomy | 🔒 |
-| T-DOCK1 | Precision landing on a dock | R-CTL2, R-NAV2 | T-TSK2, T-DOCK2, M-2 | Sensors, control | 🔒 |
-| T-DOCK2 | Auto charging (OASA-DOCK) | T-DOCK1, R-PWR1 | L-7, G-4, S-6, O-4, O-6, O-8, O-17, MS-7 | Power electronics, mechanisms | 🔒 |
+| T-DOCK1 | Precision landing on a dock | R-CTL2, R-NAV2 | T-TSK2, T-DOCK2, T-DOCK3, M-2 | Sensors, control | 🔒 |
+| T-DOCK2 | Auto charging (OASA-DOCK) | T-DOCK1, R-PWR1 | L-7, G-4, S-6, S-7, O-4, O-6, O-8, O-17, MS-7 | Power electronics, mechanisms | 🔒 |
+| T-DOCK3 | Landing on a moving deck (buoy or boat pitching in waves) | T-DOCK1 | S-6, S-7 | Control, motion prediction | 🔒 |
 | T-SIM1 | Simulator / digital twin | R-CTL2 | SP-4, training | Simulation, physics engines | 🔒 |
 | T-BENCH1 | Test bench + test software | — | MS-8, Quality across all nodes | Test engineering | 🟢 |
 | T-RF1 | RF scanning in radios | R-COM1 | T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
@@ -192,11 +193,12 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | S-1 | Survey boat | R-CTL2 | S-3, S-4, O-20 | Hull design, buoyancy | 🔒 |
-| S-2 | Buoy node (mesh + weather) | T-NET1, R-PWR2 | U-4, MS-1 | Marine engineering, moorings | 🔒 |
+| S-2 | Buoy node (mesh + weather) | T-NET1, R-PWR2 | S-7, U-4, MS-1 | Marine engineering, moorings | 🔒 |
 | S-3 | Solar boat | S-1, R-PWR2 | S-5, S-6 | Solar marine power | 🔒 |
 | S-4 | Water sampling payload | S-1, T-PAY1 | MS-4 | Environmental science | 🔒 |
 | S-5 | Cleanup boat (algae, debris) | S-3, T-AI1, M-1 | O-17, MS-4, MS-13 | Collection mechanisms | 🔒 |
-| S-6 | Drone carrier boat | S-3, T-DOCK2 | MS-5 | Moving-platform landing | 🔒 |
+| S-6 | Drone carrier boat | S-3, T-DOCK2, T-DOCK3 | MS-5 | Moving-platform landing | 🔒 |
+| S-7 | Lifeguard buoy dock (sealed drone hangar, solar charging, mesh and weather node) | S-2, T-DOCK2, T-DOCK3 | O-26, MS-15 | Marine engineering, corrosion | 🔒 |
 
 ### 3.5 Underwater
 
@@ -265,7 +267,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | O-13 | Seed-planting and regrowth tracking | X-6, M-3, X-8 | MS-12 | Forestry, ecology | 🔒 |
 | O-14 | City sensing platform (intelligent sensors that talk to each other and the map) | O-2, X-6, T-NET4 | MS-14 | Urban systems, IoT | 🔒 |
 | O-15 | Drowning detection (vision + acoustic, e.g., screams) | T-AI1, X-1, X-5 | O-16, MS-15 | AI, acoustics, water safety | 🔒 |
-| O-16 | Lifeguard assist kit (shore launcher with self-inflating float, drone flotation drop, two-way speaker to lifeguard station; budget tiers) | O-15, M-3, M-6, A-1 | MS-15 | Rescue engineering | 🔒 |
+| O-16 | Lifeguard assist kit (shore launcher with self-inflating float, drone flotation drop, two-way speaker to lifeguard station; budget tiers) | O-15, M-3, M-6, A-1 | O-26, MS-15 | Rescue engineering | 🔒 |
 | O-17 | Ocean cleanup base (unload, recharge, relaunch) | S-5, T-DOCK2 | MS-13 | Marine logistics | 🔒 |
 | O-18 | Utility-pole sensor network (air quality, weather, mosquito; solar + radio; partner with utilities) | O-2, T-NET5 | O-19, MS-23 | Environmental monitoring | 🔒 |
 | O-19 | Mosquito control (map standing water, larvicide drops with county programs) | X-6, M-3, O-18 | MS-23 | Public health, entomology | 🔒 |
@@ -275,6 +277,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | O-23 | Autonomous grounds maintenance (scan, plan, cut, then re-scan to check the work) | T-SITE3, G-8, M-8, M-9, T-LEARN1 | O-25, I-10, I-11, C-6 | Operations, landscape management | 🔒 |
 | O-24 | Landscape inspection and growth tracking (repeat scans schedule the next visit) | T-SITE2, T-AI1 | — | Ecology, change detection | 🔒 |
 | O-25 | Wildfire defensible-space clearing around homes and communities | O-23, O-11 | MS-12 | Fire ecology | 🔒 |
+| O-26 | Buoy-launched beach rescue (alert, launch, float drop, hover and mark, lifeguard on TAK) | O-16, S-7, T-MAP1 | MS-15 | Rescue engineering, water safety | 🔒 |
 
 ### 4.4 Infrastructure Inspection (seed branch — to grow into its own tree)
 
@@ -347,7 +350,7 @@ Plan from the start for OASA systems to work beyond Earth. Stepping stones begin
 | MS-12 | **Reforestation & Wildfire Prevention** — map fire risk around communities, support controlled burns with fire agencies, plant and track regrowth | O-11, O-12, O-13, O-25, MS-9 nodes |
 | MS-13 | **Ocean Cleanup & Restoration Armada** — autonomous fleets clearing waterways and restoring reefs and wetlands | S-5, O-17, U-7, O-4, O-20 |
 | MS-14 | **City Digital Twin & Automation** — a living model of the city from intelligent sensors that interact with the world around them | O-14, X-6, MS-1 nodes |
-| MS-15 | **Lifeguard Assist Network** — supports (never replaces) lifeguards; detection, shore launchers, drone drops, two-way speaker; tiers for every budget | O-15, O-16, X-10 |
+| MS-15 | **Lifeguard Assist Network** — supports (never replaces) lifeguards; detection, shore launchers, drone drops, two-way speaker; tiers for every budget | O-15, O-16, X-10, S-7, O-26 |
 | MS-16 | **Underground Explorers** — autonomous 3D mapping of collapsed buildings, caves and tunnels | G-5, M-5, X-3 |
 | MS-17 | **Light-Speed Links** — vehicles that aim lasers at each other in flight for encrypted comms and power | R-COM4, R-PWR5, T-RF3 |
 | MS-18 | **Talk to Your Fleet** — plan missions from a sentence and steer them by voice | T-AI2, T-AI3 |
