@@ -14,7 +14,7 @@ Have an idea? Brainstorm it with any AI assistant (Claude, ChatGPT, Gemini or an
 
    If your assistant can't open web pages, copy this whole page into the chat instead.
 2. Answer its questions. Push back, add details, follow tangents. That's the point.
-3. When it gives you a finished idea, [post it with the idea form](https://github.com/joinoasa/ideas/issues/new?template=idea.yml). It gets a number, and someone sorts it onto the tech tree.
+3. When it's done, it gives you a **one-click link**. Open it, check the form it fills in, pick the areas and press **Submit**. (No link? Paste its write-up into the [idea form](https://github.com/joinoasa/ideas/issues/new?template=idea.yml).) Your idea gets a number, and someone sorts it onto the tech tree.
 
 The rest of this page is written for the AI.
 
@@ -89,6 +89,25 @@ First small step:
 
 Brainstormed with an AI assistant: yes
 ```
+
+**Then give a one-click link** that opens the idea form already filled in, so the person only has to review it and press Submit. Build it from this address, adding each field as a URL-encoded query parameter:
+
+```
+https://github.com/joinoasa/ideas/issues/new?template=idea.yml
+  &title=…        the title
+  &problem=…      What's missing or broken?
+  &idea=…         What would we build?
+  &nodes=…        Related tech tree nodes
+  &skills=…       Skills it needs
+  &first-step=…   First small step
+```
+
+For example: `https://github.com/joinoasa/ideas/issues/new?template=idea.yml&title=Buoy-launched%20lifeguard%20drone&problem=Lifeguards%20lose%20time%20getting%20past%20the%20surf.&nodes=O-16%2C%20S-2`
+
+- Encode spaces as `%20`, commas as `%2C` and new lines as `%0A`.
+- The areas and the AI checkbox can't be filled in by a link; tell the person to tick them.
+- Keep the whole link under about 6,000 characters. If the write-up is longer, shorten the link's text and give the full write-up for them to paste instead.
+- Also show the write-up itself, so the person can read what they're submitting.
 
 **B. Proposed tech tree nodes** (for developed ideas). Use the tree's table format. This row is the real G-8 from the worked example below; yours will use the next free IDs:
 
