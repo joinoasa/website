@@ -43,6 +43,7 @@ export default defineConfig({
           { label: 'Licensing', slug: 'docs/licensing' },
           { label: 'Academy', slug: 'docs/academy' },
           { label: 'Contributing', slug: 'docs/contributing' },
+          { label: 'Brainstorm with AI', slug: 'docs/brainstorm' },
         ] },
         { label: 'Chapters', items: [{ label: 'Start a chapter', slug: 'docs/start-a-chapter' }] },
       ],
