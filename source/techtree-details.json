@@ -1004,145 +1004,145 @@
   },
   "T-SITE1": {
     "brief": "A drone that plans its own flight over an area, captures it, and builds a 3D map anyone can reproduce. Each map comes with a report on how accurate it is.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/143",
     "lead": null,
     "team": []
   },
   "T-SITE2": {
     "brief": "One open format for site surveys, so a map made by one robot can be used by any other. It bundles existing formats (COPC point clouds, cloud-optimized GeoTIFF terrain, GeoJSON zones) with a small manifest, and stays light enough for very large areas.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/144",
     "lead": null,
     "team": []
   },
   "T-SITE3": {
     "brief": "Software that reads a site survey and says exactly what needs doing: where to mow, where to clear brush, what to stay away from. It estimates area and time and picks the right robot size.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/145",
     "lead": null,
     "team": []
   },
   "T-SAFE1": {
     "brief": "Shared safety rules for any robot that carries a blade, sprayer or arm. Tools stop when a person or animal comes near, work only inside approved zones, and can be stopped remotely or with a physical button.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/146",
     "lead": null,
     "team": []
   },
   "T-LEARN1": {
     "brief": "When a robot isn't sure what to do, it pauses and asks an operator on TAK, then remembers the answer for next time. Learned behavior is reviewed before it spreads to other robots, and it can never loosen a safety rule.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/147",
     "lead": null,
     "team": []
   },
   "G-8": {
     "brief": "A small tracked landscaping robot for slopes, trails and tight spaces that are hard to maintain by hand. Light enough to haul without a trailer, and able to run remotely or on its own.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/148",
     "lead": null,
     "team": []
   },
   "G-9": {
     "brief": "A skid-steer-sized landscaping robot for big jobs like fields and right-of-ways. It uses the same tools, survey data and safety rules as the compact robot.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/149",
     "lead": null,
     "team": []
   },
   "M-7": {
     "brief": "A quick-attach mount for ground robots, like the one on a skid-steer, carrying mechanical, power and data connections. Any tool built to it works on any OASA ground robot.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/151",
     "lead": null,
     "team": []
   },
   "M-8": {
     "brief": "A mower deck for the landscaping robots, for tall grass in hard-to-reach places.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/152",
     "lead": null,
     "team": []
   },
   "M-9": {
     "brief": "A brush cutter (flail or mulcher) that clears bushes and thick undergrowth.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/153",
     "lead": null,
     "team": []
   },
   "M-10": {
     "brief": "A shear for cutting small trees, the next step after brush clearing. Needs the full-size robot for weight and stability.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/154",
     "lead": null,
     "team": []
   },
   "M-11": {
     "brief": "A tool that finds weeds with AI and pulls them out, instead of spraying.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/155",
     "lead": null,
     "team": []
   },
   "M-12": {
     "brief": "An attachment that plants trees, shrubs and flower beds where the work plan says to.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/156",
     "lead": null,
     "team": []
   },
   "M-13": {
     "brief": "An attachment that rolls out new grass (sod).",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/157",
     "lead": null,
     "team": []
   },
   "M-14": {
     "brief": "A spreader for fertilizer and seed, metered to the amounts in the work plan.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/158",
     "lead": null,
     "team": []
   },
   "O-23": {
     "brief": "The full loop: survey a site, plan the work, mow and clear brush, then scan again to check the job was done. Aimed at semi-public spaces that are hard for counties and owners to keep up.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/159",
     "lead": null,
     "team": []
   },
   "O-24": {
     "brief": "Repeat surveys that show how a landscape is changing: regrowth, problem areas, damage. The results schedule the next maintenance visit automatically.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/160",
     "lead": null,
     "team": []
   },
   "O-25": {
     "brief": "Clearing brush and fuel around homes and communities to reduce wildfire risk, guided by fire-risk maps.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/161",
     "lead": null,
     "team": []
   },
   "I-10": {
     "brief": "Keeping brush and small trees clear under power lines, so crews don't have to do it by hand in rough terrain.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/163",
     "lead": null,
     "team": []
   },
   "I-11": {
     "brief": "Mowing along roads, drainage ditches and levees, where steep slopes make the work slow and risky for people.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/164",
     "lead": null,
     "team": []
   },
   "C-6": {
     "brief": "Mowing and brush control between the panel rows of solar farms.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/165",
     "lead": null,
     "team": []
   },
   "T-DOCK3": {
     "brief": "Landing reliably on a deck that pitches and heaves with the waves, like a buoy or a boat. Anything that launches drones from the water needs it.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/142",
     "lead": null,
     "team": []
   },
   "S-7": {
     "brief": "A moored buoy that keeps a drone dry, charged and ready to launch offshore, close to where swimmers get into trouble. It doubles as a mesh and weather node.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/150",
     "lead": null,
     "team": []
   },
   "O-26": {
     "brief": "The beach rescue mission: when a swimmer is flagged, the buoy's drone launches, drops a float, hovers as a marker and alerts the lifeguard on TAK. The lifeguard can abort or take control at any time.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/162",
     "lead": null,
     "team": []
   }
