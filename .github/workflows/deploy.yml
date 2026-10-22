@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 concurrency:
   group: deploy
@@ -27,6 +28,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}   # raises the API rate limit for the tech tree status pull (public data)
       - run: npm run check:launch   # informational: lists owner values still open
 
       # Brings the D1 schema up to date (migrations/) before the new Worker code goes live.

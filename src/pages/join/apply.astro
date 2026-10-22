@@ -59,8 +59,8 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
               </div>
             );
             const common = {
-              id: f.name, name: f.name, maxlength: f.max, autocomplete: f.autocomplete ?? 'off',
-              pattern: f.pattern?.source, title: f.pattern?.message, spellcheck: f.pattern ? 'false' : undefined, autocapitalize: f.pattern ? 'off' : undefined,
+              id: f.name, name: f.name, maxlength: f.max + (f.stripAt ? 1 : 0), autocomplete: f.autocomplete ?? 'off',
+              pattern: f.clientPattern ?? f.pattern?.source, title: f.pattern?.message, spellcheck: f.pattern ? 'false' : undefined, autocapitalize: f.pattern ? 'off' : undefined,
               // Conditional fields are checked on the server; the script adds `required` when they apply.
               required: f.required && !f.showWhen, 'aria-describedby': describedBy(f),
             };

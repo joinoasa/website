@@ -203,14 +203,14 @@ npm run apps:score -- 12 4 3 5 4 4                    # rubric 1-5: skill talent
 npm run apps:note -- 12 "Strong CAD; ask about time"  # private note
 npm run apps:due                                      # interviews, trials ending in 7 days or overdue, applications waiting > 7 days
 npm run apps:purge                                    # dry run: declined/withdrawn applications past 12 months
-npm run apps:purge -- --apply                         # delete them
+npm run apps:purge -- --apply                         # delete them   # then delete the matching Discord alerts by hand (the script prints the numbers)
 ```
 
 Statuses: `new`, `reviewing`, `interview`, `trial`, `accepted`, `declined`, `withdrawn`. Entering `trial` sets the trial start to today and the end 30 days later. Accepted, declined and withdrawn record `decision_at`, which starts the retention clock. Every script takes `--local` (wrangler dev's database) and `--dry` (print the SQL, run nothing). Text you type is escaped before it reaches SQL, and wrangler is run without a shell. A review page (behind Cloudflare Access) is planned. You can also browse the table in the dashboard: Storage & Databases → D1 → `oasa-applications`.
 
 Run `apps:due` weekly. Guardian consent (youth, when it opens) can still be set by hand: `npx wrangler d1 execute DB --remote --command "UPDATE applications SET guardian_consent = 'received' WHERE id = 13"`.
 
-**Retention (interim, on the privacy page):** declined and withdrawn applications are deleted 12 months after the decision (`apps:purge`); a member's application is kept while they are a member and deleted within 90 days of their leaving (`DELETE FROM application_events WHERE app_id = N; DELETE FROM applications WHERE id = N`).
+**Retention (interim, on the privacy page):** declined and withdrawn applications are deleted 12 months after the decision (`apps:purge`); a member's application is kept while they are a member and deleted within 90 days of their leaving (`DELETE FROM application_events WHERE app_id = N; DELETE FROM applications WHERE id = N`). Also delete the matching Discord alert messages in the private alerts channel; they hold the name, city and a skills preview and are not removed by the scripts.
 
 **Migrations** run automatically in `.github/workflows/deploy.yml` before each deploy (`wrangler d1 migrations apply DB --remote`); run `npm run db:migrate` yourself only for a manual deploy.
 
@@ -218,7 +218,7 @@ Run `apps:due` weekly. Guardian consent (youth, when it opens) can still be set 
 
 **Test locally:** `npm run build && npm run db:migrate:local && npx wrangler dev`, then use `npm run apps:show -- 1 --local` (all `apps:*` commands accept `--local`). For local Discord tests, put `DISCORD_WEBHOOK_URL=...` in a `.dev.vars` file (git-ignored).
 
-**Deleting an application on request:** `npx wrangler d1 execute DB --remote --command "DELETE FROM application_events WHERE app_id = 12; DELETE FROM applications WHERE id = 12"`. Also delete the Discord alert message.
+**Deleting an application on request:** `npx wrangler d1 execute DB --remote --command "DELETE FROM application_events WHERE app_id = 12; DELETE FROM applications WHERE id = 12"`. Also delete the matching Discord alert message (the scripts never touch Discord).
 
 ### Yearly chores
 

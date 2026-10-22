@@ -24,10 +24,11 @@ console.log(`Retention: ${RETENTION_MONTHS} months. Cutoff ${cutoff.slice(0, 10)
 for (const r of rows) console.log(`  #${r.id}  ${r.status}  since ${String(r.since).slice(0, 10)}`);
 if (!rows.length) process.exit(0);
 if (!apply) {
-  console.log('\nDry run: nothing deleted. Run again with --apply to delete these.');
+  console.log('\nDry run: nothing deleted. Run again with --apply to delete these. Afterwards delete their Discord alert messages too.');
   process.exit(0);
 }
 // Delete exactly the rows listed above, by number.
 const ids = rows.map((r) => sqlInt(r.id)).join(', ');
 d1(`DELETE FROM application_events WHERE app_id IN (${ids});\nDELETE FROM applications WHERE id IN (${ids}) AND status IN ('declined', 'withdrawn');`, { local });
 console.log(`\nDeleted ${rows.length} application(s) at ${nowIso().slice(0, 16)}Z.`);
+console.log(`Now also delete the Discord alert messages for: ${rows.map((r) => '#' + r.id).join(', ')}`);

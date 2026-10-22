@@ -21,6 +21,8 @@ export interface Field {
   showWhen?: { field: string; value: string };
   /** Text answers must match this (regular expression source, whole value). Also sent to the browser. */
   pattern?: { source: string; message: string };
+  /** What the browser checks, when it must be looser than `pattern` because the server tidies first (strips "@", lowercases). */
+  clientPattern?: string;
   /** Remove a leading "@" before checking (usernames people type as @name). */
   stripAt?: boolean;
   /** Hidden when this other field has this value (and ignored by the server). */
@@ -55,11 +57,13 @@ const allFields: Field[] = [
   {
     name: 'discord_handle', label: 'Discord username', kind: 'text', max: 32, stripAt: true, autocomplete: 'off',
     hint: 'Optional. Lets us reach you on Discord. Your username, not a display name, for example: sam_builds',
+    clientPattern: '@?[A-Za-z0-9_.]{2,32}',
     pattern: { source: '[a-z0-9_.]{2,32}', message: 'Use your Discord username: 2 to 32 lowercase letters, numbers, underscores or dots.' },
   },
   {
     name: 'github_username', label: 'GitHub username', kind: 'text', max: 39, stripAt: true, autocomplete: 'off',
     hint: 'Optional. We use it to credit your work and give you repository access.',
+    clientPattern: '@?(?!.*--)[A-Za-z0-9](?:[A-Za-z0-9\\-]{0,37}[A-Za-z0-9])?',
     pattern: { source: '(?!.*--)[A-Za-z0-9](?:[A-Za-z0-9\\-]{0,37}[A-Za-z0-9])?', message: 'Use your GitHub username: letters, numbers and single hyphens, up to 39 characters.' },
   },
   { name: 'skills', label: 'Skills', kind: 'textarea', required: true, max: 2000, hint: 'What can you do? Code, CAD, electronics, flying, machining, writing, teaching, leading. Anything counts.' },
