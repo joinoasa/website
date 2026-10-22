@@ -4,3 +4,4 @@ dist/
 src/data/techtree.json
 .wrangler/
 .dev.vars
+src/data/ideas.json

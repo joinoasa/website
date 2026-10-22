@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import data from '../data/ideas.json';
+import tree from '../data/techtree.json';
+import { site } from '../config/site';
+
+type Idea = (typeof data.ideas)[number];
+const nodeById = new Map(tree.nodes.map((n) => [n.id, n]));
+const shotIds = new Set([...tree.moonshots, ...tree.starshots].map((m) => m.id));
+const nodeHref = (id: string) => (shotIds.has(id) ? `/moonshots/#${id}` : `/techtree/#${id}`);
+
+const OUTCOMES: Record<string, string> = {
+  'on-tree': 'On the tree',
+  'expands-node': 'Expands a node',
+  'new-node': 'New node',
+  'connects-nodes': 'Connects nodes',
+  operations: 'How OASA runs',
+  parked: 'Parked',
+};
+const ideas = data.ideas as Idea[];
+const waiting = ideas.filter((x) => !x.outcome);
+const parked = ideas.filter((x) => x.outcome === 'parked');
+const sorted = ideas.filter((x) => x.outcome && x.outcome !== 'parked').reverse(); // newest first
+const groups = [
+  { id: 'waiting', title: 'Waiting to be sorted', list: waiting.slice().reverse(), empty: 'Nothing waiting. Every idea has a home.' },
+  { id: 'parked', title: 'Parked for later', list: parked.slice().reverse(), empty: 'No parked ideas.' },
+  { id: 'sorted', title: 'Sorted', list: sorted, empty: 'No ideas sorted yet.' },
+];
+const count = (o: string) => ideas.filter((x) => x.outcome === o).length;
+const form = site.links.ideaForm;
+const repo = site.links.ideas;
+const discussions = site.links.ideaBoard ? `${site.links.ideaBoard.replace(/\/$/, '')}/categories/ideas` : null;
+---
+<Base title="Ideas" description="Every idea for OASA gets a number, then a home on the tech tree. See what's been posted, what's waiting and where each idea landed, and post your own.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Ideas</h1>
+      <p class="lede">Every idea gets a number, then a home on the tech tree. Anyone can post one. You don't need to be a member.</p>
+      <p class="actions">
+        {form && <a class="btn btn-primary" href={form}>Post an idea</a>}
+        {discussions && <a class="btn" href={discussions}>Talk one through first</a>}
+      </p>
+      {data.fetched && (
+        <p class="tally">
+          <strong>{ideas.length}</strong> ideas · <strong>{waiting.length}</strong> waiting · <strong>{count('on-tree') + count('expands-node') + count('new-node') + count('connects-nodes')}</strong> on the tech tree · <strong>{parked.length}</strong> parked
+        </p>
+      )}
+    </div>
+  </header>
+
+  <div class="wrap section">
+    <h2>How an idea finds its place</h2>
+    <p>Post an idea with the form, or start a discussion in the Ideas category; discussions are copied over within the hour. Each idea then gets one outcome:</p>
+    <dl class="outcomes">
+      <div><dt>On the tree</dt><dd>It's already covered, and gets linked to that node.</dd></div>
+      <div><dt>Expands a node</dt><dd>It adds detail or a new use to a node that exists.</dd></div>
+      <div><dt>New node</dt><dd>It becomes one or more new nodes on the tech tree.</dd></div>
+      <div><dt>Connects nodes</dt><dd>It links nodes together, or ties them into a moonshot.</dd></div>
+      <div><dt>How OASA runs</dt><dd>It's about the alliance itself: members, chapters, Academy, events.</dd></div>
+      <div><dt>Parked</dt><dd>A good idea for later. It stays open for anyone to pick up.</dd></div>
+    </dl>
+    <p>Each node on the <a href="/techtree/">tech tree</a> lists the ideas it grew from. Brainstorming with an AI assistant? Paste what it gives you straight into the form.</p>
+
+    {!data.fetched ? (
+      <p class="note">The list of ideas loads from GitHub when the site is built. {repo && <a href={`${repo}/issues?q=is%3Aissue`}>See every idea on GitHub.</a>}</p>
+    ) : (
+      groups.map((g) => (
+        <section class="group" aria-labelledby={`g-${g.id}`}>
+          <h2 id={`g-${g.id}`}>{g.title} <span class="n">{g.list.length}</span></h2>
+          {g.list.length === 0 ? <p class="note">{g.empty}</p> : (
+            <ol class="ideas">
+              {g.list.map((x) => (
+                <li id={x.id}>
+                  <span class="iid">{x.id}</span>
+                  <div>
+                    <a class="ititle" href={x.url}>{x.title}</a>
+                    <p class="imeta">
+                      {x.outcome && <span class="tag" data-o={x.outcome}>{OUTCOMES[x.outcome]}</span>}
+                      <span>{x.date}</span>
+                    </p>
+                    {x.nodes.length > 0 && (
+                      <ul class="inodes">
+                        {x.nodes.map((n) => <li><a href={nodeHref(n)} title={nodeById.get(n)?.name}>{n}</a></li>)}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+      ))
+    )}
+  </div>
+</Base>
+
+<style>
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-4); }
+  .tally { margin-top: var(--space-4); color: var(--ink-soft); font-size: var(--step--1); }
+  .tally strong { color: var(--ink); }
+  .outcomes { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--space-3) var(--space-6); margin: var(--space-4) 0 var(--space-6); }
+  .outcomes dt { font-weight: var(--weight-bold); color: var(--ink); }
+  .outcomes dd { margin: 0; color: var(--ink-soft); font-size: var(--step--1); }
+  .note { color: var(--ink-muted); }
+  .group { margin-top: var(--space-10); }
+  .group h2 .n { font-size: var(--step-0); color: var(--ink-muted); font-weight: var(--weight-ui); margin-left: var(--space-2); }
+  .ideas { list-style: none; margin: var(--space-4) 0 0; padding: 0; border-top: 2px solid var(--ink); }
+  .ideas > li { display: grid; grid-template-columns: 7.5rem 1fr; gap: var(--space-4); padding-block: var(--space-4); border-bottom: 1px solid var(--contour); scroll-margin-top: var(--space-4); }
+  .ideas > li:target { background: var(--accent-tint); }
+  .iid { font-family: var(--font-display); font-stretch: var(--stretch-condensed); font-weight: var(--weight-heading); color: var(--chart-deep); }
+  .ititle { font-weight: var(--weight-bold); }
+  .imeta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin: var(--space-1) 0 0; font-size: var(--step--1); color: var(--ink-muted); }
+  .tag { display: inline-block; padding: 0 var(--space-2); border-radius: var(--radius-sm); border: 1px solid var(--line-control); color: var(--ink-soft); background: var(--white); }
+  .tag[data-o='new-node'], .tag[data-o='connects-nodes'], .tag[data-o='expands-node'] { border-color: var(--chart); color: var(--chart-deep); }
+  .tag[data-o='on-tree'] { border-color: var(--available); color: var(--available); }
+  .tag[data-o='parked'] { border-color: var(--progress); color: var(--ink); }
+  .inodes { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .inodes a { display: inline-flex; align-items: center; min-height: 2rem; padding: 0 var(--space-2); border: 1px solid var(--line-control); border-radius: var(--radius-sm); background: var(--white); text-decoration: none; font-family: var(--font-display); font-stretch: var(--stretch-condensed); font-weight: var(--weight-ui); color: var(--chart-deep); }
+  .inodes a:hover { border-color: var(--chart); color: var(--ink); }
+  @media (max-width: 640px) { .ideas > li { grid-template-columns: 1fr; gap: var(--space-1); } }
+</style>

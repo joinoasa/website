@@ -61,4 +61,4 @@ A project is released when it has a working build, docs someone else can follow,
 
 Funding, makerspace time, partner parts, mentors and promotion.
 
-Have an idea but no project yet? Post it on the idea board.
+Have an idea but no project yet? [Post it as an idea](/ideas/). It gets a number and a home on the tech tree.

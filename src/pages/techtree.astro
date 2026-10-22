@@ -166,6 +166,7 @@ const counts = {
                     <div><dt>Needed by</dt><dd>{n.neededBy.total > 0 ? `${n.neededBy.direct} directly, ${n.neededBy.total} in total` : n.neededBy.moonshots.length ? 'No other nodes' : 'Nothing depends on this yet'}</dd></div>
                     {n.neededBy.moonshots.length > 0 && <div><dt>Moonshots</dt><dd>{n.neededBy.moonshots.map((m, i) => (<>{i > 0 && ', '}<a href={`/moonshots/#${m}`}>{m}</a></>))}</dd></div>}
                     <div><dt>You'll learn</dt><dd>{n.sciences} · <a href="/docs/academy/">Academy</a></dd></div>
+                    {(n.ideas ?? []).length > 0 && <div><dt>Grew from</dt><dd>{n.ideas.map((x, i) => (<>{i > 0 && ', '}<a href={x.url} title={x.title}>{x.id}</a></>))}</dd></div>}
                   </dl>
                   {cta(n) && <p class="start-now"><a href={cta(n)!.href}>{cta(n)!.label}</a>{n.status === 'available' && <> · <a href="/docs/claim-a-node/">How claiming works</a></>}</p>}
                 </details>
@@ -175,7 +176,7 @@ const counts = {
         </section>
       ))}
       <div class="empty" hidden>
-        <p>No nodes match. Try another search or branch, or {site.links.ideaBoard ? <><a href={site.links.ideaBoard}>propose a new node on the idea board</a>.</> : <>tell us what is missing at <a href={`mailto:${contact('general')}`}>{contact('general')}</a>.</>}</p>
+        <p>No nodes match. Try another search or branch, or {site.links.ideaForm ? <><a href={site.links.ideaForm}>post it as an idea</a>.</> : <>tell us what is missing at <a href={`mailto:${contact('general')}`}>{contact('general')}</a>.</>}</p>
         <button type="button" class="btn btn-ghost reset">Clear search and filters</button>
       </div>
     </div>
