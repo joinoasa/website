@@ -36,4 +36,4 @@ Skill badges earned here can support a promotion. See [how membership works](/do
 
 ## Who runs it
 
-The Academy council is responsible for courses, training, badges and school outreach. See [governance](/docs/governance/).
+During the founding phase, the founder runs the Academy. A planned Academy council will take over courses, training, badges and school outreach. See [governance](/docs/governance/).

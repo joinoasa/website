@@ -4,7 +4,7 @@ description: How OASA makes decisions, now and as it grows.
 lastUpdated: 2026-10-20
 ---
 
-OASA starts founder-led and hands decisions to member councils as it grows.
+OASA starts founder-led and plans to hand decisions to member councils as it grows. Today there are no councils: the founder makes every decision that this page gives to a council.
 
 ## Phases
 
@@ -21,11 +21,11 @@ OASA starts founder-led and hands decisions to member councils as it grows.
 
 Both are being drafted.
 
-## Councils
+## Councils (planned)
 
-Each council has 3 to 7 people, drawn from Lead and Core members, with 1-year terms.
+None of these exist yet. When they do, each council will have 3 to 7 people, drawn from Lead and Core members, with 1-year terms.
 
-| Council | Responsible for |
+| Council | Will be responsible for |
 |---|---|
 | Core | Direction, official projects, moonshots, Lead and Core promotions |
 | Technical | Standards, tech tree, architecture |
@@ -33,20 +33,26 @@ Each council has 3 to 7 people, drawn from Lead and Core members, with 1-year te
 | Chapters | Chapter rules, new chapters, makerspace partnerships |
 | Academy | Courses, training, badges, school outreach |
 
+## Security reports
+
+During the founding phase, vulnerability reports go to the founder through the address on the [security page](/security/). There is no Security council yet.
+
 ## Decisions
+
+Until councils exist, "a council decides" below means the founder decides, and posts the decision publicly.
 
 | Size | Process |
 |---|---|
 | Small | The project lead decides |
 | Medium | A council or lead decides, and posts it publicly |
 | Large (new standard, moonshot, rule change) | OASA Proposal |
-| Foundational (charter, core principles) | Proposal plus two-thirds of Core |
+| Foundational (charter, core principles) | Proposal plus two-thirds of Core (once it exists) |
 
 ## OASA Proposals
 
 1. A Builder or above writes the proposal.
 2. It stays open for discussion for about two weeks.
-3. The council votes by simple majority.
+3. The founder decides for now. Once councils exist, the council votes by simple majority.
 4. The decision and the reasons are published.
 
 ## Founder veto

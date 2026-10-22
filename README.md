@@ -28,9 +28,16 @@ npm run build      # outputs to dist/
 | `scripts/check-launch.mjs` | Lists every value in the config still marked `TODO(owner)` |
 | `scripts/brand/` | Share image and icon sources, and the script that renders them into `public/` |
 | `.github/workflows/deploy.yml` | Builds and deploys on every merge and nightly |
+| `.github/workflows/ci.yml` | Builds every pull request and non-main branch (check name `build`) and dry-runs the Worker bundle |
+| `.github/dependabot.yml`, `CODEOWNERS`, `pull_request_template.md` | Dependency updates, review ownership, PR checklist |
+| `LICENSE`, `LICENSE-content` | Apache-2.0 (code) and CC BY-SA 4.0 (content) |
 | `worker/index.ts` | The only server code: `POST /api/apply` (application form) |
 | `src/data/application.ts` | Application questions; drives the form, the server check and the privacy page |
 | `migrations/` | Application database tables (Cloudflare D1) |
+
+## Contributing
+
+Open a pull request against `main`. CI must pass (`build`). Docs are plain Markdown under `src/content/docs/docs/`. Contributors working on a tech tree node should read [Claim a node](https://joinoasa.org/docs/claim-a-node/).
 
 ## Owner settings
 
@@ -45,7 +52,7 @@ Set these before launch: the production domain (`site.url`), the four mailboxes 
 
 ## Updating the tech tree
 
-Edit `source/OASA-techtree.md`, then keep `/home/claude/OASA-techtree.md` (the master copy) byte-identical to it.
+Edit `source/OASA-techtree.md`. It is the source of truth for the tech tree.
 
 **Requires is the single source of truth.** Grammar of a Requires cell:
 
@@ -62,6 +69,15 @@ npm run techtree        # parses the doc into src/data/techtree.json (the build 
 ```
 
 The build never writes the source. It warns when the Unlocks column is stale and fails on unknown IDs, duplicate IDs or unknown status emoji.
+
+### Live status from GitHub
+
+Nodes are claimed on GitHub (see [Claim a node](src/content/docs/docs/claim-a-node.md)). When the build runs in GitHub Actions (`GITHUB_ACTIONS=true`), or with `TECHTREE_GITHUB=1`, `scripts/build-techtree.mjs` reads the issues in `joinoasa/techtree` (public API; `GITHUB_TOKEN` is used if set) and applies:
+
+- **Status:** the stronger of the doc (🟡/✅) and the issue label (`status:in-progress` / `status:done`). Available/locked is then recomputed.
+- **Team and lead:** issue assignees become the team (GitHub logins). The lead is `lead` from `source/techtree-details.json` if set, otherwise the first assignee.
+
+If GitHub can't be reached the build prints a warning and carries on with the doc alone. Plain local builds stay offline: `TECHTREE_GITHUB=1 npm run techtree` to try it.
 
 ### Tech tree details (briefs, GitHub links, leads, team)
 
@@ -100,7 +116,7 @@ python3 scripts/brand/render.py   # needs Python Playwright (Chromium) and Pillo
 
 `public/favicon.svg` and `public/site.webmanifest` are edited by hand.
 
-## Discord server
+## Discord server (maintainer setup)
 
 `scripts/discord/layout.mjs` describes the server: roles, categories, channels, who can see what, and the first welcome and rules posts. `npm run discord:setup` builds it. It matches by name, creates what's missing, updates the rest and never deletes anything.
 
@@ -133,11 +149,11 @@ The site is static files served by **Cloudflare Workers static assets**. GitHub 
 | `public/_headers` | Security headers and caching (copied into `dist/` at build) |
 | `.github/workflows/deploy.yml` | Build, then `npx wrangler deploy` |
 
-### One-time setup
+### Maintainer setup: first deploy
 
 1. **Account:** create a free Cloudflare account.
 2. **Domain:** add `joinoasa.org` to Cloudflare (Free plan). Register it with Cloudflare Registrar, or keep your registrar and switch its nameservers to the two Cloudflare gives you.
-3. **API token:** My Profile → API Tokens → Create Token → use the **Edit Cloudflare Workers** template, limited to your account. Copy the token. Copy your **Account ID** from the dashboard overview.
+3. **API token:** My Profile → API Tokens → Create Token → use the **Edit Cloudflare Workers** template, limited to your account, then add the permission **Account → D1 → Edit** (the deploy applies database migrations). Copy the token. Copy your **Account ID** from the dashboard overview.
 4. **GitHub secrets** (repo → Settings → Secrets and variables → Actions): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 5. **First deploy:** push to `main` (or run the workflow by hand). The site appears at `https://joinoasa.<your-subdomain>.workers.dev`.
 6. **Attach the domain:** uncomment the `routes` block in `wrangler.jsonc` and push. Or, in the dashboard: Workers & Pages → `joinoasa` → Settings → Domains & Routes → Add → Custom domain, for both `joinoasa.org` and `www.joinoasa.org`.
@@ -213,3 +229,12 @@ Statuses: `new`, `reviewing`, `interview`, `trial`, `accepted`, `declined`, `wit
 - Renew `security.securityTxtExpires` in `src/config/site.ts`.
 - Renew the domain (Cloudflare Registrar can auto-renew at cost).
 - Re-run `npm run check:launch` before each release.
+
+## License
+
+The repository has two licenses:
+
+- **Code** (site, Worker, scripts, workflows): [Apache-2.0](LICENSE).
+- **Content** (docs, tech tree text and briefs, other written material): [CC BY-SA 4.0](LICENSE-content).
+
+The OASA name and logo are not licensed under either. Use of them is covered by brand rules that are still being written. If you fork the site, please use your own name and logo. The licensing policy for member projects is described in [Licensing](https://joinoasa.org/docs/licensing/).

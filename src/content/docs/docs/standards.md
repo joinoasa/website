@@ -8,10 +8,10 @@ OASA adopts or extends existing standards (MAVLink, Cursor-on-Target (CoT), Dron
 
 ## Stages
 
-1. **Idea:** the Technical council accepts the proposal.
+1. **Idea:** the proposal is accepted (by the founder for now; later the Technical council).
 2. **Draft:** at least one working prototype.
 3. **Candidate:** two independent implementations that work together.
-4. **Security review:** passes red team and Security council review.
+4. **Security review:** passes a red team review (later signed off by the Security council).
 5. **Stable.**
 6. **Deprecated:** a migration path is published.
 
@@ -25,7 +25,7 @@ Major versions are breaking. Minor versions add compatible features. Old majors 
 
 ## People
 
-A standard editor and a working group. The Technical council approves stages, and the Security council signs off before Stable. Anyone can comment on drafts. Members write them.
+A standard editor and a working group. During the founding phase the founder approves stages; planned Technical and Security councils take this over. Anyone can comment on drafts. Members write them.
 
 ## Planned standards
 

@@ -10,7 +10,7 @@ lastUpdated: 2026-10-20
 |---|---|---|
 | Personal | Any member | None, just register it |
 | Community | Any member | A lead and a short charter |
-| Official OASA | Builder+ proposal or Core | Founder (later the Core council) |
+| Official OASA | Builder+ proposal or Core | The founder for now (a Core council is planned) |
 | Contract | The company | Company and client |
 
 Projects can graduate from personal to community to official.
@@ -23,9 +23,17 @@ Projects can graduate from personal to community to official.
 | Apply or invite | Members the lead approves |
 | Contract | Members hired through OASA Engineering |
 
+## Registering a project
+
+Open the [Register a project](https://github.com/joinoasa/techtree/issues/new?template=register-project.yml) form in the techtree repository. For a community project, also fill in the one-page [charter template](https://github.com/joinoasa/techtree/blob/main/docs/charter-template.md).
+
 ## Charter
 
 One page: name and goal, tech tree nodes, lead and team, access level, first milestone, help needed.
+
+## Claiming tech tree nodes
+
+To work on a single node, you don't need a project. Comment `/claim` on its issue. See [claim a node](/docs/claim-a-node/).
 
 ## Help board
 
