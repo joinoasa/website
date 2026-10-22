@@ -71,6 +71,12 @@ const membershipEmail = contact('membership');
         <dt>Do I need a degree or a portfolio?</dt>
         <dd>No. We look at what you've built or done, and raw ability counts. Share links, photos or anything that shows your work.</dd>
       </div>
+      {site.links.discord && (
+        <div>
+          <dt>Can I talk to people before applying?</dt>
+          <dd>Yes. Join the <a href={site.links.discord}>OASA Discord</a> and ask in the lobby.</dd>
+        </div>
+      )}
       <div>
         <dt>There's no chapter near me.</dt>
         <dd>Projects are online, so you can take part from anywhere in the United States. You can also start a satellite group with other members near you. <a href="/chapters/#satellite-groups">Read how satellite groups work.</a></dd>

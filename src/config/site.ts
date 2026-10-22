@@ -15,10 +15,10 @@ export const site = {
   phase: 'Phase 0: home base', // from OASA-roadmap.md; update when the phase changes
 
   email: {
-    general: 'hello@joinoasa.org', // TODO(owner): confirm mailbox is live
-    membership: 'membership@joinoasa.org', // TODO(owner): confirm mailbox is live
-    chapters: 'chapters@joinoasa.org', // TODO(owner): confirm mailbox is live
-    security: 'security@joinoasa.org', // TODO(owner): confirm mailbox is live (also in /.well-known/security.txt)
+    general: 'hello@joinoasa.org', // the one OASA inbox (Proton; catch-all for @joinoasa.org)
+    membership: null as string | null, // null routes to general (hello@)
+    chapters: null as string | null, // null routes to general (hello@)
+    security: null as string | null, // null routes to general (hello@); also used in /.well-known/security.txt
     press: null as string | null, // TODO(owner): press address; null routes press to general
     partners: null as string | null, // TODO(owner): partnerships address; null routes to general
     engineering: null as string | null, // TODO(owner): OASA Engineering contact (agencies, contracts); null routes to general

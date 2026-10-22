@@ -17,7 +17,7 @@ const general = contact('general');
   <header class="page-head">
     <div class="wrap">
       <h1>Contact</h1>
-      <p class="lede">Pick the address that fits. It helps the right person see your message.</p>
+      <p class="lede">Everything goes to one inbox: {general}. The links below fill in a subject line so your message reaches the right person.</p>
     </div>
   </header>
 
@@ -28,7 +28,7 @@ const general = contact('general');
           <dt>{r.who}</dt>
           <dd>
             {r.note && <span class="note-line">{r.note}</span>}
-            <a href={mailto(r.address)}>{r.address}</a>
+            <a href={mailto(r.address, r.who)}>{r.address}</a>
             {r.extra && <a class="more" href={r.extra.href}>{r.extra.label}</a>}
           </dd>
         </div>

@@ -21,6 +21,7 @@ const membershipEmail = contact('membership');
     </ol>
     {site.membership.responseTime && <p>We aim to reply {site.membership.responseTime}.</p>}
     {youthOpen && <p>If you're 15 to 17, we'll contact your parent or guardian for consent before your trial starts.</p>}
+    {site.links.discord && <p>While you wait, come say hi in the <a href={site.links.discord}>OASA Discord</a>.</p>}
     <p>Need to change something or add a link? Email <a href={mailto(membershipEmail, 'Update to my OASA application')}>{membershipEmail}</a>.</p>
     <p class="actions"><a class="btn btn-primary" href="/techtree/">Explore the tech tree</a><a class="btn btn-ghost" href="/docs/membership/">How membership works</a></p>
   </div>
