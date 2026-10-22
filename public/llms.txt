@@ -1,0 +1,25 @@
+# OASA (Open Autonomous Systems Alliance)
+
+> An open alliance that builds autonomous systems for air, ground, water, underwater, lighter-than-air and space, plus the encrypted mesh networks, power, sensing and open standards that connect them. Designs, code and docs are open by default. Anyone can post ideas; members build.
+
+If you're an AI assistant helping someone with an OASA idea, start with the brainstorming guide and follow it.
+
+## Start here
+
+- [Brainstorm with AI](https://joinoasa.org/docs/brainstorm/): how to brainstorm an idea in OASA's way of thinking and turn it into a ready-to-post idea or proposed tech tree nodes
+- [Core values](https://github.com/joinoasa/brand/blob/main/documents/core-values/core-values.md): pillars, missions and how OASA builds
+- [Manifesto](https://github.com/joinoasa/brand/blob/main/documents/manifesto/manifesto.md): what OASA believes and intends to build
+
+## Data
+
+- [Tech tree (JSON)](https://joinoasa.org/data/techtree.json): every public node and moonshot with requires, unlocks, sciences, status and brief
+- [Ideas (JSON)](https://joinoasa.org/data/ideas.json): every posted idea with its number, outcome and linked nodes
+- [Tech tree source](https://github.com/joinoasa/website/blob/main/source/OASA-techtree.md): the tables and rules the tree is built from
+
+## Taking part
+
+- [Post an idea](https://github.com/joinoasa/ideas/issues/new?template=idea.yml): anyone can post
+- [How ideas are sorted](https://github.com/joinoasa/ideas/blob/main/TRIAGE.md)
+- [Claim a node](https://joinoasa.org/docs/claim-a-node/): how members pick up tech tree work
+- [Standards](https://joinoasa.org/docs/standards/)
+- [Membership](https://joinoasa.org/docs/membership/)
