@@ -71,7 +71,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | R-SEC1 | Device identity, keys, pairing | — | R-COM2, R-SEC2, T-UPD1 | Cryptography, key management | 🟢 |
-| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, MS-7 | Security engineering | 🔒 |
+| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, T-BENCH3, MS-7 | Security engineering | 🔒 |
 
 ### Power
 
@@ -131,7 +131,11 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-DOCK2 | Auto charging (OASA-DOCK) | T-DOCK1, R-PWR1 | L-7, G-4, S-6, S-7, O-4, O-6, O-8, O-17, MS-7 | Power electronics, mechanisms | 🔒 |
 | T-DOCK3 | Landing on a moving deck (buoy or boat pitching in waves) | T-DOCK1 | S-6, S-7 | Control, motion prediction | 🔒 |
 | T-SIM1 | Simulator / digital twin | R-CTL2 | SP-4, training | Simulation, physics engines | 🔒 |
-| T-BENCH1 | Test bench + test software | — | MS-8, Quality across all nodes | Test engineering | 🟢 |
+| T-BENCH1 | Test bench + test software | — | T-BENCH2, MS-8, Quality across all nodes | Test engineering | 🟢 |
+| T-BENCH2 | Remote autonomous lab (one site, run by its owner and AI agents from anywhere; every run leaves checked evidence) | T-BENCH1 | T-BENCH3 | Test automation, networking, security | 🔒 |
+| T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH2, R-SEC2 | T-BENCH4 | Security, operations | 🔒 |
+| T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3 | T-BENCH5 | Distributed systems, test engineering | 🔒 |
+| T-BENCH5 | Lab facility (warehouse-scale: shielded rooms, ranges, many radio and vehicle types) | T-BENCH4 | — | RF test, facilities, operations | 🔒 |
 | T-RF1 | RF scanning in radios | R-COM1 | T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
 | T-RF2 | Direction finding (bearings on TAK) | T-RF1, R-TIME1, T-MAP1 | Interference hunting | Antenna arrays, signal processing | 🔒 |
 | T-RF3 | Beamforming | T-RF1 | R-COM4, A-6, MS-1, MS-10, MS-17, Longer links | Phased arrays, DSP | 🔒 |
