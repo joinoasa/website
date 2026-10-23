@@ -70,7 +70,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| R-SEC1 | Device identity, keys, pairing | — | R-COM2, R-SEC2 | Cryptography, key management | 🟢 |
+| R-SEC1 | Device identity, keys, pairing | — | R-COM2, R-SEC2, T-UPD1 | Cryptography, key management | 🟢 |
 | R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, MS-7 | Security engineering | 🔒 |
 
 ### Power
@@ -112,9 +112,9 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
+| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
 | T-MAP2 | Tap-to-control from TAK | T-MAP1, R-CTL2 | T-NET3, T-AI3, T-TSK1, T-LEARN1 | Mission control, UX | 🔒 |
-| T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, S-2, I-1 | Mesh networking | 🔒 |
+| T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, T-UPD2, S-2, I-1 | Mesh networking | 🔒 |
 | T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
 | T-NET3 | Multi-GCS handoff, multi-operator control | T-NET2, T-MAP2 | T-NET4, O-4 | Distributed systems | 🔒 |
 | T-NET4 | Large mesh scaling (100+ nodes) | T-NET3 | R-TIME2, O-1, O-14, MS-1, MS-10 | Network scaling | 🔒 |
@@ -142,6 +142,8 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-SITE3 | Work plan from a scan (mow, cut brush, keep out; area, time and which robot size) | T-SITE2, T-AI1, T-TSK1 | M-12, M-14, O-23 | Vegetation classification, operations planning | 🔒 |
 | T-SAFE1 | Tool safety standard (OASA-SAFE): person and animal stop zones, work only inside approved zones, remote and physical e-stops, blade stops before the robot | T-AI1, R-CTL2 | G-8, MS-7 | Safety engineering, functional safety | 🔒 |
 | T-LEARN1 | Ask-and-learn (OASA-LEARN): robot pauses and asks on TAK, logs the answer and reuses it; reviewed before sharing; never loosens a safety rule | T-MAP2, T-LOG1, T-AI1 | O-23, MS-7 | Human-in-the-loop learning, data curation | 🔒 |
+| T-UPD1 | Signed updates (OASA-UPDATE): every release signed, checked on the device before install; installs only when landed and approved; trial boot, then confirm or revert | R-SEC1 | T-UPD2, MS-7 | Software supply chain, bootloaders, security | 🔒 |
+| T-UPD2 | Field updates: a ground station caches signed updates and serves its fleet over Wi-Fi or the mesh; every device's version shows on TAK | T-UPD1, T-NET1, T-MAP1 | — | Distributed systems, operations | 🔒 |
 
 ---
 
@@ -342,7 +344,7 @@ Plan from the start for OASA systems to work beyond Earth. Stepping stones begin
 | MS-4 | **Clean Waters & Streets** — river surveys, sampling, cleanup boats, trash robots | S-4, S-5, U-5, G-3 |
 | MS-5 | **Multi-Domain Teams** — air, ground, surface and underwater on one mission | T-TSK1, O-4, A-7, G-4, S-6, U-5, L-7, T-VID1, T-TSK2 |
 | MS-6 | **High-Altitude Platform** — "poor man's satellite" for coverage and imaging | A-6, L-6 |
-| MS-7 | **Open Autonomy Stack** — the open baseline everyone builds on | R-COM2, R-SEC2, T-NET2, T-PAY1, T-LOG1, R-TIME1, T-MAP1, T-VID1, T-DOCK2, O-2, T-SITE2, T-SAFE1, T-LEARN1, partner adoption |
+| MS-7 | **Open Autonomy Stack** — the open baseline everyone builds on | R-COM2, R-SEC2, T-NET2, T-PAY1, T-LOG1, R-TIME1, T-MAP1, T-VID1, T-DOCK2, O-2, T-SITE2, T-SAFE1, T-LEARN1, T-UPD1, partner adoption |
 | MS-8 | **Build Anywhere** — any chapter can build any design | T-BENCH1, reference builds, Academy, chapter kits |
 | MS-9 | **Wildfire Watch Network** — modern fire towers in the sky, plus search and mapping when fires start | O-7, X-9, X-6, MS-1 nodes |
 | MS-10 | **Atmospheric Satellites / Perma Gliders** — aircraft that stay aloft indefinitely on solar by day, stored energy and soaring by night, acting as relays, cameras and sensor platforms | A-5, A-6, A-8, A-9, R-PWR2, T-RF3, T-NET4 |
