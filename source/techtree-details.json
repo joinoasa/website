@@ -27,7 +27,7 @@
   "R-SEC1": {
     "brief": "Gives every device a unique identity and secret keys, and a safe way to pair it with the network. Without it, nothing in OASA can tell trusted devices from strangers.",
     "github": "https://github.com/joinoasa/techtree/issues/5",
-    "lead": null,
+    "lead": "citruscybersec",
     "team": []
   },
   "R-SEC2": {
@@ -1143,6 +1143,18 @@
   "O-26": {
     "brief": "The beach rescue mission: when a swimmer is flagged, the buoy's drone launches, drops a float, hovers as a marker and alerts the lifeguard on TAK. The lifeguard can abort or take control at any time.",
     "github": "https://github.com/joinoasa/techtree/issues/162",
+    "lead": null,
+    "team": []
+  },
+  "T-UPD1": {
+    "brief": "Makes every software and firmware update signed and checked on the device before it installs, and only when the vehicle is landed and an operator says yes. Builds on TUF, Uptane and the PX4 and ArduPilot secure bootloaders.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-UPD2": {
+    "brief": "Lets a ground station carry signed updates into the field and serve its fleet with no internet, and shows every device's version on the shared map.",
+    "github": null,
     "lead": null,
     "team": []
   }
