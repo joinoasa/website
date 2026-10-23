@@ -1157,5 +1157,29 @@
     "github": null,
     "lead": null,
     "team": []
+  },
+  "T-BENCH2": {
+    "brief": "Lets one lab run tests with nobody in the room: its owner and AI agents start approved test suites from anywhere, watch them live, and get results an independent checker has verified.",
+    "github": null,
+    "lead": "citruscybersec",
+    "team": []
+  },
+  "T-BENCH3": {
+    "brief": "Opens a lab to invited members, who can run approved test suites on its hardware, with roles, a queue and an audit log.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH4": {
+    "brief": "Connects members' home labs into one network. Each lab lists its hardware, and tests go to a lab that has what they need.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH5": {
+    "brief": "A shared, warehouse-scale lab with shielded rooms, test ranges and many radio and vehicle types, open to the lab network.",
+    "github": null,
+    "lead": null,
+    "team": []
   }
 }
