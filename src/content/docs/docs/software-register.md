@@ -25,7 +25,7 @@ Unlike the standards, this list changes whenever we learn something. Project lea
 | [ArduPilot signing](https://ardupilot.org/dev/docs/common-MAVLink2-signing.html) | Signing in ArduPilot | GPL-3.0 | **Adopted**, inside encryption only | ArduPilot drones | **SERIAL0 (normally USB) is always trusted:** it accepts unsigned commands, and an unsigned key change there replaces the key. Connect companions on SERIAL1 or higher and protect SERIAL0 physically. Refuses signed commands for up to a minute after a reboot. Tested with oasa-sec in ArduPilot SITL (Oct 2026) |
 | [WireGuard](https://www.wireguard.com/protocol/) | Encrypted tunnel (design) | GPL-2.0 (kernel code); paper public | **Adopted** (design only) | The R-COM2 link: indexes, timestamps, `mac1`, rekey and stale rules | We follow the design, not the code. Its cookie reply isn't in v0 yet |
 | [rust-mavlink](https://github.com/mavlink/rust-mavlink) | MAVLink in Rust | MIT or Apache-2.0 | **Trial** | oasa-sec | 0.20.0 (Oct 2026) has a signing feature. Scorecard 4.9 |
-| [pymavlink](https://github.com/ArduPilot/pymavlink) | MAVLink in Python | LGPL-3.0 (generated code MIT) | **Trial** | Tests and ground tools | **Defaults to MAVLink 1, which can't be signed:** set `MAVLINK20=1`. Use as a library only. Scorecard 5.2 |
+| [pymavlink](https://github.com/ArduPilot/pymavlink) | MAVLink in Python | LGPL-3.0 (generated code MIT) | **Trial** | Tests and ground tools | **Defaults to MAVLink 1, which can't be signed:** set `MAVLINK20=1`. Use as a library only. **Allowed in tests only** (owner decision, 2026-10-23): optional, never shipped. Scorecard 5.2 |
 | [libsodium](https://libsodium.org) | Crypto library | ISC | **Trial** | Linux companion computers, ground tools | Scorecard 6.9 |
 | [Monocypher](https://monocypher.org) | Small crypto library in C | CC0 or BSD-2 | **Trial** | C on small boards; also inside PX4 and ArduPilot bootloaders | Under 2000 lines. Scorecard 3.5 |
 | [Noise-C](https://github.com/rweather/noise-c) | Noise in C | MIT | **Trial** | C fallback; ESP32 port exists | Reference implementation. No Scorecard found |
@@ -74,6 +74,7 @@ Unlike the standards, this list changes whenever we learn something. Project lea
 | Project | What it does | License | Status | Used for | Notes |
 |---|---|---|---|---|---|
 | [pytest](https://docs.pytest.org) | Test runner | MIT | **Adopted** | Every lab suite; JUnit output | One command for people and agents |
+| [PX4](https://px4.io) and [ArduPilot](https://ardupilot.org) SITL | Autopilot simulators | BSD-3 / GPL-3.0 | **Adopted** (tests) | `l1-mavlink-sitl`: flights through the encrypted link | Optional, built locally; not in CI (20+ min builds) |
 | [pytest-json-ctrf](https://github.com/infopulse/pytest-common-test-report-json) | CTRF results from pytest | MIT | **Trial** | `results.ctrf.json` in each evidence bundle | |
 | [CTRF](https://ctrf.io) | Common test report format (spec) | MIT | **Adopted** | Test results in evidence | |
 | pcap (libpcap file format) | Packet captures | Open format | **Adopted** | Captures of simulated radio traffic | Written by the lab itself (about 40 lines); opens in Wireshark |
