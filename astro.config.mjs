@@ -41,6 +41,7 @@ export default defineConfig({
         { label: 'Building', items: [
           { label: 'Standards', slug: 'docs/standards' },
           { label: 'Software standard', slug: 'docs/software-standard' },
+          { label: 'Update standard', slug: 'docs/update-standard' },
           { label: 'Adopting software', slug: 'docs/adopting-software' },
           { label: 'Software register', slug: 'docs/software-register' },
           { label: 'Licensing', slug: 'docs/licensing' },

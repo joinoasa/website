@@ -1,14 +1,14 @@
 ---
 title: Software standard
 description: How OASA builds software and firmware, so every project works the same way.
-lastUpdated: 2026-10-22
+lastUpdated: 2026-10-23
 ---
 
-**Status:** Draft v0.1 · **Owner:** founder (Technical council later) · **Last reviewed:** 2026-10-22
+**Version:** 1.0 · **Status:** Adopted 2026-10-23 · **Owner:** founder (Technical council later) · **Changes:** see [Changing this standard](#changing-this-standard)
 
 This is how OASA builds software and firmware. It applies to every **official** project and is recommended for personal and community projects. It follows the four practice groups of [NIST SP 800-218 (SSDF)](https://csrc.nist.gov/Projects/SSDF): prepare the organization, protect the software, produce secure software, respond to vulnerabilities.
 
-Companion pages: [Adopting software](../adopting-software/) and the [Software register](../software-register/).
+Companion pages: [Update standard](../update-standard/), [Adopting software](../adopting-software/) and the [Software register](../software-register/).
 
 ---
 
@@ -53,6 +53,8 @@ CISA and the NSA recommend memory-safe languages to remove a whole class of secu
 - **Signed commits** on official projects.
 - **CI runs on every pull request:** build, tests, lint, and secret scanning.
 - **Dependabot** security updates on, and the **OpenSSF Scorecard** action on every official repo.
+- **Dependency gates in CI** for Rust: `cargo deny` (licenses, banned crates, duplicate and yanked crates, known vulnerabilities) and `cargo audit` against the RustSec database. A failing gate blocks the merge.
+- Lock files (`Cargo.lock`) are committed, and CI builds with `--locked`.
 - "Protect main" ruleset: pull request required, CI must pass.
 - Commit email: your GitHub no-reply address.
 
@@ -62,18 +64,21 @@ CISA and the NSA recommend memory-safe languages to remove a whole class of secu
 - **Simulate before flying.** Anything that moves a vehicle is tested in SITL (PX4 or ArduPilot) first.
 - Hardware tests follow the field test plan and safety checklist.
 
-## 7. Releases
+## 7. Releases and updates
 
-- Releases are **signed** and built in CI, with **GitHub artifact attestations** (SLSA Build Level 2 to start).
-- Each release includes a **software bill of materials (SBOM)** listing every dependency.
+Follow the [update standard](../update-standard/). In short:
+
+- Built in CI from a tagged commit, reproducibly (`--locked`, `SOURCE_DATE_EPOCH`).
+- Published as a GitHub **immutable release** with **artifact attestations** (SLSA Build Level 2 to start) and a **software bill of materials** (SBOM).
+- Signed with OASA's update keys (TUF roles), and checked on every device before install.
 - Version numbers: major = breaking, minor = compatible additions, patch = fixes.
 
 ## 8. Firmware on boards
 
-- **Secure boot:** boards only run firmware signed by the project's release key.
-- **Signed updates:** updates are verified before install, with safe rollback if they fail.
-- **Key storage:** private keys stored where the board can protect them (secure storage or a secure element where available).
-- Debug ports locked on release builds where the hardware allows.
+- **Secure boot:** boards only run firmware signed by the project's key: embassy-boot or MCUboot for OASA firmware, and PX4's or ArduPilot's secure bootloader on flight controllers, with OASA keys replacing any test keys.
+- **Safe updates:** trial boot, health check, then confirm; otherwise revert. Anti-rollback blocks downgrades to versions with known holes.
+- **Key storage:** private keys stored where the board can protect them (secure storage, or a secure element once one supports OASA's curves).
+- **Debug ports locked** on release builds where the hardware allows (for example nRF AP-Protect), and flash encryption on where secure boot depends on it (for example ESP32).
 
 ## 9. Vulnerabilities
 
@@ -87,4 +92,10 @@ Members are encouraged to use AI to write code and docs. AI-written code gets th
 
 ---
 
-**Changing this standard:** propose a change as a pull request. Small fixes: project lead or founder. Rule changes: OASA Proposal (Technical council once it exists).
+## Changing this standard
+
+v1.0 is locked. Changes follow [governance](../governance/):
+
+- **Fixes** (typos, links, clearer wording): a pull request approved by the founder (later the Technical council).
+- **Rule changes:** an OASA Proposal, open for about two weeks, then decided and published with the reasons.
+- **Section 1 (encrypted, always)** is a core principle: changing it follows the foundational process, and the founder keeps a veto.
