@@ -17,12 +17,13 @@ Unlike the standards, this list changes whenever we learn something. Project lea
 | Project | What it does | License | Status | Used for | Notes |
 |---|---|---|---|---|---|
 | [Noise Protocol Framework](https://noiseprotocol.org) | Handshake design (spec) | Public domain spec | **Adopted** | Pairing and link handshakes | Used by WireGuard, Lightning, WhatsApp |
-| [snow](https://github.com/mcginty/snow) | Noise in Rust | Apache-2.0 or MIT | **Trial** | [oasa-sec](https://github.com/joinoasa/oasa-sec) pairing | Trail of Bits review (funded by 1Password): 10 findings, 1 medium, 8 resolved. Latest 0.10.0 (July 2025) fixes nonce handling, possibly the medium finding *(verify against the report)*. Doesn't wipe its session state from memory. Scorecard 3.6 |
+| [snow](https://github.com/mcginty/snow) | Noise in Rust | Apache-2.0 or MIT | **Trial** | [oasa-sec](https://github.com/joinoasa/oasa-sec) pairing and the link (stateless transport, our own counter as the nonce) | Trail of Bits review (funded by 1Password): 10 findings, 1 medium, 8 resolved. Latest 0.10.0 (July 2025) fixes nonce handling, possibly the medium finding *(verify against the report)*. Doesn't wipe its session state from memory. Scorecard 3.6 |
 | [curve25519-dalek](https://github.com/dalek-cryptography/curve25519-dalek) | X25519 math | BSD-3-Clause | **Trial** | oasa-sec public keys (already inside snow) | Quarkslab audit 2019, no critical issues; nothing newer found. We use 4.1 through snow; 5.0 is out |
 | fiat-crypto, r-efi | Pulled in by crypto and random-number crates | Dual-licensed; we use them under MIT or Apache-2.0 | **Trial** (indirect) | oasa-sec | `cargo deny` checks every indirect dependency's license |
 | [MAVLink 2 signing](https://mavlink.io/en/guide/message_signing.html) | Message authentication | MIT (MAVLink) | **Adopted**, inside encryption only | Second layer on drone links | Authentication only; messages stay readable. Keys only over a secure link |
 | [PX4 signing](https://docs.px4.io/main/en/mavlink/message_signing.html) | Signing in PX4 | BSD-3 | **Adopted**, inside encryption only | PX4 drones | First key accepted unsigned on any link; after that, unsigned key changes are refused. Tested with oasa-sec in PX4 SITL (Oct 2026) |
 | [ArduPilot signing](https://ardupilot.org/dev/docs/common-MAVLink2-signing.html) | Signing in ArduPilot | GPL-3.0 | **Adopted**, inside encryption only | ArduPilot drones | **SERIAL0 (normally USB) is always trusted:** it accepts unsigned commands, and an unsigned key change there replaces the key. Connect companions on SERIAL1 or higher and protect SERIAL0 physically. Refuses signed commands for up to a minute after a reboot. Tested with oasa-sec in ArduPilot SITL (Oct 2026) |
+| [WireGuard](https://www.wireguard.com/protocol/) | Encrypted tunnel (design) | GPL-2.0 (kernel code); paper public | **Adopted** (design only) | The R-COM2 link: indexes, timestamps, `mac1`, rekey and stale rules | We follow the design, not the code. Its cookie reply isn't in v0 yet |
 | [rust-mavlink](https://github.com/mavlink/rust-mavlink) | MAVLink in Rust | MIT or Apache-2.0 | **Trial** | oasa-sec | 0.20.0 (Oct 2026) has a signing feature. Scorecard 4.9 |
 | [pymavlink](https://github.com/ArduPilot/pymavlink) | MAVLink in Python | LGPL-3.0 (generated code MIT) | **Trial** | Tests and ground tools | **Defaults to MAVLink 1, which can't be signed:** set `MAVLINK20=1`. Use as a library only. Scorecard 5.2 |
 | [libsodium](https://libsodium.org) | Crypto library | ISC | **Trial** | Linux companion computers, ground tools | Scorecard 6.9 |
@@ -68,13 +69,26 @@ Unlike the standards, this list changes whenever we learn something. Project lea
 | [Meshtastic](https://meshtastic.org) | LoRa mesh | GPL-3.0 | **Watch** | T-NET5 bridge | 9.5 CVSS key-reuse CVE taught us: devices make their own keys. Firmware updates aren't signed |
 | [Reticulum](https://reticulum.network) | Encrypted mesh stack | Reticulum License | **Watch**: not adoptable as a standard | Ideas for T-NET1 | License bars use in any system able to harm people, and in AI training data. Still beta |
 
+## Test lab ([oasa-lab](https://github.com/joinoasa/oasa-lab))
+
+| Project | What it does | License | Status | Used for | Notes |
+|---|---|---|---|---|---|
+| [pytest](https://docs.pytest.org) | Test runner | MIT | **Adopted** | Every lab suite; JUnit output | One command for people and agents |
+| [pytest-json-ctrf](https://github.com/infopulse/pytest-common-test-report-json) | CTRF results from pytest | MIT | **Trial** | `results.ctrf.json` in each evidence bundle | |
+| [CTRF](https://ctrf.io) | Common test report format (spec) | MIT | **Adopted** | Test results in evidence | |
+| pcap (libpcap file format) | Packet captures | Open format | **Adopted** | Captures of simulated radio traffic | Written by the lab itself (about 40 lines); opens in Wireshark |
+| [labgrid](https://labgrid.readthedocs.io) | Lab hardware control | LGPL-2.1 | **Watch** | Hardware tiers (M3+) | Check the license before adopting |
+| [SigMF](https://sigmf.org) | Radio recording format | CC0 spec; tools Apache-2.0 | **Watch** | Radio captures (M3+) | |
+| [cosign](https://github.com/sigstore/cosign) | Signing | Apache-2.0 | **Watch** | Signing evidence with our key (M5) | |
+| tc / netem | Linux network impairment | GPL-2.0 | **Rejected** for L1 | | Needs root and Linux, and isn't repeatable from a seed |
+
 ## Development tools
 
 | Project | What it does | License | Status | Used for |
 |---|---|---|---|---|
 | [OpenSSF Scorecard](https://scorecard.dev) | Rates a project's security habits | Apache-2.0 | **Adopted** | Our dependencies and our own repos |
 | GitHub Dependabot | Security updates | GitHub service | **Adopted** | All repos |
-| [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) | Signed build records (Sigstore) | GitHub service | **Adopted** | Releases (SLSA Build Level 2) |
+| [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) | Signed build records (Sigstore) | GitHub service | **Adopted** | Releases (SLSA Build Level 2); lab evidence bundles in CI |
 
 ## Gaps: upstream projects with unsigned updates
 
