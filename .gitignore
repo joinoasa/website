@@ -5,3 +5,6 @@ src/data/techtree.json
 .wrangler/
 .dev.vars
 src/data/ideas.json
+src/data/tasks.json
+__pycache__/
+oasa-checks.json
