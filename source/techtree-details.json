@@ -1184,25 +1184,25 @@
   },
   "R-COM5": {
     "brief": "One open, affordable SDR radio any OASA device can use as its IP link, from drones to solar nodes. Band cards cover sub-GHz for control and fallback and 5.8 GHz with a beamforming array for data.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/174",
     "lead": null,
     "team": []
   },
   "T-RF4": {
     "brief": "Points beams at neighbours using shared positions, then fine-tunes, and puts blind spots on jammers and listeners. The mesh picks routes by live beam quality, shown on TAK.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/175",
     "lead": null,
     "team": []
   },
   "T-RF5": {
     "brief": "Several nodes lock their timing and phase and transmit together as one large antenna array, for links far beyond what one node can reach.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/176",
     "lead": null,
     "team": []
   },
   "T-FILES1": {
     "brief": "Every project keeps its files in the same shapes, so people and AI agents can read, reuse and compare any project's work. Starts with oasa.toml, the repo manifest; BOMs, CAD metadata and test results follow.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/177",
     "lead": "citruscybersec",
     "team": []
   }
