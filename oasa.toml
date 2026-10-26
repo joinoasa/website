@@ -1,0 +1,37 @@
+oasa = "files/0"
+
+[project]
+name = "website"
+summary = "joinoasa.org: the site, the docs, the tech tree source and the OASA-FILES tool"
+repo = "https://github.com/joinoasa/website"
+license = "Apache-2.0"
+nodes = ["T-FILES1"]
+standards = ["OASA-FILES"]
+docs = ["README.md", "AGENTS.md", "source/OASA-techtree.md", "src/content/docs/docs/agents.md", "src/content/docs/docs/oasa-files.md"]
+
+[review]
+# The worker handles membership applications (personal data), so a person reviews every change.
+security = "standard"
+
+[setup]
+tools = ["node 22", "python >= 3.11"]
+steps = ["npm ci"]
+
+[[check]]
+name = "build"
+run = "npm run build"
+
+[[check]]
+name = "test"
+run = "npm test"
+
+[[check]]
+name = "oasa-files"
+run = "npm run oasa-files:test"
+
+[[check]]
+name = "oasa-toml"
+run = "python3 tools/oasa-files/oasa_toml.py check --tree src/data/techtree.json"
+
+[hardware]
+needed = false
