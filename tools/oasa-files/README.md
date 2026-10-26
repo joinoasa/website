@@ -4,6 +4,7 @@
 
 ```sh
 python3 oasa_toml.py check [--strict] [--tree techtree.json|URL]
+python3 oasa_toml.py setup
 python3 oasa_toml.py show [--json]
 python3 oasa_toml.py run [--all] [--setup] [--only NAME ...] [--markdown] [--out FILE] [--timeout SECS]
 ```

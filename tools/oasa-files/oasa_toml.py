@@ -21,7 +21,7 @@ import tomllib
 import urllib.request
 from pathlib import Path
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 FORMAT = "files/0"
 SECURITY = ("critical", "standard", "light")
 REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
@@ -324,6 +324,30 @@ def _exec(cmd: str, cwd: Path, env_extra: dict, timeout: float | None) -> int:
         return 124
 
 
+def cmd_setup(args) -> int:
+    got = _read(args)
+    if not got:
+        return 1
+    path, data = got
+    root = path.resolve().parent
+    errors, _ = validate(data, root)
+    if errors:
+        for e in errors:
+            print(f"error: {e}", file=sys.stderr)
+        return 1
+    return 0 if _run_setup(data, root, args.timeout) else 1
+
+
+def _run_setup(data: dict, root: Path, timeout) -> bool:
+    for step in data.get("setup", {}).get("steps", []):
+        print(f"\n== setup: {step}", flush=True)
+        code = _exec(step, root, {}, timeout)
+        if code != 0:
+            print(f"setup step failed (exit {code}): {step}", file=sys.stderr)
+            return False
+    return True
+
+
 def cmd_run(args) -> int:
     got = _read(args)
     if not got:
@@ -337,13 +361,8 @@ def cmd_run(args) -> int:
         print("fix oasa.toml first (python3 oasa_toml.py check)", file=sys.stderr)
         return 1
 
-    if args.setup:
-        for step in data.get("setup", {}).get("steps", []):
-            print(f"\n== setup: {step}", flush=True)
-            code = _exec(step, root, {}, args.timeout)
-            if code != 0:
-                print(f"setup step failed (exit {code}): {step}", file=sys.stderr)
-                return 1
+    if args.setup and not _run_setup(data, root, args.timeout):
+        return 1
 
     checks = data["check"]
     if args.only:
@@ -386,6 +405,8 @@ def cmd_run(args) -> int:
         results.append(res)
         label = f"skipped ({skipped})" if (skipped and not required) else ("pass" if code == 0 else "FAIL")
         print(f"-- {c['name']}: {label} ({secs}s)", flush=True)
+        if code == 127 and not skipped:
+            print("hint: command not found. Did you run `oasa_toml.py setup`?", file=sys.stderr, flush=True)
 
     failed = [r for r in results if r["exitCode"] not in (0, None) and r["required"]]
     stamp = datetime.date.today().isoformat()
@@ -434,6 +455,10 @@ def main(argv=None) -> int:
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_show)
 
+    u = sub.add_parser("setup", help="run [setup].steps in order")
+    u.add_argument("--timeout", type=float, default=None, metavar="SECS", help="per-command timeout")
+    u.set_defaults(fn=cmd_setup)
+
     r = sub.add_parser("run", help="run the checks")
     r.add_argument("--all", action="store_true", help="include optional checks")
     r.add_argument("--setup", action="store_true", help="run setup steps first")
@@ -443,7 +468,7 @@ def main(argv=None) -> int:
     r.add_argument("--timeout", type=float, default=None, metavar="SECS", help="per-command timeout")
     r.set_defaults(fn=cmd_run)
 
-    for sp in (c, s, r):  # also accept --file after the command
+    for sp in (c, s, u, r):  # also accept --file after the command
         sp.add_argument("--file", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
 
     args = ap.parse_args(argv)

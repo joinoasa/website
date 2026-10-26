@@ -23,6 +23,7 @@ Every OASA repo has an `oasa.toml` at its root. It answers what an agent or a ne
 ### Example
 
 ```toml
+# OASA-FILES manifest format
 oasa = "files/0"
 
 [project]
@@ -67,7 +68,7 @@ optional = ["2× Heltec LoRa V3", "RTL-SDR V4L"]
 
 | Field | Required | Meaning |
 |---|---|---|
-| `oasa` | yes | Format version: `"files/0"` |
+| `oasa` | yes | The manifest format version line: always `"files/0"` for now (not the project's version) |
 | `project.name` | yes | Repo name |
 | `project.summary` | yes | One line |
 | `project.repo` | yes | GitHub URL |
@@ -105,11 +106,14 @@ Unknown fields are warnings, so newer files still load in older tools. A new maj
 `oasa_toml.py` is one Python file (3.11+, standard library only):
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/joinoasa/website/main/tools/oasa-files/oasa_toml.py
-python3 oasa_toml.py check            # validate oasa.toml (CI runs this)
-python3 oasa_toml.py show             # print setup steps and checks
-python3 oasa_toml.py run --markdown   # run every required check, print a table for the pull request
+mkdir -p .oasa && curl -fsSL https://raw.githubusercontent.com/joinoasa/website/main/tools/oasa-files/oasa_toml.py -o .oasa/oasa_toml.py
+python3 .oasa/oasa_toml.py check            # validate oasa.toml (CI runs this)
+python3 .oasa/oasa_toml.py setup            # run [setup].steps
+python3 .oasa/oasa_toml.py show             # print setup steps and checks
+python3 .oasa/oasa_toml.py run --markdown   # run every required check, print a table for the pull request
 ```
+
+Every repo except the website keeps the tool at `.oasa/oasa_toml.py`. The dev container downloads it there and its post-create step runs `oasa_toml.py setup`, so `[setup].steps` is the single source of truth for setup: the container, a person and an agent all run the same steps.
 
 `run` runs the required checks in order (add `--all` for optional ones and `--setup` to run setup steps first), keeps going after a failure, writes `oasa-checks.json`, and exits 1 if any required check failed. Paste its table into the pull request. With `--only NAME`, the result goes to `oasa-checks.only.json` so it doesn't replace the full report.
 

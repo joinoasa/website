@@ -334,6 +334,14 @@ class RunTests(Base):
         self.run_cli(text, "--only", "a", "--out", "x.json")
         self.assertTrue((self.dir / "x.json").is_file())
 
+    def test_hint_on_127(self):
+        code, _, err = self.run_cli(manifest(chk("m", "definitely-not-a-command-xyz")))
+        self.assertEqual(code, 1)
+        self.assertIn("oasa_toml.py setup", err)
+
+    def test_no_hint_on_other_failure(self):
+        self.assertNotIn("oasa_toml.py setup", self.run_cli(manifest(chk("f", "exit 3")))[2])
+
     def test_timeout(self):
         code, _, _ = self.run_cli(manifest(chk("slow", "sleep 5")), "--timeout", "0.3")
         self.assertEqual(code, 1)
@@ -343,6 +351,23 @@ class RunTests(Base):
         code, _, err = self.run_cli(VALID.replace("files/0", "x"))
         self.assertEqual(code, 1)
         self.assertIn("error: oasa:", err)
+
+
+class SetupTests(Base):
+    def test_runs_steps_in_order(self):
+        f = self.write(manifest(chk("c", "true"), setup='\n[setup]\nsteps = ["echo a > log", "echo b >> log"]\n'))
+        self.assertEqual(cli("--file", f, "setup")[0], 0)
+        self.assertEqual((self.dir / "log").read_text(), "a\nb\n")
+
+    def test_stops_on_failure(self):
+        f = self.write(manifest(chk("c", "true"), setup='\n[setup]\nsteps = ["exit 2", "touch later"]\n'))
+        code, _, err = cli("--file", f, "setup")
+        self.assertEqual(code, 1)
+        self.assertIn("setup step failed", err)
+        self.assertFalse((self.dir / "later").exists())
+
+    def test_no_steps_ok(self):
+        self.assertEqual(cli("--file", self.write(VALID), "setup")[0], 0)
 
 
 class MiscTests(unittest.TestCase):
