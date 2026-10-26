@@ -21,9 +21,10 @@ import tomllib
 import urllib.request
 from pathlib import Path
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 FORMAT = "files/0"
 SECURITY = ("critical", "standard", "light")
+REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 NODE_RE = re.compile(r"^[A-Z]{1,3}-[A-Z]*[0-9]+$")
 
 KNOWN = {
@@ -31,7 +32,7 @@ KNOWN = {
     "project": {"name", "summary", "repo", "license", "nodes", "standards", "docs"},
     "review": {"security", "leads"},
     "setup": {"container", "tools", "steps"},
-    "check": {"name", "run", "required", "needs", "env"},
+    "check": {"name", "run", "dir", "required", "needs", "env", "repos"},
     "lab": {"suite", "hardware"},
     "hardware": {"needed", "optional"},
 }
@@ -157,6 +158,16 @@ def validate(data: dict, root: Path, tree_ids: set[str] | None = None) -> tuple[
             if "required" in ch and not isinstance(ch["required"], bool):
                 err(f"{p}required: must be true or false")
             opt_list(ch, "needs", p)
+            d = ch.get("dir")
+            if d is not None:
+                if not isinstance(d, str) or not d.strip():
+                    err(f"{p}dir: must be a non-empty string")
+                elif not (root / d).is_dir():
+                    err(f"{p}dir: directory not found: {d}")
+            repos = opt_list(ch, "repos", p)
+            for j, rp in enumerate(repos or []):
+                if not REPO_RE.match(rp):
+                    err(f"{p}repos[{j}]: {rp!r} is not a repo name (like oasa-sec)")
             env = ch.get("env")
             if env is not None and not (isinstance(env, dict) and all(isinstance(v, str) for v in env.values())):
                 err(f"{p}env: must be a table of strings")
@@ -253,6 +264,8 @@ def _summary(data: dict) -> dict:
             "name": c["name"],
             "run": c["run"],
             "required": c.get("required", True),
+            "dir": c.get("dir"),
+            "repos": c.get("repos", []),
             "needs": c.get("needs", []),
             "env": c.get("env", {}),
         }
@@ -282,6 +295,10 @@ def cmd_show(args) -> int:
     for c in s["checks"]:
         opt = "" if c["required"] else " (optional)"
         print(f"  {c['name']}{opt}: {c['run']}")
+        if c["dir"]:
+            print(f"    dir: {c['dir']}")
+        if c["repos"]:
+            print(f"    repos: {', '.join(c['repos'])} (next to this repo)")
         if c["needs"]:
             print(f"    needs: {', '.join(c['needs'])}")
         for k, v in c["env"].items():
@@ -297,10 +314,10 @@ def _git_commit(root: Path) -> str | None:
         return None
 
 
-def _exec(cmd: str, root: Path, env_extra: dict, timeout: float | None) -> int:
+def _exec(cmd: str, cwd: Path, env_extra: dict, timeout: float | None) -> int:
     env = {**os.environ, **env_extra}
     try:
-        p = subprocess.run(cmd, shell=True, cwd=root, env=env, timeout=timeout)
+        p = subprocess.run(cmd, shell=True, cwd=cwd, env=env, timeout=timeout)
         return p.returncode
     except subprocess.TimeoutExpired:
         print(f"timed out after {timeout}s: {cmd}", file=sys.stderr)
@@ -342,15 +359,35 @@ def cmd_run(args) -> int:
     results = []
     for c in checks:
         print(f"\n== check: {c['name']}: {c['run']}", flush=True)
+        required = c.get("required", True)
+        env = dict(c.get("env", {}))
+        missing = []
+        for rp in c.get("repos", []):
+            sib = (root.parent / rp).resolve()
+            if not sib.is_dir():
+                missing.append(f"../{rp}")
+            env["OASA_ROOT_" + rp.upper().replace("-", "_").replace(".", "_")] = str(sib)
         t0 = time.monotonic()
-        code = _exec(c["run"], root, c.get("env", {}), args.timeout)
+        skipped = None
+        if missing:
+            skipped = f"needs {', '.join(missing)}"
+            code = 1
+            print(f"{'skipped' if not required else 'FAIL'}: {skipped}", file=sys.stderr, flush=True)
+        else:
+            cwd = root / c["dir"] if c.get("dir") else root
+            code = _exec(c["run"], cwd, env, args.timeout)
         secs = round(time.monotonic() - t0, 1)
-        results.append(
-            {"name": c["name"], "command": c["run"], "exitCode": code, "seconds": secs, "required": c.get("required", True)}
-        )
-        print(f"-- {c['name']}: {'pass' if code == 0 else 'FAIL'} ({secs}s)", flush=True)
+        res = {"name": c["name"], "command": c["run"], "exitCode": code, "seconds": secs, "required": required}
+        if skipped:
+            res["error"] = skipped
+            if not required:
+                res["skipped"] = True
+                res["exitCode"] = None
+        results.append(res)
+        label = f"skipped ({skipped})" if (skipped and not required) else ("pass" if code == 0 else "FAIL")
+        print(f"-- {c['name']}: {label} ({secs}s)", flush=True)
 
-    failed = [r for r in results if r["exitCode"] != 0 and r["required"]]
+    failed = [r for r in results if r["exitCode"] not in (0, None) and r["required"]]
     stamp = datetime.date.today().isoformat()
     commit = _git_commit(root)
     report = {
@@ -360,7 +397,7 @@ def cmd_run(args) -> int:
         "passed": not failed,
         "results": results,
     }
-    out = Path(args.out)
+    out = Path(args.out or ("oasa-checks.only.json" if args.only else "oasa-checks.json"))
     if not out.is_absolute():
         out = root / out
     out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
@@ -368,8 +405,12 @@ def cmd_run(args) -> int:
     if args.markdown:
         print("\n| Check | Command | Result | Time |\n|---|---|---|---|")
         for r in results:
-            if r["exitCode"] == 0:
+            if r["exitCode"] is None:
+                res = f"skipped ({r['error']})"
+            elif r["exitCode"] == 0:
                 res = "pass"
+            elif r.get("error"):
+                res = f"fail ({r['error']})"
             else:
                 res = f"fail ({r['exitCode']})" + ("" if r["required"] else ", optional")
             cmd = r["command"].replace("|", "\\|").replace("`", "'")
@@ -398,7 +439,7 @@ def main(argv=None) -> int:
     r.add_argument("--setup", action="store_true", help="run setup steps first")
     r.add_argument("--only", nargs="+", metavar="NAME", help="run only these checks")
     r.add_argument("--markdown", action="store_true", help="print a table for the pull request")
-    r.add_argument("--out", default="oasa-checks.json", help="result file (default: oasa-checks.json)")
+    r.add_argument("--out", default=None, help="result file (default: oasa-checks.json, or oasa-checks.only.json with --only)")
     r.add_argument("--timeout", type=float, default=None, metavar="SECS", help="per-command timeout")
     r.set_defaults(fn=cmd_run)
 

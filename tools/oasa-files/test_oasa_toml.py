@@ -128,6 +128,16 @@ class ValidateTests(Base):
         self.assertEqual(errs, [])
         self.assertIn("extra: unknown key", warns)
 
+    def test_check_dir(self):
+        self.has(VALID + '\n[[check]]\nname = "b"\nrun = "x"\ndir = "nope"\n', "check[1].dir: directory not found")
+        (self.dir / "sub").mkdir()
+        errs, _ = self.errors(VALID + '\n[[check]]\nname = "b"\nrun = "x"\ndir = "sub"\n')
+        self.assertEqual(errs, [])
+
+    def test_check_repos(self):
+        self.has(VALID + '\n[[check]]\nname = "b"\nrun = "x"\nrepos = "oasa-sec"\n', "check[1].repos: must be a list")
+        self.has(VALID + '\n[[check]]\nname = "b"\nrun = "x"\nrepos = ["../x"]\n', "check[1].repos[0]")
+
     def test_tree(self):
         errs, _ = self.errors(VALID, tree={"R-SEC1"})
         self.assertEqual(errs, ["project.nodes[1]: T-DOCK2 is not in the tech tree"])
@@ -250,7 +260,8 @@ class RunTests(Base):
     def test_only(self):
         text = manifest(chk("a", "true") + chk("b", "false"))
         self.assertEqual(self.run_cli(text, "--only", "a")[0], 0)
-        self.assertEqual([x["name"] for x in self.report()["results"]], ["a"])
+        only = json.loads((self.dir / "oasa-checks.only.json").read_text())
+        self.assertEqual([x["name"] for x in only["results"]], ["a"])
         code, _, err = self.run_cli(text, "--only", "zzz")
         self.assertEqual(code, 1)
         self.assertIn("no such check", err)
@@ -279,6 +290,49 @@ class RunTests(Base):
         self.assertIn("setup step failed", err)
         self.assertFalse((self.dir / "later").exists())
         self.assertFalse((self.dir / "oasa-checks.json").exists())
+
+    def test_dir_is_cwd(self):
+        (self.dir / "sub").mkdir()
+        (self.dir / "sub/here").write_text("x")
+        self.assertEqual(self.run_cli(manifest(chk("d", "test -f here", dir='"sub"')))[0], 0)
+
+    def sibling_root(self):
+        repo = self.dir / "me"
+        repo.mkdir()
+        return repo
+
+    def test_repos_missing_required_fails_without_running(self):
+        repo = self.sibling_root()
+        (repo / "oasa.toml").write_text(manifest(chk("c", "touch ran", repos='["oasa-sec"]')))
+        code, out, err = cli("--file", str(repo / "oasa.toml"), "run", "--markdown")
+        self.assertEqual(code, 1)
+        self.assertFalse((repo / "ran").exists())
+        self.assertIn("needs ../oasa-sec", err)
+        self.assertIn("fail (needs ../oasa-sec)", out)
+
+    def test_repos_missing_optional_skipped(self):
+        repo = self.sibling_root()
+        text = manifest(chk("c", "touch ran", required="false", repos='["oasa-sec"]'))
+        (repo / "oasa.toml").write_text(text)
+        code, out, _ = cli("--file", str(repo / "oasa.toml"), "run", "--all", "--markdown")
+        self.assertEqual(code, 0)
+        self.assertFalse((repo / "ran").exists())
+        self.assertIn("skipped (needs ../oasa-sec)", out)
+
+    def test_repos_present_sets_env(self):
+        repo = self.sibling_root()
+        (self.dir / "oasa-sec").mkdir()
+        cmd = 'test \\"$OASA_ROOT_OASA_SEC\\" = \\"' + str((self.dir / "oasa-sec").resolve()) + '\\"'
+        (repo / "oasa.toml").write_text(manifest(chk("c", cmd, repos='["oasa-sec"]')))
+        self.assertEqual(cli("--file", str(repo / "oasa.toml"), "run")[0], 0)
+
+    def test_only_default_out(self):
+        text = manifest(chk("a", "true"))
+        self.run_cli(text, "--only", "a")
+        self.assertTrue((self.dir / "oasa-checks.only.json").is_file())
+        self.assertFalse((self.dir / "oasa-checks.json").exists())
+        self.run_cli(text, "--only", "a", "--out", "x.json")
+        self.assertTrue((self.dir / "x.json").is_file())
 
     def test_timeout(self):
         code, _, _ = self.run_cli(manifest(chk("slow", "sleep 5")), "--timeout", "0.3")
