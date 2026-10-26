@@ -24,12 +24,14 @@ const api = (path, ...rest) => gh(['api', ...rest, `repos/${ADMIN_REPO}/${path}`
 export function findIssue(id) {
   const app = appNumber(id);
   const out = gh(['api', '--paginate', `repos/${ADMIN_REPO}/issues?labels=applicant&state=all&per_page=100`,
-    '--jq', '.[] | select(.pull_request == null) | {number, title, state, labels: [.labels[].name]}']);
+    '--jq', '.[] | select(.pull_request == null) | {number, title, state, labels: [.labels[].name], marked: ((.body // "") | contains("<!-- oasa-app:' + String(Number(id)) + ' -->"))}']);
   const issues = out.split('\n').filter(Boolean).map((l) => JSON.parse(l));
-  return issues.find((i) => i.title.startsWith(`${app}:`)) ?? null;
+  // The hidden marker survives a renamed title; the title prefix covers issues made with the form.
+  return issues.find((i) => i.marked) ?? issues.find((i) => i.title.startsWith(`${app}:`)) ?? null;
 }
 
-/** Moves the issue to the label for `status`. Never throws; prints what happened. */
+/** Moves the issue to the label for `status`. Never throws; prints what happened.
+ *  With dry, it still reads the issue from GitHub (a GET) but changes nothing. */
 export function syncIssue(id, status, { dry = false } = {}) {
   const label = STAGE[status];
   if (!label) return;
@@ -44,15 +46,27 @@ export function syncIssue(id, status, { dry = false } = {}) {
     console.log(`GitHub: no issue for ${appNumber(id)} in ${ADMIN_REPO}. Create one with: npm run apps:issue -- ${id}`);
     return;
   }
-  const old = issue.labels.filter((n) => /^(stage|outcome):/.test(n) && n !== label);
+  // Onboarding finished (closed with outcome:accepted): a later "accepted" changes nothing.
+  if (status === 'accepted' && issue.state === 'closed' && issue.labels.includes('outcome:accepted')) {
+    console.log(`GitHub: ${ADMIN_REPO}#${issue.number} is already onboarded and closed; left as is.`);
+    return;
+  }
+  const add = issue.labels.includes(label) ? null : label;
+  // outcome:accepted is set by hand at the end of onboarding; only a decline or withdrawal removes it.
+  const old = issue.labels.filter((n) => /^(stage|outcome):/.test(n) && n !== label && (n !== 'outcome:accepted' || CLOSES.has(status)));
   const close = CLOSES.has(status) && issue.state !== 'closed';
-  const reopen = !CLOSES.has(status) && issue.state === 'closed';
+  // Reopen only when a declined or withdrawn applicant comes back.
+  const reopen = !CLOSES.has(status) && issue.state === 'closed' && issue.labels.some((n) => n === 'outcome:declined' || n === 'outcome:withdrawn');
+  if (!add && !old.length && !close && !reopen) {
+    console.log(`GitHub: ${ADMIN_REPO}#${issue.number} is already ${label}.`);
+    return;
+  }
   if (dry) {
-    console.log(`GitHub (dry): #${issue.number} add ${label}${old.length ? `, remove ${old.join(', ')}` : ''}${close ? ', close' : ''}${reopen ? ', reopen' : ''}`);
+    console.log(`GitHub (dry): #${issue.number}${add ? ` add ${add}` : ''}${old.length ? `, remove ${old.join(', ')}` : ''}${close ? ', close' : ''}${reopen ? ', reopen' : ''}`);
     return;
   }
   try {
-    api(`issues/${issue.number}/labels`, '-X', 'POST', '-f', `labels[]=${label}`, '--silent');
+    if (add) api(`issues/${issue.number}/labels`, '-X', 'POST', '-f', `labels[]=${add}`, '--silent');
     for (const n of old) api(`issues/${issue.number}/labels/${encodeURIComponent(n)}`, '-X', 'DELETE', '--silent');
     if (close || reopen) api(`issues/${issue.number}`, '-X', 'PATCH', '-f', `state=${close ? 'closed' : 'open'}`, '--silent');
     console.log(`GitHub: ${ADMIN_REPO}#${issue.number} is now ${label}${close ? ' (closed)' : ''}.`);

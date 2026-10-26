@@ -55,7 +55,7 @@ export function applicantIssue(id, v) {
     '',
   ];
   if (youth) {
-    lines.push('Applicant aged 15 to 17: number only. Parent or guardian consent is needed before any trial.', '');
+    lines.push('Number only. Parent or guardian consent is needed before any trial.', '');
   } else {
     const gh = handle(v.github_username);
     const dc = handle(v.discord_handle);
@@ -63,15 +63,17 @@ export function applicantIssue(id, v) {
   }
   lines.push('### Pipeline', ...CHECKLIST.map((l) => l.replaceAll('ID', String(id))));
   return {
-    title: youth ? `${app}: applicant aged 15 to 17` : `${app}: ${firstName(v.name)}`,
+    title: youth ? `${app}: guardian consent needed` : `${app}: ${firstName(v.name)}`,
     body: lines.join('\n'),
     labels: ['applicant', 'stage:new'],
   };
 }
 
-/** Opens the issue. Never throws: a failure is logged and the application is already safe in D1. */
+/** Opens the issue. Never throws: a failure is logged and the application is already safe in D1.
+ *  `draft` may be a function, so even building it happens inside the guard. */
 export async function openApplicantIssue(token, repo, draft, fetcher = fetch) {
   try {
+    if (typeof draft === 'function') draft = draft();
     const res = await fetcher(`https://api.github.com/repos/${repo}/issues`, {
       method: 'POST',
       headers: {
@@ -130,9 +132,15 @@ export function digestText(d) {
   }
   if (!d.interviews.length && !d.trials.length && !d.waiting.length) out.push('', 'Nothing needs attention.');
   out.push('', 'Details: `npm run apps:due` · Tracking: github.com/joinoasa/admin/issues');
-  let text = out.join('\n');
-  if (text.length > 1900) text = `${text.slice(0, 1880)}\n… (more: npm run apps:due)`;
-  return text;
+  // Whole lines only, so a long digest never splits a line or a character.
+  const kept = [];
+  let size = 0;
+  for (const line of out) {
+    if (size + line.length + 1 > 1850) { kept.push('… (more: npm run apps:due)'); break; }
+    kept.push(line);
+    size += line.length + 1;
+  }
+  return kept.join('\n');
 }
 
 /** Reads D1 and posts the digest. Never throws. */

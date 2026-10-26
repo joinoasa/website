@@ -29,7 +29,7 @@
 	],
 	// Weekly applications digest to Discord #staff, Mondays 13:05 UTC (worker/admin.js).
 	"triggers": {
-		"crons": ["5 13 * * 1"]
+		"crons": ["5 13 * * MON"]
 	},
 	// Error logs from the Worker (dashboard → Workers & Pages → joinoasa → Logs).
 	"observability": {

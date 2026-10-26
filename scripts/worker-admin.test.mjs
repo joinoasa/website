@@ -1,5 +1,5 @@
 // Tests for worker/admin.js.
-// Run: npm run test:admin
+// Run: npm test
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { appNumber, firstName, applicantIssue, openApplicantIssue, digestText, sendDigest } from '../worker/admin.js';
@@ -33,7 +33,7 @@ test('adult issue: first name and handles, no email, age or answers', () => {
 
 test('youth issue: number only', () => {
   const issue = applicantIssue(9, { name: 'Kid Name', age_group: '15-17', github_username: 'kidgh', discord_handle: 'kiddc' });
-  assert.equal(issue.title, 'APP-0009: applicant aged 15 to 17');
+  assert.equal(issue.title, 'APP-0009: guardian consent needed');
   for (const leak of ['Kid', 'kidgh', 'kiddc']) assert.ok(!issue.body.includes(leak), leak);
 });
 
@@ -85,4 +85,19 @@ test('sendDigest queries D1 and posts once', async () => {
   assert.match(body.content, /last 7 days: 1/);
   assert.deepEqual(body.allowed_mentions, { parse: [] });
   assert.ok(sqls.every(([sql]) => !/email/i.test(sql)), 'digest never reads email');
+});
+
+test('openApplicantIssue builds the draft inside its guard', async () => {
+  const quiet = console.error; console.error = () => {};
+  try {
+    assert.equal(await openApplicantIssue('t', 'r', () => { throw new Error('bad'); }, async () => new Response('{}')), null);
+  } finally { console.error = quiet; }
+});
+
+test('long digests are cut at whole lines', () => {
+  const many = Array.from({ length: 80 }, (_, i) => ({ id: i + 1, name: '𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙', status: 'new', created_at: '2026-10-01T00:00:00Z' }));
+  const text = digestText({ today: '2026-11-02', newThisWeek: 80, interviews: [], trials: [], waiting: many });
+  assert.ok(text.length <= 1900);
+  assert.match(text, /… \(more: npm run apps:due\)$/);
+  assert.ok(!/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/.test(text), 'no lone surrogates');
 });

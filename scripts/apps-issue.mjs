@@ -1,14 +1,15 @@
 // Opens the applicant issue in joinoasa/admin for an application that doesn't have one yet
 // (applications from before the automation, or if the Worker couldn't reach GitHub).
-// Usage: npm run apps:issue -- <id>  [--local] [--dry]
+// Usage: npm run apps:issue -- <id>  [--dry]   (--dry still reads GitHub to check for an existing issue)
 // Needs the GitHub CLI logged in (gh auth login). Sends the number, first name and handles only.
 import { d1, sqlInt, parseArgs, appId, fail } from './apps-lib.mjs';
 import { applicantIssue } from '../worker/admin.js';
 import { findIssue, createIssue, syncIssue } from './apps-github.mjs';
 
-const usage = 'Usage: npm run apps:issue -- <id> [--local] [--dry]';
+const usage = 'Usage: npm run apps:issue -- <id> [--dry]';
 const { args, local, dry } = parseArgs(process.argv.slice(2));
 const id = appId(args[0], usage);
+if (local) fail('The local test database has no GitHub issues. Drop --local (or use --dry to preview).');
 
 const [rows] = d1(`SELECT id, name, age_group, github_username, discord_handle, status FROM applications WHERE id = ${sqlInt(id)}`, { local });
 const app = rows?.[0];

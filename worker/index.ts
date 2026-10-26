@@ -116,7 +116,7 @@ async function apply(request: Request, env: Env, ctx: Ctx): Promise<Response> {
   const id = result.meta.last_row_id;
 
   if (env.DISCORD_WEBHOOK_URL) ctx.waitUntil(notify(env.DISCORD_WEBHOOK_URL, id, values));
-  if (env.ADMIN_ISSUES_TOKEN) ctx.waitUntil(openApplicantIssue(env.ADMIN_ISSUES_TOKEN, ADMIN_REPO, applicantIssue(id, values)));
+  if (env.ADMIN_ISSUES_TOKEN) ctx.waitUntil(openApplicantIssue(env.ADMIN_ISSUES_TOKEN, ADMIN_REPO, () => applicantIssue(id, values)));
 
   return reply(request, 200, { ok: true, redirect: THANKS });
 }
