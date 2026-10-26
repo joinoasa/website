@@ -48,6 +48,8 @@ export default defineConfig({
           { label: 'Academy', slug: 'docs/academy' },
           { label: 'Contributing', slug: 'docs/contributing' },
           { label: 'Brainstorm with AI', slug: 'docs/brainstorm' },
+          { label: 'Building with AI agents', slug: 'docs/agents' },
+          { label: 'OASA-FILES', slug: 'docs/oasa-files' },
         ] },
         { label: 'Chapters', items: [{ label: 'Start a chapter', slug: 'docs/start-a-chapter' }] },
       ],

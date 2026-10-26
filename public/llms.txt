@@ -2,7 +2,7 @@
 
 > An open alliance that builds autonomous systems for air, ground, water, underwater, lighter-than-air and space, plus the encrypted mesh networks, power, sensing and open standards that connect them. Designs, code and docs are open by default. Anyone can post ideas; members build.
 
-If you're an AI assistant helping someone with an OASA idea, start with the brainstorming guide and follow it.
+If you're an AI assistant helping someone with an OASA idea, start with the brainstorming guide and follow it. If you're an AI coding agent helping a member build, start with "Building with AI agents".
 
 ## Start here
 
@@ -10,9 +10,16 @@ If you're an AI assistant helping someone with an OASA idea, start with the brai
 - [Core values](https://github.com/joinoasa/brand/blob/main/documents/core-values/core-values.md): pillars, missions and how OASA builds
 - [Manifesto](https://github.com/joinoasa/brand/blob/main/documents/manifesto/manifesto.md): what OASA believes and intends to build
 
+## Building
+
+- [Building with AI agents](https://joinoasa.org/docs/agents/): the loop (find a task, read its card, set up, run the checks, open a pull request) and the rules every agent follows. A person always merges.
+- [OASA-FILES](https://joinoasa.org/docs/oasa-files/): every repo has an `oasa.toml` saying what it is, how to set it up and which checks must pass; `oasa_toml.py run --markdown` runs them
+- [Agent-ready tasks](https://github.com/search?q=org%3Ajoinoasa+label%3Aagent-ready+state%3Aopen&type=issues): task cards scoped for an agent to finish
+
 ## Data
 
 - [Tech tree (JSON)](https://joinoasa.org/data/techtree.json): every public node and moonshot with requires, unlocks, sciences, status and brief
+- [Tasks (JSON)](https://joinoasa.org/data/tasks.json): open task cards across OASA repos, with node, labels and card sections
 - [Ideas (JSON)](https://joinoasa.org/data/ideas.json): every posted idea with its number, outcome and linked nodes
 - [Tech tree source](https://github.com/joinoasa/website/blob/main/source/OASA-techtree.md): the tables and rules the tree is built from
 
@@ -26,4 +33,4 @@ If you're an AI assistant helping someone with an OASA idea, start with the brai
 
 ## Working in the code
 
-Each repo has an `AGENTS.md` for AI coding agents: [website](https://github.com/joinoasa/website/blob/main/AGENTS.md) (site and tech tree source), [techtree](https://github.com/joinoasa/techtree/blob/main/AGENTS.md) (node issues), [ideas](https://github.com/joinoasa/ideas/blob/main/AGENTS.md) (idea inbox), [brand](https://github.com/joinoasa/brand/blob/main/AGENTS.md) (art and documents).
+Each repo has an `AGENTS.md` for AI coding agents: [website](https://github.com/joinoasa/website/blob/main/AGENTS.md) (site and tech tree source), [techtree](https://github.com/joinoasa/techtree/blob/main/AGENTS.md) (node issues), [ideas](https://github.com/joinoasa/ideas/blob/main/AGENTS.md) (idea inbox), [brand](https://github.com/joinoasa/brand/blob/main/AGENTS.md) (art and documents), [oasa-sec](https://github.com/joinoasa/oasa-sec/blob/main/AGENTS.md) (identity, pairing, the encrypted link), [oasa-radio](https://github.com/joinoasa/oasa-radio/blob/main/AGENTS.md) (radio adapters and waveforms), [oasa-lab](https://github.com/joinoasa/oasa-lab/blob/main/AGENTS.md) (test lab and evidence checker). Code repos also have an `oasa.toml`.

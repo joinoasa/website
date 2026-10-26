@@ -1199,5 +1199,11 @@
     "github": null,
     "lead": null,
     "team": []
+  },
+  "T-FILES1": {
+    "brief": "Every project keeps its files in the same shapes, so people and AI agents can read, reuse and compare any project's work. Starts with oasa.toml, the repo manifest; BOMs, CAD metadata and test results follow.",
+    "github": null,
+    "lead": "citruscybersec",
+    "team": []
   }
 }

@@ -44,6 +44,7 @@ A standard editor and a working group. During the founding phase the founder app
 | OASA-SITE | Site survey data robots can share (maps, terrain, work zones) |
 | OASA-SAFE | Safety rules for robots that carry tools |
 | OASA-LEARN | How robots ask for help and learn from the answer |
+| [OASA-FILES](/docs/oasa-files/) | Shared project files: repo manifest, BOMs, CAD metadata, test results |
 
 Build order for the first six: SEC, MAP, NET, PAY, LOG, TIME.
 

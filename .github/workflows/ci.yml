@@ -26,6 +26,13 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+      - name: Tests
+        run: npm test
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test the oasa.toml tool
+        run: npm run oasa-files:test
 
       # Bundles the Worker without uploading it, so a broken worker/ fails here and not at deploy time.
       - name: Check the Worker bundles

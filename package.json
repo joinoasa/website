@@ -9,6 +9,8 @@
     "build": "npm run techtree && astro build",
     "preview": "astro preview",
     "techtree:sync": "node scripts/sync-techtree.mjs",
+    "test": "node --test scripts/build-techtree.test.mjs",
+    "oasa-files:test": "python3 -m unittest discover -s tools/oasa-files",
     "check:launch": "node scripts/check-launch.mjs",
     "deploy": "npm run build && wrangler deploy",
     "preview:cf": "npm run build && wrangler dev",

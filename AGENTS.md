@@ -2,6 +2,8 @@
 
 Read by AI coding agents (Claude Code, Codex, Cursor and others) and useful for people too. This repo is [joinoasa.org](https://joinoasa.org): the site, the docs and the **tech tree source**.
 
+**Start here:** [Building with AI agents](https://joinoasa.org/docs/agents/) (source: `src/content/docs/docs/agents.md`) holds the rules every OASA repo shares; this file adds to them and never loosens them. `oasa.toml` lists setup and the checks; `python3 tools/oasa-files/oasa_toml.py run --markdown` runs them. Paste the table into the pull request.
+
 ## How OASA thinks
 
 Dream big, ship small. People first, secure always (every link encrypted), open by default, integrate before building, built to last, everything on one shared map (TAK). Read the [core values](https://github.com/joinoasa/brand/blob/main/documents/core-values/core-values.md) once. Writing style everywhere: **short, clear, not wordy.**

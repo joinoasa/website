@@ -13,7 +13,8 @@
 //
 // Live status: in GitHub Actions (GITHUB_ACTIONS=true) or with TECHTREE_GITHUB=1, issue labels and
 // assignees from joinoasa/techtree are merged in (see fetchGithubNodes / applyGithub), and ideas from
-// joinoasa/ideas are linked to the nodes they were sorted onto (src/data/ideas.json). A failure only warns.
+// joinoasa/ideas are linked to the nodes they were sorted onto (src/data/ideas.json), and open `task`
+// issues from the code repos are written to src/data/tasks.json. A failure only warns.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
@@ -522,6 +523,73 @@ async function loadIdeas() {
   }
 }
 
+// ---------- Tasks (agent task cards in the code repos) ----------
+export const TASK_REPOS = ['joinoasa/oasa-sec', 'joinoasa/oasa-radio', 'joinoasa/oasa-lab', 'joinoasa/website', 'joinoasa/techtree'];
+const TASKS_OUT = new URL('tasks.json', OUT_DIR);
+const TASK_SECTIONS = {
+  Node: 'node', Goal: 'goal', 'Done when': 'doneWhen', 'Start here': 'startHere',
+  Evidence: 'evidence', 'Out of scope': 'outOfScope', Size: 'size', Needs: 'needs',
+};
+
+/** Split a GitHub issue-form body (`### Heading` then a value) into { heading: value }. "_No response_" is empty. Pure. */
+export function parseIssueForm(body) {
+  const out = {};
+  const parts = String(body ?? '').replace(/\r\n?/g, '\n').split(/^### +(.+?)[ \t]*$/m);
+  for (let i = 1; i < parts.length; i += 2) {
+    const v = parts[i + 1].trim();
+    out[parts[i].trim()] = v === '_No response_' ? '' : v;
+  }
+  return out;
+}
+
+/** One task card from a code-repo issue, or null for pull requests. Pure. */
+export function parseTask(i, repo) {
+  if (i.pull_request) return null;
+  const labels = (i.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name)).filter(Boolean);
+  const f = parseIssueForm(i.body);
+  const t = { repo, number: i.number, title: String(i.title ?? '').trim(), url: i.html_url, node: null, labels };
+  const fromSection = (f.Node ?? '').split(/[\s,;]+/).map((x) => x.replace(/[^A-Za-z0-9-]/g, '')).find((x) => ID_RE.test(x));
+  const fromLabel = labels.map((l) => l.match(/^node:(.+)$/)?.[1]?.trim()).find((x) => x && ID_RE.test(x));
+  t.node = fromSection ?? fromLabel ?? null;
+  t.agentReady = labels.includes('agent-ready');
+  t.needsHardware = labels.includes('needs-hardware');
+  t.securityReview = labels.includes('security-review');
+  t.size = f.Size ?? '';
+  t.assignees = (i.assignees ?? []).map((a) => a.login);
+  for (const [h, k] of Object.entries(TASK_SECTIONS)) if (!(k in t)) t[k] = f[h] ?? '';
+  t.updated = i.updated_at ?? null;
+  return t;
+}
+
+/** Open issues labeled `task` in one repo. Throws on any failure. */
+export async function fetchTasks({ fetchFn = fetch, repos = TASK_REPOS, token = process.env.GITHUB_TOKEN, timeoutMs = 10_000 } = {}) {
+  const out = [];
+  const headers = { accept: 'application/vnd.github+json', 'user-agent': 'joinoasa-website-build' };
+  if (token) headers.authorization = `Bearer ${token}`;
+  for (const repo of repos) {
+    for (let page = 1; page <= 10; page++) {
+      const res = await fetchFn(`https://api.github.com/repos/${repo}/issues?state=open&labels=task&per_page=100&page=${page}`, {
+        headers, signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!res.ok) throw new Error(`GitHub answered ${res.status} for ${repo}`);
+      const items = await res.json();
+      if (!Array.isArray(items)) throw new Error('unexpected GitHub response');
+      for (const i of items) { const x = parseTask(i, repo); if (x) out.push(x); }
+      if (items.length < 100) break;
+    }
+  }
+  return out.sort((a, b) => a.repo.localeCompare(b.repo) || a.number - b.number);
+}
+
+async function loadTasks() {
+  if (process.env.GITHUB_ACTIONS !== 'true' && process.env.TECHTREE_GITHUB !== '1') return { tasks: [], fetched: false, warning: null };
+  try {
+    return { tasks: await fetchTasks(), fetched: true, warning: null };
+  } catch (e) {
+    return { tasks: [], fetched: false, warning: `could not read tasks from GitHub (${e.message})` };
+  }
+}
+
 async function loadGithub() {
   if (process.env.GITHUB_ACTIONS !== 'true' && process.env.TECHTREE_GITHUB !== '1') return { gh: new Map(), warning: null };
   try {
@@ -551,6 +619,8 @@ async function main() {
   applyGithubPeople(json, gh);
   const { ideas, fetched, warning: ideasWarning } = await loadIdeas();
   if (ideasWarning) warnings.push(ideasWarning);
+  const { tasks, fetched: tasksFetched, warning: tasksWarning } = await loadTasks();
+  if (tasksWarning) warnings.push(tasksWarning);
   // Only public tree IDs: an idea pointing at a hidden (government) node isn't linked from the site.
   const known = new Set([...json.nodes, ...json.moonshots, ...json.starshots].map((x) => x.id));
   const publicIdeas = ideas.map((x) => ({ ...x, nodes: x.nodes.filter((n) => known.has(n)) }));
@@ -559,8 +629,9 @@ async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(OUT, JSON.stringify(json, null, 2) + '\n');
   writeFileSync(IDEAS_OUT, JSON.stringify({ fetched, repo: IDEAS_REPO, ideas: publicIdeas }, null, 2) + '\n');
+  writeFileSync(TASKS_OUT, JSON.stringify({ fetched: tasksFetched, tasks }, null, 2) + '\n');
   const available = json.nodes.filter((n) => n.status === 'available').length;
-  console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${fetched ? `${ideas.length} ideas, ` : ''}${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
+  console.log(`techtree: ${json.nodes.length} nodes, ${json.moonshots.length} moonshots, ${json.starshots.length} starshots, ${available} available, ${fetched ? `${ideas.length} ideas, ` : ''}${tasksFetched ? `${tasks.length} tasks, ` : ''}${warnings.length ? warnings.length + ' warning line(s)' : '0 warnings'}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();
