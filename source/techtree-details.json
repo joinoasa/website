@@ -241,7 +241,7 @@
     "team": []
   },
   "T-RF3": {
-    "brief": "Combining antennas to aim radio energy toward a target. It gives longer, stronger links and is needed for laser links and high-altitude platforms.",
+    "brief": "Combining antennas to aim radio energy toward a target. It gives longer, stronger links and is needed for laser links and high-altitude platforms. First step: simulate a 3-antenna triangle, then measure direction of arrival with a 2-channel SDR.",
     "github": "https://github.com/joinoasa/techtree/issues/41",
     "lead": null,
     "team": []
@@ -1178,6 +1178,24 @@
   },
   "T-BENCH5": {
     "brief": "A shared, warehouse-scale lab with shielded rooms, test ranges and many radio and vehicle types, open to the lab network.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-COM5": {
+    "brief": "One open, affordable SDR radio any OASA device can use as its IP link, from drones to solar nodes. Band cards cover sub-GHz for control and fallback and 5.8 GHz with a beamforming array for data.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-RF4": {
+    "brief": "Points beams at neighbours using shared positions, then fine-tunes, and puts blind spots on jammers and listeners. The mesh picks routes by live beam quality, shown on TAK.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-RF5": {
+    "brief": "Several nodes lock their timing and phase and transmit together as one large antenna array, for links far beyond what one node can reach.",
     "github": null,
     "lead": null,
     "team": []

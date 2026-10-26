@@ -62,9 +62,10 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | R-COM1 | Basic radio link (off-the-shelf) | — | R-COM2, R-CTL1, T-PAY1, T-RF1 | RF basics, antennas | 🟢 |
-| R-COM2 | Encrypted link (OASA-SEC v0) | R-COM1, R-SEC1 | R-COM4, T-MAP1, T-NET1, U-3, O-2, SP-1, MS-7 | Cryptography basics, networking | 🔒 |
+| R-COM2 | Encrypted link (OASA-SEC v0) | R-COM1, R-SEC1 | R-COM4, R-COM5, T-MAP1, T-NET1, U-3, O-2, SP-1, MS-7 | Cryptography basics, networking | 🔒 |
 | R-COM3 | Physical links (copper/fiber tether) | — | R-PWR4, L-4, U-1, U-2, I-1, C-3 | Fiber optics, cabling, signal integrity | 🟢 |
 | R-COM4 | Laser links (free-space optical, encrypted) with in-flight pointing and tracking | R-COM2, T-RF3 | R-PWR5, SP-2, MS-17 | Optics, tracking control | 🔒 |
+| R-COM5 | Open SDR radio: multi-band IP radio with plug-in band cards (sub-GHz control and fallback, 5.8 GHz data, 60 GHz later) and a router inside that carries encrypted OASA traffic | R-COM2, T-RF1 | T-RF4 | SDR, RF design, embedded Linux | 🔒 |
 
 ### Security
 
@@ -94,7 +95,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| R-NAV1 | GNSS positioning | — | R-CTL2, R-NAV2, R-NAV3, R-TIME1, T-MAP1, SP-1 | Satellite navigation | 🟢 |
+| R-NAV1 | GNSS positioning | — | R-CTL2, R-NAV2, R-NAV3, R-TIME1, T-MAP1, T-RF4, SP-1 | Satellite navigation | 🟢 |
 | R-NAV2 | RTK precision positioning | R-NAV1 | T-DOCK1, G-6, X-6 | Geodesy, RTCM corrections | 🔒 |
 | R-NAV3 | GNSS-denied navigation | R-NAV1, X-1 | G-2, G-5, U-5, I-4, SP-5 | Visual odometry, inertial nav | 🔒 |
 
@@ -102,7 +103,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| R-TIME1 | Time sync (OASA-TIME) | R-NAV1 | R-TIME2, T-VID1, T-RF2, X-5, MS-7 | Clocks, timing protocols | 🔒 |
+| R-TIME1 | Time sync (OASA-TIME) | R-NAV1 | R-TIME2, T-VID1, T-RF2, T-RF5, X-5, MS-7 | Clocks, timing protocols | 🔒 |
 | R-TIME2 | Backup timing and positioning network (works when GPS fails) | R-TIME1, T-NET4 | MS-20 | Clocks, radio navigation | 🔒 |
 | X-1 | Camera and video streaming | — | R-NAV3, T-AI1, T-VID1, A-8, X-6, O-15, I-1 | Optics, video encoding | 🟢 |
 
@@ -112,10 +113,10 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
+| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, T-RF4, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
 | T-MAP2 | Tap-to-control from TAK | T-MAP1, R-CTL2 | T-NET3, T-AI3, T-TSK1, T-LEARN1 | Mission control, UX | 🔒 |
 | T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, T-UPD2, S-2, I-1 | Mesh networking | 🔒 |
-| T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
+| T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, T-RF4, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
 | T-NET3 | Multi-GCS handoff, multi-operator control | T-NET2, T-MAP2 | T-NET4, O-4 | Distributed systems | 🔒 |
 | T-NET4 | Large mesh scaling (100+ nodes) | T-NET3 | R-TIME2, O-1, O-14, MS-1, MS-10 | Network scaling | 🔒 |
 | T-NET5 | Meshtastic / LoRa bridge (encrypted gateway between OASA and Meshtastic networks) | T-NET1 | O-18, O-22, MS-20, MS-23 | LoRa, protocol bridging | 🔒 |
@@ -136,9 +137,11 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH2, R-SEC2 | T-BENCH4 | Security, operations | 🔒 |
 | T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3 | T-BENCH5 | Distributed systems, test engineering | 🔒 |
 | T-BENCH5 | Lab facility (warehouse-scale: shielded rooms, ranges, many radio and vehicle types) | T-BENCH4 | — | RF test, facilities, operations | 🔒 |
-| T-RF1 | RF scanning in radios | R-COM1 | T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
+| T-RF1 | RF scanning in radios | R-COM1 | R-COM5, T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
 | T-RF2 | Direction finding (bearings on TAK) | T-RF1, R-TIME1, T-MAP1 | Interference hunting | Antenna arrays, signal processing | 🔒 |
-| T-RF3 | Beamforming | T-RF1 | R-COM4, A-6, MS-1, MS-10, MS-17, Longer links | Phased arrays, DSP | 🔒 |
+| T-RF3 | Beamforming | T-RF1 | R-COM4, T-RF4, A-6, MS-1, MS-10, MS-17, Longer links | Phased arrays, DSP | 🔒 |
+| T-RF4 | Smart beams: position-aided steering, beam scheduling, null steering on jammers, beam-aware routing, beam quality on TAK | T-RF3, R-COM5, T-NET2, R-NAV1, T-MAP1 | T-RF5 | Phased arrays, anti-jam, routing | 🔒 |
+| T-RF5 | Cooperative beamforming (several phase-synced nodes transmit as one array) | T-RF4, R-TIME1 | — | Distributed arrays, phase sync | 🔒 |
 | T-NODE1 | Backpack node kit | T-NET1, R-PWR1 | T-NODE2, MS-2 | Integration | 🔒 |
 | T-NODE2 | Tower / vehicle / home node kits | T-NODE1, R-PWR2 | O-1, MS-1 | Integration, weatherproofing | 🔒 |
 | T-SITE1 | Autonomous survey mission (drone plans its own flight, captures, and builds a reproducible map with an accuracy report) | X-6, A-1 or A-2 | T-SITE2 | Photogrammetry, flight planning, geodesy | 🔒 |
