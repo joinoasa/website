@@ -151,6 +151,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-LEARN1 | Ask-and-learn (OASA-LEARN): robot pauses and asks on TAK, logs the answer and reuses it; reviewed before sharing; never loosens a safety rule | T-MAP2, T-LOG1, T-AI1 | O-23, MS-7 | Human-in-the-loop learning, data curation | 🔒 |
 | T-UPD1 | Signed updates (OASA-UPDATE): every release signed, checked on the device before install; installs only when landed and approved; trial boot, then confirm or revert | R-SEC1 | T-UPD2, MS-7 | Software supply chain, bootloaders, security | 🔒 |
 | T-UPD2 | Field updates: a ground station caches signed updates and serves its fleet over Wi-Fi or the mesh; every device's version shows on TAK | T-UPD1, T-NET1, T-MAP1 | — | Distributed systems, operations | 🔒 |
+| T-FILES1 | Shared project files (OASA-FILES): a repo manifest (`oasa.toml`) first, then BOMs, CAD metadata and test results that people and AI tools read the same way | — | MS-8 | Data formats, documentation | 🟢 |
 
 ---
 
@@ -352,7 +353,7 @@ Plan from the start for OASA systems to work beyond Earth. Stepping stones begin
 | MS-5 | **Multi-Domain Teams** — air, ground, surface and underwater on one mission | T-TSK1, O-4, A-7, G-4, S-6, U-5, L-7, T-VID1, T-TSK2 |
 | MS-6 | **High-Altitude Platform** — "poor man's satellite" for coverage and imaging | A-6, L-6 |
 | MS-7 | **Open Autonomy Stack** — the open baseline everyone builds on | R-COM2, R-SEC2, T-NET2, T-PAY1, T-LOG1, R-TIME1, T-MAP1, T-VID1, T-DOCK2, O-2, T-SITE2, T-SAFE1, T-LEARN1, T-UPD1, partner adoption |
-| MS-8 | **Build Anywhere** — any chapter can build any design | T-BENCH1, reference builds, Academy, chapter kits |
+| MS-8 | **Build Anywhere** — any chapter can build any design | T-BENCH1, T-FILES1, reference builds, Academy, chapter kits |
 | MS-9 | **Wildfire Watch Network** — modern fire towers in the sky, plus search and mapping when fires start | O-7, X-9, X-6, MS-1 nodes |
 | MS-10 | **Atmospheric Satellites / Perma Gliders** — aircraft that stay aloft indefinitely on solar by day, stored energy and soaring by night, acting as relays, cameras and sensor platforms | A-5, A-6, A-8, A-9, R-PWR2, T-RF3, T-NET4 |
 | MS-11 | **Self-Repairing Fleet** — field repair cells print and swap parts; logistics fleet carries damaged devices to automated repair centers | O-8, O-9, O-10, T-LOG1 |
