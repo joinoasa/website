@@ -200,6 +200,8 @@ npx wrangler d1 create oasa-applications --location enam
 # paste the database_id it prints into wrangler.jsonc (replace REPLACE_WITH_DATABASE_ID)
 npm run db:migrate                                # creates the database tables
 npx wrangler secret put DISCORD_WEBHOOK_URL       # optional: paste the channel webhook URL
+npx wrangler secret put ADMIN_ISSUES_TOKEN        # optional: opens an issue per application in joinoasa/admin
+npx wrangler secret put STAFF_WEBHOOK_URL         # optional: weekly digest in Discord #staff
 npm run deploy
 ```
 
@@ -218,15 +220,18 @@ npm run apps:interview -- 12 2026-11-05T18:30         # record the interview dat
 npm run apps:score -- 12 4 3 5 4 4                    # rubric 1-5: skill talent ambition initiative collaboration
 npm run apps:note -- 12 "Strong CAD; ask about time"  # private note
 npm run apps:due                                      # interviews, trials ending in 7 days or overdue, applications waiting > 7 days
+npm run apps:issue -- 12                              # open the joinoasa/admin tracking issue if it's missing
 npm run apps:purge                                    # dry run: declined/withdrawn applications past 12 months
 npm run apps:purge -- --apply                         # delete them   # then delete the matching Discord alerts by hand (the script prints the numbers)
 ```
 
 Statuses: `new`, `reviewing`, `interview`, `trial`, `accepted`, `declined`, `withdrawn`. Entering `trial` sets the trial start to today and the end 30 days later. Accepted, declined and withdrawn record `decision_at`, which starts the retention clock. Every script takes `--local` (wrangler dev's database) and `--dry` (print the SQL, run nothing). Text you type is escaped before it reaches SQL, and wrangler is run without a shell. A review page (behind Cloudflare Access) is planned. You can also browse the table in the dashboard: Storage & Databases → D1 → `oasa-applications`.
 
+**Admin repo tracking:** with `ADMIN_ISSUES_TOKEN` set (a fine-grained token with Issues read/write on `joinoasa/admin` only), every application opens `APP-0012: First name` there: number, first name and handles only, number only for ages 15 to 17. `apps:set` then moves its stage label (and closes it on declined or withdrawn) through the GitHub CLI; skip with `--offline`, and `--local` never touches GitHub. With `STAFF_WEBHOOK_URL` set, the Worker posts the `apps:due` summary to Discord every Monday (cron in `wrangler.jsonc`). Code: `worker/admin.js`, `scripts/apps-github.mjs`; tests: `npm test`. Setup steps: `automation.md` in `joinoasa/admin`.
+
 Run `apps:due` weekly. Guardian consent (youth, when it opens) can still be set by hand: `npx wrangler d1 execute DB --remote --command "UPDATE applications SET guardian_consent = 'received' WHERE id = 13"`.
 
-**Retention (interim, on the privacy page):** declined and withdrawn applications are deleted 12 months after the decision (`apps:purge`); a member's application is kept while they are a member and deleted within 90 days of their leaving (`DELETE FROM application_events WHERE app_id = N; DELETE FROM applications WHERE id = N`). Also delete the matching Discord alert messages in the private alerts channel; they hold the name, city and a skills preview and are not removed by the scripts.
+**Retention (interim, on the privacy page):** declined and withdrawn applications are deleted 12 months after the decision (`apps:purge`); a member's application is kept while they are a member and deleted within 90 days of their leaving (`DELETE FROM application_events WHERE app_id = N; DELETE FROM applications WHERE id = N`). Also delete the matching Discord alert messages in the private alerts channel; they hold the name, city and a skills preview and are not removed by the scripts. Delete the matching `joinoasa/admin` issue too (owners: issue → Delete issue); it holds the first name and handles.
 
 **Migrations** run automatically in `.github/workflows/deploy.yml` before each deploy (`wrangler d1 migrations apply DB --remote`); run `npm run db:migrate` yourself only for a manual deploy.
 

@@ -13,7 +13,7 @@ OASA looks for raw skill, talent and ambition. Membership is free.
 3. **Interview.** A conversation about skill, talent, ambition, initiative and collaboration.
 4. **30-day trial.** Work on an OASA project, or your own project if it is meaningful toward autonomy. You can ask the whole community for help.
 5. **Decision.** Accepted, or feedback and an invitation to reapply.
-6. **Onboarding.** Accounts, the contributor agreement and an onboarding buddy.
+6. **Onboarding.** Accounts, the contributor agreement and an onboarding buddy. Start with [New member start](/docs/new-members/).
 
 Invitees still interview and do the trial. Teams can apply together and do a team trial. In the founding cohort, the founder handles every step.
 

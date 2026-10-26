@@ -2,27 +2,35 @@
 // Only /api/* reaches this code (see run_worker_first in wrangler.jsonc); every other
 // request is served straight from the built site in ./dist.
 //
-// POST /api/apply  stores a membership application in D1 and posts a short alert to Discord.
+// POST /api/apply  stores a membership application in D1, posts a short alert to Discord and
+//                  opens an "Applicant" issue in the private joinoasa/admin repo.
+// Cron (Mondays)   posts the weekly applications digest to Discord #staff (worker/admin.js).
 //
 // Bindings and secrets (README → "Applications"):
 //   DB                    D1 database (wrangler.jsonc)
 //   ASSETS                the built site (wrangler.jsonc)
 //   DISCORD_WEBHOOK_URL   secret, optional: private Discord channel webhook for alerts
 //   TURNSTILE_SECRET      secret, optional: Cloudflare Turnstile secret key (spam check)
+//   ADMIN_ISSUES_TOKEN    secret, optional: fine-grained GitHub token, Issues read/write on joinoasa/admin only
+//   STAFF_WEBHOOK_URL     secret, optional: Discord #staff webhook for the weekly digest
 
 import { fields, youthOpen, YOUTH, type Field } from '../src/data/application';
+import { ADMIN_REPO, applicantIssue, openApplicantIssue, sendDigest } from './admin.js';
 
 interface D1Result { meta: { last_row_id: number } }
 interface D1Statement {
   bind(...values: unknown[]): D1Statement;
   first<T = Record<string, unknown>>(): Promise<T | null>;
   run(): Promise<D1Result>;
+  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
 }
 interface Env {
   DB?: { prepare(sql: string): D1Statement };
   ASSETS: { fetch(request: Request): Promise<Response> };
   DISCORD_WEBHOOK_URL?: string;
   TURNSTILE_SECRET?: string;
+  ADMIN_ISSUES_TOKEN?: string;
+  STAFF_WEBHOOK_URL?: string;
 }
 interface Ctx { waitUntil(p: Promise<unknown>): void }
 
@@ -50,6 +58,11 @@ export default {
     }
     if (url.pathname.startsWith('/api/')) return json({ ok: false, message: 'Not found.' }, 404);
     return env.ASSETS.fetch(request);
+  },
+
+  // Weekly digest (cron in wrangler.jsonc). Does nothing until STAFF_WEBHOOK_URL is set.
+  async scheduled(_event: unknown, env: Env, ctx: Ctx): Promise<void> {
+    if (env.DB && env.STAFF_WEBHOOK_URL) ctx.waitUntil(sendDigest(env.DB, env.STAFF_WEBHOOK_URL));
   },
 };
 
@@ -103,6 +116,7 @@ async function apply(request: Request, env: Env, ctx: Ctx): Promise<Response> {
   const id = result.meta.last_row_id;
 
   if (env.DISCORD_WEBHOOK_URL) ctx.waitUntil(notify(env.DISCORD_WEBHOOK_URL, id, values));
+  if (env.ADMIN_ISSUES_TOKEN) ctx.waitUntil(openApplicantIssue(env.ADMIN_ISSUES_TOKEN, ADMIN_REPO, applicantIssue(id, values)));
 
   return reply(request, 200, { ok: true, redirect: THANKS });
 }

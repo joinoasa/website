@@ -3,10 +3,12 @@
 //   statuses: new, reviewing, interview, trial, accepted, declined, withdrawn
 // Entering "trial" sets trial_start to today and trial_end to 30 days later.
 // Accepted, declined and withdrawn record decision_at (the retention clock starts then).
+// Also moves the applicant issue in joinoasa/admin to the matching stage (needs gh; skip with --offline).
 import { STATUSES, TRIAL_DAYS, d1, sqlText, sqlInt, nowIso, today, addDays, parseArgs, appId, fail } from './apps-lib.mjs';
+import { syncIssue } from './apps-github.mjs';
 
-const usage = `Usage: npm run apps:set -- <id> <${STATUSES.join('|')}> [note] [--local] [--dry]`;
-const { args, local, dry } = parseArgs(process.argv.slice(2));
+const usage = `Usage: npm run apps:set -- <id> <${STATUSES.join('|')}> [note] [--local] [--dry] [--offline]`;
+const { args, local, dry, offline } = parseArgs(process.argv.slice(2));
 const id = appId(args[0], usage);
 const status = args[1];
 if (!STATUSES.includes(status)) fail(usage);
@@ -37,3 +39,5 @@ if (!dry) {
 }
 d1(sql, { local, dry });
 if (!dry) console.log(`#${id} is now "${status}".${status === 'trial' ? ` Trial ends ${addDays(day, TRIAL_DAYS)} (if it was not already running).` : ''}`);
+// The local database is for testing, so its changes never touch GitHub.
+if (!local && !offline) syncIssue(id, status, { dry });

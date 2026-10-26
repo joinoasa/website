@@ -9,7 +9,7 @@
     "build": "npm run techtree && astro build",
     "preview": "astro preview",
     "techtree:sync": "node scripts/sync-techtree.mjs",
-    "test": "node --test scripts/build-techtree.test.mjs",
+    "test": "node --test scripts/build-techtree.test.mjs scripts/worker-admin.test.mjs",
     "oasa-files:test": "python3 -m unittest discover -s tools/oasa-files",
     "check:launch": "node scripts/check-launch.mjs",
     "deploy": "npm run build && wrangler deploy",
@@ -24,6 +24,7 @@
     "apps:interview": "node scripts/apps-interview.mjs",
     "apps:due": "node scripts/apps-due.mjs",
     "apps:purge": "node scripts/apps-purge.mjs",
+    "apps:issue": "node scripts/apps-issue.mjs",
     "discord:setup": "node scripts/discord/setup.mjs"
   },
   "dependencies": {
