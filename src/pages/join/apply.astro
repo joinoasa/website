@@ -7,7 +7,7 @@ import { applicationQuestions } from '../../data/membership';
 const byName = Object.fromEntries(fields.map((f) => [f.name, f])) as Record<string, Field>;
 const groups: { legend: string; names: string[] }[] = [
   { legend: 'About you', names: ['name', 'email', 'city_state', 'nearest_chapter', 'age_group', 'guardian_email', 'discord_handle', 'github_username'] },
-  { legend: 'Your work', names: ['skills', 'links', 'interests', 'time_commitment'] },
+  { legend: 'Your work', names: ['role', 'skills', 'links', 'interests', 'time_commitment'] },
   { legend: 'Joining', names: ['why', 'contract_interest', 'invited_by'] },
 ];
 const consent = byName.consent;
@@ -33,6 +33,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   </header>
 
   <div class="wrap section">
+    <p class="role-banner" id="role-banner" hidden>You're applying for the <strong id="role-name"></strong> role. <a href="/roles/">See all roles</a></p>
     <form id="apply" class="apply" method="post" action="/api/apply">
       <div class="summary" id="form-summary" role="alert" tabindex="-1" hidden></div>
 
@@ -70,6 +71,8 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
                 {f.hint && <p class="hint" id={hintId(f)}>{f.hint}</p>}
                 {f.kind === 'textarea'
                   ? <textarea {...common} rows={f.max > 1500 ? 6 : 4}></textarea>
+                  : f.kind === 'select'
+                  ? <select id={f.name} name={f.name} aria-describedby={describedBy(f)}>{f.options!.map((o) => <option value={o.value}>{o.label}</option>)}</select>
                   : <input {...common} type={f.kind === 'email' ? 'email' : 'text'} />}
                 <p class="error" id={`${f.name}-error`} hidden></p>
               </div>
@@ -119,7 +122,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
       const value = rule.split('=')[1];
       const on = el.dataset.showWhen ? age() === value : age() !== value;
       el.hidden = !on;
-      el.querySelectorAll('input, textarea').forEach((input) => {
+      el.querySelectorAll('input, textarea, select').forEach((input) => {
         input.disabled = !on;
         if (el.dataset.showWhen) input.required = on;
       });
@@ -129,6 +132,18 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   }
   form.addEventListener('change', (e) => { if (e.target.name === 'age_group') sync(); });
   sync();
+
+  // Coming from /roles/: ?role=<slug> picks that role and shows which one.
+  const roleSelect = form.querySelector('select[name="role"]');
+  const banner = document.getElementById('role-banner');
+  function showRole() {
+    const opt = roleSelect.selectedOptions[0];
+    banner.hidden = !roleSelect.value;
+    document.getElementById('role-name').textContent = opt ? opt.textContent : '';
+  }
+  const wanted = new URLSearchParams(location.search).get('role');
+  if (roleSelect && wanted && [...roleSelect.options].some((o) => o.value === wanted)) roleSelect.value = wanted;
+  if (roleSelect) { roleSelect.addEventListener('change', showRole); showRole(); }
 
   function clearErrors() {
     summary.hidden = true;
@@ -150,12 +165,12 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
         const label = wrap?.querySelector('.label, .choice')?.textContent?.replace(/\s*\(.*\)\s*$/, '').trim() ?? name;
         const err = document.getElementById(`${name}-error`);
         if (err) { err.textContent = errors[name]; err.hidden = false; }
-        wrap?.querySelectorAll('input, textarea').forEach((el) => el.setAttribute('aria-invalid', 'true'));
+        wrap?.querySelectorAll('input, textarea, select').forEach((el) => el.setAttribute('aria-invalid', 'true'));
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.href = `#${wrap?.querySelector('input, textarea')?.id || name}`;
+        a.href = `#${wrap?.querySelector('input, textarea, select')?.id || name}`;
         a.textContent = `${label}: ${errors[name]}`;
-        a.addEventListener('click', (ev) => { ev.preventDefault(); wrap?.querySelector('input, textarea')?.focus(); });
+        a.addEventListener('click', (ev) => { ev.preventDefault(); wrap?.querySelector('input, textarea, select')?.focus(); });
         li.append(a);
         ul.append(li);
       });
@@ -168,7 +183,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   // Use the browser's own checks first, but report them in our summary.
   function localErrors() {
     const errors = {};
-    form.querySelectorAll('input, textarea').forEach((el) => {
+    form.querySelectorAll('input, textarea, select').forEach((el) => {
       if (el.disabled || el.name === 'website' || el.validity.valid || errors[el.name]) return;
       errors[el.name] = el.validity.valueMissing
         ? (el.type === 'checkbox' ? 'Please tick this box.' : el.type === 'radio' ? 'Please choose one.' : 'Please fill this in.')
@@ -213,15 +228,16 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   .flag { font-weight: var(--weight-regular); color: var(--ink-muted); }
   .hint { margin: 0 0 var(--space-2); font-size: var(--step--1); color: var(--ink-muted); }
   .check .hint { margin: var(--space-1) 0 0 2rem; }
-  input[type='text'], input[type='email'], textarea {
+  .role-banner { margin: 0 0 var(--space-6); padding: var(--space-3) var(--space-4); border-left: 4px solid var(--airspace); background: var(--accent-tint); color: var(--ink); }
+  input[type='text'], input[type='email'], textarea, select {
     display: block; width: 100%; min-height: var(--tap); padding: 0.6em 0.75em;
     font: inherit; color: var(--ink); background: var(--white);
     border: 1px solid var(--line-control); border-radius: var(--radius-md);
     transition: border-color var(--dur-feedback) var(--ease-out);
   }
   textarea { resize: vertical; line-height: var(--leading-body); }
-  input:hover, textarea:hover { border-color: var(--ink-soft); }
-  input:focus-visible, textarea:focus-visible { outline-offset: 1px; border-color: var(--chart); }
+  input:hover, textarea:hover, select:hover { border-color: var(--ink-soft); }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { outline-offset: 1px; border-color: var(--chart); }
   [aria-invalid='true']:is(input[type='text'], input[type='email'], textarea) { border: 2px solid var(--airspace); }
   .choice { display: flex; align-items: flex-start; gap: 0.6rem; min-height: var(--tap); padding-block: 0.6rem; cursor: pointer; }
   .choice input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; flex: none; }

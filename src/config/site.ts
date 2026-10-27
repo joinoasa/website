@@ -109,7 +109,7 @@ export const nav = {
     { heading: 'Explore', links: [
       { href: '/techtree/', label: 'Tech tree' }, { href: '/moonshots/', label: 'Moonshots' }, { href: '/ideas/', label: 'Ideas' }, { href: '/chapters/', label: 'Chapters' } ] },
     { heading: 'Join', links: [
-      { href: '/join/', label: 'Apply to join' }, { href: '/docs/membership/', label: 'How membership works' }, { href: '/docs/code-of-conduct/', label: 'Code of conduct' } ] },
+      { href: '/join/', label: 'Apply to join' }, { href: '/roles/', label: 'Open roles' }, { href: '/docs/membership/', label: 'How membership works' }, { href: '/docs/code-of-conduct/', label: 'Code of conduct' } ] },
     { heading: 'Learn', links: [
       { href: '/docs/', label: 'Docs' }, { href: '/docs/principles/', label: 'Principles' }, { href: '/docs/standards/', label: 'Standards' }, { href: '/docs/academy/', label: 'Academy' } ] },
     { heading: 'Organization', links: [

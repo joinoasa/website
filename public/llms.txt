@@ -28,6 +28,7 @@ If you're an AI assistant helping someone with an OASA idea, start with the brai
 - [Post an idea](https://github.com/joinoasa/ideas/issues/new?template=idea.yml): anyone can post
 - [How ideas are sorted](https://github.com/joinoasa/ideas/blob/main/TRIAGE.md)
 - [Claim a node](https://joinoasa.org/docs/claim-a-node/): how members pick up tech tree work
+- [Open roles](https://joinoasa.org/roles/): volunteer roles (build, community, coordination, operations) and how to take one
 - [How estimates work](https://joinoasa.org/docs/estimates/): rough hours, parts, lab and field time per node; moonshot totals
 - [Standards](https://joinoasa.org/docs/standards/)
 - [Membership](https://joinoasa.org/docs/membership/)
