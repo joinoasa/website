@@ -1,10 +1,10 @@
 ---
 title: Software standard
 description: How OASA builds software and firmware, so every project works the same way.
-lastUpdated: 2026-10-23
+lastUpdated: 2026-10-27
 ---
 
-**Version:** 1.0 · **Status:** Adopted 2026-10-23 · **Owner:** founder (Technical council later) · **Changes:** see [Changing this standard](#changing-this-standard)
+**Version:** 1.1 · **Status:** Adopted 2026-10-23; v1.1 2026-10-27 · **Owner:** founder (Technical council later) · **Changes:** see [Changing this standard](#changing-this-standard)
 
 This is how OASA builds software and firmware. It applies to every **official** project and is recommended for personal and community projects. It follows the four practice groups of [NIST SP 800-218 (SSDF)](https://csrc.nist.gov/Projects/SSDF): prepare the organization, protect the software, produce secure software, respond to vulnerabilities.
 
@@ -37,6 +37,7 @@ Companion pages: [Update standard](../update-standard/), [Adopting software](../
 | Security prototypes | **Rust** | The prototype grows into the real code instead of being rewritten |
 | Scripts, test harnesses, quick experiments | **Python** | Fastest to write; never for crypto in a release |
 | Web | **TypeScript** | Matches the website stack |
+| Repo automation and CI | **The repo's own language**: JavaScript/TypeScript (Node) for the website, GitHub Actions glue and the admin repo; Python in Python repos; Rust only when it ships with the product | Shares code with what it automates and adds no new toolchain. Standalone tools still default to Python |
 
 CISA and the NSA recommend memory-safe languages to remove a whole class of security bugs. New security-critical OASA code should be in a memory-safe language unless there's a written reason.
 
@@ -94,8 +95,12 @@ Members are encouraged to use AI to write code and docs. AI-written code gets th
 
 ## Changing this standard
 
-v1.0 is locked. Changes follow [governance](../governance/):
+Changes follow [governance](../governance/):
 
 - **Fixes** (typos, links, clearer wording): a pull request approved by the founder (later the Technical council).
 - **Rule changes:** an OASA Proposal, open for about two weeks, then decided and published with the reasons.
 - **Section 1 (encrypted, always)** is a core principle: changing it follows the foundational process, and the founder keeps a veto.
+
+### Change log
+
+- **v1.1 (2026-10-27):** added the "Repo automation and CI" row to Languages by layer. It records existing practice and changes no code. Founder decision during the founding phase.
