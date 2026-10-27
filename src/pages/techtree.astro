@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import tree from '../data/techtree.json';
 import { site, contact, nav } from '../config/site';
 import TreeMap from '../components/techtree/TreeMap.astro';
+import { formatEstimate, formatResources, type NodeEstimate } from '../lib/estimates';
 
 const ORDER = [
   'Roots', 'Trunk', 'Air', 'Lighter-than-air & wind', 'Ground', 'Surface water', 'Underwater',
@@ -165,6 +166,8 @@ const counts = {
                     {n.enables && <div><dt>Enables</dt><dd>{n.enables}</dd></div>}
                     <div><dt>Needed by</dt><dd>{n.neededBy.total > 0 ? `${n.neededBy.direct} directly, ${n.neededBy.total} in total` : n.neededBy.moonshots.length ? 'No other nodes' : 'Nothing depends on this yet'}</dd></div>
                     {n.neededBy.moonshots.length > 0 && <div><dt>Moonshots</dt><dd>{n.neededBy.moonshots.map((m, i) => (<>{i > 0 && ', '}<a href={`/moonshots/#${m}`}>{m}</a></>))}</dd></div>}
+                    {n.estimate && <div><dt>Rough estimate</dt><dd>{formatEstimate(n.estimate as NodeEstimate)} · <a href="/docs/estimates/">How estimates work</a></dd></div>}
+                    {n.estimate && n.estimate.resources.length > 0 && <div><dt>Equipment</dt><dd>{formatResources(n.estimate as NodeEstimate, 99)}</dd></div>}
                     <div><dt>You'll learn</dt><dd>{n.sciences} · <a href="/docs/academy/">Academy</a></dd></div>
                     {(n.ideas ?? []).length > 0 && <div><dt>Grew from</dt><dd>{n.ideas.map((x, i) => (<>{i > 0 && ', '}<a href={x.url} title={x.title}>{x.id}</a></>))}</dd></div>}
                   </dl>

@@ -38,6 +38,7 @@ export default defineConfig({
           { label: 'New member start', slug: 'docs/new-members' },
           { label: 'Projects', slug: 'docs/projects' },
           { label: 'Claim a node', slug: 'docs/claim-a-node' },
+          { label: 'How estimates work', slug: 'docs/estimates' },
         ] },
         { label: 'Building', items: [
           { label: 'Standards', slug: 'docs/standards' },

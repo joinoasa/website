@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import tree from '../data/techtree.json';
 import { nav } from '../config/site';
+import { formatShotEstimate, type ShotEstimate } from '../lib/estimates';
 const nodeById = new Map(tree.nodes.map((n) => [n.id, n]));
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
@@ -42,6 +43,7 @@ const needsLabel = (m: Shot, starshot: boolean) => {
           )}
           {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
           {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
+          {m.estimate && <p class="progress">Rough estimate to reach it, counting every node it needs: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
           {m.startWith.length > 0 && (
             <div class="needs start">
               <span class="needs-label">Start with:</span>
@@ -73,6 +75,7 @@ const needsLabel = (m: Shot, starshot: boolean) => {
           )}
           {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
           {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
+          {m.estimate && <p class="progress">Rough estimate to reach it, counting every node it needs: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
           {m.startWith.length > 0 && (
             <div class="needs start">
               <span class="needs-label">Start with:</span>

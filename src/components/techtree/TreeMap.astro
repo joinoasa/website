@@ -4,6 +4,7 @@
 // Layout is computed here at build time; the client script only pans, zooms and opens popups.
 import tree from '../../data/techtree.json';
 import { site, nav } from '../../config/site';
+import { formatEstimate, formatShotEstimate, formatResources, type NodeEstimate, type ShotEstimate } from '../../lib/estimates';
 
 interface Props { order: string[] }
 const { order } = Astro.props;
@@ -172,10 +173,12 @@ const data = {
     ...tree.nodes.map((n) => [n.id, {
       kind: 'node', name: n.name, branch: n.branch, status: n.status, brief: n.brief, github: n.github, lead: n.lead, team: n.team, ideas: n.ideas ?? [],
       req: reqParts(n), unlocks: [...n.unlocks.filter((u) => pos.has(u))], enables: n.enables || '', needed: n.neededBy.total,
+      est: n.estimate ? formatEstimate(n.estimate as NodeEstimate) : '', gear: formatResources(n.estimate as NodeEstimate | null),
     }]),
     ...shots.map(({ m }) => [m.id, {
       kind: 'moonshot', name: m.title, brief: m.brief || m.summary, github: m.github, lead: m.lead, team: m.team, ideas: m.ideas ?? [],
       req: shotReq(m), unlocks: [], progress: m.progress,
+      est: formatShotEstimate(m.estimate as ShotEstimate | null), gear: formatResources(m.estimate as ShotEstimate | null),
     }]),
   ]),
 };
@@ -275,6 +278,8 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
       <div data-p-people-row><dt>Who's on it</dt><dd data-p-people></dd></div>
       <div><dt data-p-req-label>Requires</dt><dd data-p-req></dd></div>
       <div data-p-unl-row><dt>Unlocks</dt><dd data-p-unl></dd></div>
+      <div data-p-est-row hidden><dt data-p-est-label>Rough estimate</dt><dd><span data-p-est></span> <a href="/docs/estimates/" class="tm-est-how">How estimates work</a></dd></div>
+      <div data-p-gear-row hidden><dt>Equipment</dt><dd data-p-gear></dd></div>
       <div data-p-ideas-row hidden><dt>Grew from</dt><dd data-p-ideas></dd></div>
     </dl>
     <p class="tm-pop-actions"><a class="btn btn-primary" data-p-link></a><a class="tm-more" data-p-more></a><a class="tm-more" data-p-how href="/docs/claim-a-node/" hidden>How claiming works</a></p>
@@ -291,6 +296,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
     lead: string | null; team: string[]; req: Part[]; unlocks: string[]; enables?: string; needed?: number;
     ideas: { id: string; title: string; url: string }[];
     progress?: { total: number; done: number };
+    est?: string; gear?: string;
   };
   const root = document.querySelector<HTMLElement>('[data-tree]');
   if (root) init(root);
@@ -562,6 +568,12 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
         ideasDd.append(a);
       });
       $('p-ideas-row').hidden = !(it.ideas ?? []).length;
+      // Rough estimate (node) or roll-up of everything still needed (moonshot).
+      $('p-est-label').textContent = it.kind === 'moonshot' ? 'To reach it' : 'Rough estimate';
+      $('p-est').textContent = it.est ?? '';
+      $('p-est-row').hidden = !it.est;
+      $('p-gear').textContent = it.gear ?? '';
+      $('p-gear-row').hidden = !it.gear;
 
       // Call to action, by case. The second link is "Full details" (nodes) or the GitHub link (moonshots).
       const link = $('p-link') as HTMLAnchorElement, more = $('p-more') as HTMLAnchorElement;
@@ -832,6 +844,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
   .tm-pop h3:focus { outline: none; }
   .tm-pop h3:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 2px; }
   .tm-pop-brief { margin: 0 0 var(--space-3); color: var(--ink-soft); }
+  .tm-est-how { font-size: var(--step--1); white-space: nowrap; }
   .tm-pop-dl { margin: 0 0 var(--space-4); display: grid; gap: var(--space-2); font-size: var(--step--1); }
   .tm-pop-dl div { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--space-2); }
   .tm-pop-dl div[hidden] { display: none; }
