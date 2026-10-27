@@ -53,6 +53,69 @@ export function mergeDetails(json, details) {
   return warnings;
 }
 
+// Optional rough estimates per node (hours, parts cost, lab and field time, resources, skills).
+const ESTIMATES = new URL('../source/techtree-estimates.json', import.meta.url);
+const EST_KEYS = ['hours', 'parts_usd', 'lab_hours', 'field_days', 'resources', 'skills', 'basis'];
+const RANGES = { hours: 3, parts_usd: 2, lab_hours: 2, field_days: 2 };
+
+/** A range of n non-negative numbers in ascending order, or null. */
+function range(v, n) {
+  return Array.isArray(v) && v.length === n && v.every((x) => typeof x === 'number' && Number.isFinite(x) && x >= 0) && v.every((x, i) => !i || x >= v[i - 1]) ? v : null;
+}
+
+/**
+ * Merge source/techtree-estimates.json into nodes (node.estimate) and roll them up on moonshots and
+ * starshots (shot.estimate): the sum over every node still needed to reach it (done nodes count as zero).
+ * Returns warnings. Run after deriveTree.
+ */
+export function mergeEstimates(json, est) {
+  const warnings = [];
+  const byId = new Map(json.nodes.map((n) => [n.id, n]));
+  for (const n of json.nodes) n.estimate = null;
+  if (est && typeof est === 'object' && !Array.isArray(est)) {
+    for (const [id, e] of Object.entries(est)) {
+      if (id.startsWith('$')) continue;
+      const node = byId.get(id);
+      if (!node) { warnings.push(`estimates: unknown node ${id}`); continue; }
+      if (!e || typeof e !== 'object' || Array.isArray(e)) { warnings.push(`estimates: ${id} must be an object`); continue; }
+      for (const k of Object.keys(e)) if (!EST_KEYS.includes(k)) warnings.push(`estimates: ${id} has unknown field "${k}"`);
+      const out = {};
+      let ok = true;
+      for (const [k, n] of Object.entries(RANGES)) {
+        const r = range(e[k], n);
+        if (!r) { warnings.push(`estimates: ${id} ${k} must be ${n} ascending numbers >= 0`); ok = false; } else out[k] = r;
+      }
+      if (!ok) continue;
+      const list = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim()) : []);
+      out.resources = list(e.resources);
+      out.skills = list(e.skills);
+      if (typeof e.basis === 'string' && e.basis.trim()) out.basis = e.basis.trim();
+      node.estimate = out;
+    }
+  } else if (est !== undefined) warnings.push('estimates: file must contain an object keyed by node ID');
+
+  for (const s of [...json.moonshots, ...json.starshots]) {
+    const total = { hours: [0, 0, 0], parts_usd: [0, 0], lab_hours: [0, 0], field_days: [0, 0] };
+    const resources = new Map();
+    const skills = new Set();
+    let estimated = 0, missing = 0, done = 0;
+    for (const id of s.reach ?? []) {
+      const n = byId.get(id);
+      if (!n) continue;
+      if (n.status === 'done') { done++; continue; }
+      if (!n.estimate) { missing++; continue; }
+      estimated++;
+      for (const k of Object.keys(total)) n.estimate[k].forEach((x, i) => { total[k][i] += x; });
+      for (const r of n.estimate.resources) resources.set(r, (resources.get(r) ?? 0) + 1);
+      for (const k of n.estimate.skills) skills.add(k);
+    }
+    s.estimate = estimated
+      ? { ...total, nodes: estimated, missing, done, resources: [...resources].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, nodes]) => ({ name, nodes })), skills: [...skills].sort() }
+      : null;
+  }
+  return warnings;
+}
+
 const STATUS = { '🟢': 'available', '🔒': 'locked', '🟡': 'in-progress', '✅': 'done' };
 export const EMOJI = { available: '🟢', locked: '🔒', 'in-progress': '🟡', done: '✅' };
 const EXCLUDE_HEADINGS = [/government/i];
@@ -370,6 +433,7 @@ export function deriveTree(parsed, overrides = new Map()) {
       needs: s.needs,
       progress,
       startWith: [...cl].filter((id) => statusOf(id) === 'available').sort(bySource),
+      reach: [...cl].sort(bySource), // every node needed to reach it (key nodes, their prerequisites, dependent moonshots)
     };
   };
 
@@ -616,6 +680,8 @@ async function main() {
     mergeDetails(json, {});
     warnings.push(`source/techtree-details.json is missing: every brief, lead and team is blank`);
   }
+  if (existsSync(ESTIMATES)) warnings.push(...mergeEstimates(json, JSON.parse(readFileSync(ESTIMATES, 'utf8'))));
+  else mergeEstimates(json, undefined);
   applyGithubPeople(json, gh);
   const { ideas, fetched, warning: ideasWarning } = await loadIdeas();
   if (ideasWarning) warnings.push(ideasWarning);

@@ -1,7 +1,7 @@
 // Tests for the pure parts of build-techtree.mjs. Run: npm test
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIssueForm, parseTask, fetchTasks, TASK_REPOS } from './build-techtree.mjs';
+import { parseIssueForm, parseTask, fetchTasks, TASK_REPOS, mergeEstimates } from './build-techtree.mjs';
 
 const BODY = `### Node
 
@@ -109,4 +109,40 @@ test('fetchTasks throws on a GitHub error', async () => {
 
 test('TASK_REPOS lists the five code repos', () => {
   assert.equal(TASK_REPOS.length, 5);
+});
+
+test('mergeEstimates validates nodes and rolls up moonshots over the nodes still needed', () => {
+  const json = {
+    nodes: [{ id: 'A-1', status: 'done' }, { id: 'A-2', status: 'locked' }, { id: 'A-3', status: 'available' }, { id: 'A-4', status: 'locked' }],
+    moonshots: [{ id: 'MS-1', reach: ['A-1', 'A-2', 'A-3', 'A-4'] }],
+    starshots: [],
+  };
+  const e = (h, r) => ({ hours: h, parts_usd: [10, 20], lab_hours: [1, 2], field_days: [0, 1], resources: r, skills: ['RF'] });
+  const warnings = mergeEstimates(json, {
+    $comment: 'ignored',
+    'A-1': e([1, 2, 3], ['SDR']),
+    'A-2': e([10, 20, 40], ['SDR', 'Oscilloscope']),
+    'A-3': { ...e([5, 5, 5], ['Oscilloscope']), basis: ' checked ' },
+    'A-4': { hours: [3, 2, 1] },
+    'Z-9': e([1, 1, 1], []),
+  });
+  assert.ok(warnings.some((w) => w.includes('unknown node Z-9')));
+  assert.ok(warnings.some((w) => w.includes('A-4 hours must be 3 ascending')));
+  assert.equal(json.nodes[3].estimate, null);
+  assert.equal(json.nodes[2].estimate.basis, 'checked');
+  const m = json.moonshots[0].estimate;
+  assert.deepEqual(m.hours, [15, 25, 45]); // A-1 is done, A-4 has no valid estimate
+  assert.deepEqual(m.parts_usd, [20, 40]);
+  assert.equal(m.nodes, 2);
+  assert.equal(m.missing, 1);
+  assert.equal(m.done, 1);
+  assert.deepEqual(m.resources, [{ name: 'Oscilloscope', nodes: 2 }, { name: 'SDR', nodes: 1 }]);
+  assert.deepEqual(m.skills, ['RF']);
+});
+
+test('mergeEstimates leaves estimates empty without a file', () => {
+  const json = { nodes: [{ id: 'A-1', status: 'locked' }], moonshots: [{ id: 'MS-1', reach: ['A-1'] }], starshots: [] };
+  assert.deepEqual(mergeEstimates(json, undefined), []);
+  assert.equal(json.nodes[0].estimate, null);
+  assert.equal(json.moonshots[0].estimate, null);
 });
