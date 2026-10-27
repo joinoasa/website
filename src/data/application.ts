@@ -4,8 +4,9 @@
 // To add a question: add it here, add a column in a new migration file, then deploy.
 
 import { site } from '../config/site';
+import { applyRoles } from './roles';
 
-export type FieldKind = 'text' | 'email' | 'textarea' | 'radio' | 'checkbox';
+export type FieldKind = 'text' | 'email' | 'textarea' | 'radio' | 'checkbox' | 'select';
 
 export interface Field {
   name: string;
@@ -68,6 +69,11 @@ const allFields: Field[] = [
   },
   { name: 'skills', label: 'Skills', kind: 'textarea', required: true, max: 2000, hint: 'What can you do? Code, CAD, electronics, flying, machining, writing, teaching, leading. Anything counts.' },
   { name: 'links', label: 'Links to your work', kind: 'textarea', max: 2000, hint: 'GitHub, builds, photos, videos, anything. One per line.' },
+  {
+    name: 'role', label: 'Role you want to take on', kind: 'select', max: 40,
+    options: [{ value: '', label: 'No specific role' }, ...applyRoles.map((r) => ({ value: r.slug, label: r.title }))],
+    hint: 'Optional. See the open roles at joinoasa.org/roles/. Every role is volunteer for now.',
+  },
   { name: 'interests', label: 'Tech tree nodes or areas you are interested in', kind: 'textarea', max: 1000, hint: 'Node IDs from the tech tree or plain words are both fine.' },
   { name: 'time_commitment', label: 'Time you can give', kind: 'text', max: 200, hint: 'For example: a few hours a week.' },
   { name: 'why', label: 'Why do you want to join OASA?', kind: 'textarea', required: true, max: 3000 },

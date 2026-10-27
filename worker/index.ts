@@ -15,6 +15,7 @@
 //   STAFF_WEBHOOK_URL     secret, optional: Discord #staff webhook for the weekly digest
 
 import { fields, youthOpen, YOUTH, type Field } from '../src/data/application';
+import { roleTitle } from '../src/data/roles';
 import { ADMIN_REPO, applicantIssue, openApplicantIssue, sendDigest } from './admin.js';
 
 interface D1Result { meta: { last_row_id: number } }
@@ -135,7 +136,7 @@ function validate(form: FormData): { values: Values; errors: Errors } {
     }
     if (v.length > f.max) errors[f.name] = `Please keep this under ${f.max} characters.`;
     else if (f.kind === 'email' && !EMAIL_RE.test(v)) errors[f.name] = 'Please enter a valid email address.';
-    else if (f.kind === 'radio' && !f.options?.some((o) => o.value === v)) errors[f.name] = 'Please choose one.';
+    else if ((f.kind === 'radio' || f.kind === 'select') && !f.options?.some((o) => o.value === v)) errors[f.name] = 'Please choose one from the list.';
     else if (f.pattern && !new RegExp(`^(?:${f.pattern.source})$`).test(v)) errors[f.name] = f.pattern.message;
   }
 
@@ -198,6 +199,7 @@ async function notify(webhook: string, id: number, v: Values): Promise<void> {
         `Skills: ${cut(v.skills.replace(/\s+/g, ' '), 300)}`,
         v.contract_interest ? 'Interested in contract work.' : '',
       ];
+  if (v.role) lines.splice(1, 0, `Applying for: **${roleTitle(v.role)}**`);
   if (v.invited_by) lines.push(`Invited by: ${cut(v.invited_by, 80)}`);
   lines.push(`Read it: \`npm run apps:show -- ${id}\``);
 

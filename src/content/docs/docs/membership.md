@@ -28,6 +28,8 @@ Invitees still interview and do the trial. Teams can apply together and do a tea
 
 Any member can invite anyone, including whole teams.
 
+A tier isn't a job. To take one on, such as moderator, researcher or project manager, see [Open roles](/roles/).
+
 ## Promotions
 
 | Promotion | Criteria | Approved by |

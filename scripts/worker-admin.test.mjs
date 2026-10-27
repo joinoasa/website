@@ -37,6 +37,12 @@ test('youth issue: number only', () => {
   for (const leak of ['Kid', 'kidgh', 'kiddc']) assert.ok(!issue.body.includes(leak), leak);
 });
 
+test('role: shown when picked, dropped when odd', () => {
+  assert.match(applicantIssue(5, { name: 'A', age_group: '18+', role: 'network-engineer' }).body, /Applying for a role:\*\* `network-engineer`/);
+  assert.ok(!applicantIssue(6, { name: 'A', age_group: '18+', role: 'x`](evil)' }).body.includes('role'));
+  assert.ok(!applicantIssue(7, { name: 'A', age_group: '18+' }).body.includes('Applying for'));
+});
+
 test('odd handles are dropped, not pasted', () => {
   const issue = applicantIssue(4, { name: 'A', age_group: '18+', github_username: 'bad name`](x)', discord_handle: '' });
   assert.match(issue.body, /- GitHub: —/);
