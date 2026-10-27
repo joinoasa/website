@@ -61,7 +61,7 @@ export function applicantIssue(id, v) {
     const dc = handle(v.discord_handle);
     lines.push(`- GitHub: ${gh ? `\`${gh}\`` : '—'}`, `- Discord: ${dc ? `\`${dc}\`` : '—'}`, '');
   }
-  if (/^[a-z0-9-]{1,40}$/.test(v.role ?? '')) lines.push(`**Applying for a role:** \`${v.role}\` (https://joinoasa.org/roles/#${v.role})`, '');
+  if (/^[a-z0-9-]{1,40}$/.test(v.role ?? '')) lines.push(`**Applying for a role:** \`${v.role}\` (https://joinoasa.org/roles/${v.role}/)`, '');
   lines.push('### Pipeline', ...CHECKLIST.map((l) => l.replaceAll('ID', String(id))));
   return {
     title: youth ? `${app}: guardian consent needed` : `${app}: ${firstName(v.name)}`,

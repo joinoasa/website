@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../config/site';
+import { roles, STATUS_LABEL, type Role } from '../../data/roles';
+
+export function getStaticPaths() {
+  return roles.map((role) => ({ params: { slug: role.slug }, props: { role } }));
+}
+const { role: r } = Astro.props as { role: Role };
+const discord = site.links.discord;
+const others = roles.filter((o) => o.track === r.track && o.slug !== r.slug);
+---
+<Base title={`${r.title} · Open roles`} description={`${r.title} at OASA (volunteer). ${r.purpose}`}>
+  <header class="page-head">
+    <div class="wrap">
+      <p class="crumb"><a href="/roles/">Open roles</a></p>
+      <h1>{r.title}</h1>
+      <ul class="meta">
+        <li><span class="k">Track</span> <a href={`/roles/?track=${r.track.toLowerCase()}`}>{r.track}</a></li>
+        <li><span class="k">Who</span> {r.who}</li>
+        <li><span class="k">Time</span> {r.hours}</li>
+        <li><span class="k">Pay</span> Volunteer</li>
+        <li><span class="status" data-s={r.status}>{STATUS_LABEL[r.status]}</span></li>
+      </ul>
+      {r.apply && <a class="btn btn-primary" href={`/join/apply/?role=${r.slug}`}>Apply for this role</a>}
+    </div>
+  </header>
+
+  <div class="wrap section posting">
+    <div class="body">
+      <h2>About the role</h2>
+      <p class="lead">{r.purpose}</p>
+
+      <h2>What you'll do</h2>
+      <ul>{r.duties.map((d) => <li>{d}</li>)}</ul>
+
+      {r.fits && (<><h2>Good fit for</h2><p>{r.fits}</p></>)}
+      {r.needs && (<><h2>What it needs</h2><p>{r.needs}</p></>)}
+
+      <h2>Pay</h2>
+      <p>Volunteer for now. We plan to pay contributors as funding allows; when OASA has funding, roles like this are where paid work starts. Time you put in now counts.</p>
+    </div>
+
+    <aside class="side">
+      {r.apply ? (
+        <>
+          <h2>Interested?</h2>
+          <p>Not a member yet: apply, and the form picks this role for you.</p>
+          <a class="btn btn-primary" href={`/join/apply/?role=${r.slug}`}>Apply for this role</a>
+          <p class="small">Already a member? Ask an admin{discord ? <> on <a href={discord}>Discord</a></> : ''}.</p>
+        </>
+      ) : r.status === 'invite' ? (
+        <>
+          <h2>By invite</h2>
+          <p>This role holds keys to OASA's systems. Members are invited after 30 days, once we know each other. It needs a security key or passkey on every account.</p>
+          <a class="btn btn-ghost" href="/join/">Start by joining</a>
+        </>
+      ) : (
+        <>
+          <h2>For {r.who}</h2>
+          <p>Members who reach this tier can ask an admin for it.</p>
+          <a class="btn btn-ghost" href="/docs/membership/#tiers">How tiers work</a>
+        </>
+      )}
+      <p class="small"><a href="/roles/#how">How roles work</a></p>
+    </aside>
+  </div>
+
+  {others.length > 0 && (
+    <div class="wrap section related">
+      <h2>More in {r.track}</h2>
+      <ul>{others.map((o) => <li><a href={`/roles/${o.slug}/`}>{o.title}</a> <span>{STATUS_LABEL[o.status]} · {o.hours}</span></li>)}</ul>
+    </div>
+  )}
+</Base>
+
+<style>
+  .crumb { margin: 0 0 var(--space-2); font-size: var(--step--1); }
+  .crumb a { display: inline-flex; align-items: center; min-height: var(--tap); }
+  .crumb a::before { content: '←'; margin-right: 0.4em; }
+  .meta { list-style: none; margin: var(--space-3) 0 var(--space-5); padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); color: var(--ink-soft); }
+  .k { color: var(--ink-muted); font-weight: var(--weight-bold); margin-right: 0.25em; }
+  .status { font-size: var(--step--1); font-family: var(--font-display); font-weight: var(--weight-ui); padding: 0.15rem var(--space-2); border-radius: var(--radius-sm); border: 1px solid currentColor; }
+  .status[data-s='always'] { color: var(--available); }
+  .status[data-s='open'] { color: var(--chart-deep); }
+  .status[data-s='invite'] { color: var(--ink-muted); }
+  .posting { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: var(--space-10); align-items: start; }
+  .body { max-width: var(--measure); }
+  .body h2 { font-size: var(--step-1); margin: var(--space-8) 0 var(--space-2); }
+  .body h2:first-child { margin-top: 0; }
+  .body ul { padding-left: 1.2em; color: var(--ink-soft); }
+  .body li + li { margin-top: var(--space-2); }
+  .body p { color: var(--ink-soft); }
+  .lead { font-size: var(--step-1); color: var(--ink) !important; line-height: var(--leading-lede); }
+  .side { position: sticky; top: var(--space-6); padding: var(--space-5); background: var(--white); border: 1px solid var(--contour); border-top: 3px solid var(--chart); border-radius: var(--radius-sm); }
+  .side h2 { font-size: var(--step-1); margin: 0 0 var(--space-2); }
+  .side p { color: var(--ink-soft); }
+  .small { font-size: var(--step--1); margin: var(--space-3) 0 0; }
+  .related { padding-top: 0; }
+  .related h2 { font-size: var(--step-2); }
+  .related ul { list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--ink); }
+  .related li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--contour); }
+  .related a { font-family: var(--font-display); font-weight: var(--weight-heading); color: var(--ink); }
+  .related span { color: var(--ink-muted); font-size: var(--step--1); }
+  @media (max-width: 860px) { .posting { grid-template-columns: 1fr; } .side { position: static; } }
+</style>
