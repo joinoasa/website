@@ -72,7 +72,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | R-SEC1 | Device identity, keys, pairing | — | R-COM2, R-SEC2, T-UPD1 | Cryptography, key management | 🟢 |
-| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, T-BENCH3, MS-7 | Security engineering | 🔒 |
+| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, T-BENCH6, MS-7 | Security engineering | 🔒 |
 
 ### Power
 
@@ -132,11 +132,18 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-DOCK2 | Auto charging (OASA-DOCK) | T-DOCK1, R-PWR1 | L-7, G-4, S-6, S-7, O-4, O-6, O-8, O-17, MS-7 | Power electronics, mechanisms | 🔒 |
 | T-DOCK3 | Landing on a moving deck (buoy or boat pitching in waves) | T-DOCK1 | S-6, S-7 | Control, motion prediction | 🔒 |
 | T-SIM1 | Simulator / digital twin | R-CTL2 | SP-4, training | Simulation, physics engines | 🔒 |
-| T-BENCH1 | Test bench + test software | — | T-BENCH2, MS-8, Quality across all nodes | Test engineering | 🟢 |
-| T-BENCH2 | Remote autonomous lab (one site, run by its owner and AI agents from anywhere; every run leaves checked evidence) | T-BENCH1 | T-BENCH3 | Test automation, networking, security | 🔒 |
-| T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH2, R-SEC2 | T-BENCH4 | Security, operations | 🔒 |
-| T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3 | T-BENCH5 | Distributed systems, test engineering | 🔒 |
+| T-BENCH1 | Test bench + test software | — | T-BENCH2, T-BENCH12, MS-8, Quality across all nodes | Test engineering | 🟢 |
+| T-BENCH2 | Remote autonomous lab (one site, run by its owner and AI agents from anywhere; every run leaves checked evidence) | T-BENCH1 | T-BENCH6, T-BENCH8 | Test automation, networking, security | 🔒 |
+| T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH6, T-BENCH8 | T-BENCH4 | Security, operations | 🔒 |
+| T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3, T-BENCH9 | T-BENCH5, MS-24 | Distributed systems, test engineering | 🔒 |
 | T-BENCH5 | Lab facility (warehouse-scale: shielded rooms, ranges, many radio and vehicle types) | T-BENCH4 | — | RF test, facilities, operations | 🔒 |
+| T-BENCH6 | Lab access (one sign-in with MFA, roles by trust tier, every access logged) | T-BENCH2, R-SEC2 | T-BENCH3, T-BENCH7 | Identity and access management, security | 🔒 |
+| T-BENCH7 | Lab connector (no open ports; end-to-end WireGuard with an open fallback) | T-BENCH6 | T-BENCH9, T-BENCH11 | Networking, security | 🔒 |
+| T-BENCH8 | Lab standard (OASA-LAB): trust tiers, cabled-only radio on the network, attended jobs, off until booked | T-BENCH2 | T-BENCH3, T-BENCH10, T-BENCH11, T-BENCH12 | Standards, safety engineering, RF compliance | 🔒 |
+| T-BENCH9 | Resource registry and dashboard | T-BENCH7 | T-BENCH4, T-BENCH10 | Distributed systems, monitoring, UX | 🔒 |
+| T-BENCH10 | Power-on-demand (sleep until booked, energy per job recorded) | T-BENCH8, T-BENCH9 | MS-24 | Power electronics, scheduling, energy efficiency | 🔒 |
+| T-BENCH11 | Shared compute and storage | T-BENCH7, T-BENCH8 | MS-24 | Virtualization, storage, security | 🔒 |
+| T-BENCH12 | Equipment revival (retired instruments become bookable lab gear) | T-BENCH1, T-BENCH8 | MS-24 | Test equipment, embedded systems, sustainability | 🔒 |
 | T-RF1 | RF scanning in radios | R-COM1 | R-COM5, T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
 | T-RF2 | Direction finding (bearings on TAK) | T-RF1, R-TIME1, T-MAP1 | Interference hunting | Antenna arrays, signal processing | 🔒 |
 | T-RF3 | Beamforming | T-RF1 | R-COM4, T-RF4, A-6, MS-1, MS-10, MS-17, Longer links | Phased arrays, DSP | 🔒 |
@@ -369,6 +376,7 @@ Plan from the start for OASA systems to work beyond Earth. Stepping stones begin
 | MS-21 | **Smart Infrastructure Watch** — roads, storm drains, water mains, the grid, dams and levees inspected autonomously | I-6, I-7, I-8, I-9, I-11, G-6 |
 | MS-22 | **Hidden Hazards & Discovery** — finding unexploded ordnance on former U.S. military sites, abandoned mines and buried hazards; the same LiDAR tools reveal American archaeology | X-12, X-13 |
 | MS-23 | **Citizen Science Network** — anyone can host a sensor and add to a shared open map, bridged with Meshtastic | O-18, O-22, T-NET5, O-19 |
+| MS-24 | **Shared Research Grid** — members pool compute, storage, instruments and lab time over an encrypted mesh, so anyone can research with gear they could never afford alone; coordinated centrally, never dependent on it | T-BENCH4, T-BENCH10, T-BENCH11, T-BENCH12 |
 
 ---
 
@@ -450,11 +458,11 @@ These map closely to **Rung 1 and Rung 2** in OASA-roadmap.md.
 | Electronics | R-PWR, R-COM, T-PAY1, T-BENCH1 |
 | RF engineering | R-COM, T-RF, T-NET, U-3 |
 | Cryptography & security | R-SEC, R-COM2 |
-| Networking & distributed systems | T-NET, T-MAP, O-1 |
+| Networking & distributed systems | T-NET, T-MAP, O-1, T-BENCH7, T-BENCH9 |
 | Aerospace engineering | A-, L- |
 | Mechanical engineering | G-, M-, T-DOCK |
 | Marine / naval engineering | S-, U- |
-| Energy & power electronics | R-PWR, A-5, L-2, L-3, S-3 |
+| Energy & power electronics | R-PWR, A-5, L-2, L-3, S-3, T-BENCH10 |
 | Controls & autonomy | R-CTL, T-DOCK1, M-2 |
 | Navigation | R-NAV, R-TIME1 |
 | Sensors & signal processing | X-, T-RF2, X-5 |
