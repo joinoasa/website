@@ -62,7 +62,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | R-COM1 | Basic radio link (off-the-shelf) | — | R-COM2, R-CTL1, T-PAY1, T-RF1 | RF basics, antennas | 🟢 |
-| R-COM2 | Encrypted link (OASA-SEC v0) | R-COM1, R-SEC1 | R-COM4, R-COM5, T-MAP1, T-NET1, T-BENCH7, U-3, O-2, SP-1, MS-7 | Cryptography basics, networking | 🔒 |
+| R-COM2 | Encrypted link (OASA-SEC v0) | R-COM1, R-SEC1 | R-COM4, R-COM5, T-MAP1, T-NET1, U-3, O-2, SP-1, MS-7 | Cryptography basics, networking | 🔒 |
 | R-COM3 | Physical links (copper/fiber tether) | — | R-PWR4, L-4, U-1, U-2, I-1, C-3 | Fiber optics, cabling, signal integrity | 🟢 |
 | R-COM4 | Laser links (free-space optical, encrypted) with in-flight pointing and tracking | R-COM2, T-RF3 | R-PWR5, SP-2, MS-17 | Optics, tracking control | 🔒 |
 | R-COM5 | Open SDR radio: multi-band IP radio with plug-in band cards (sub-GHz control and fallback, 5.8 GHz data, 60 GHz later) and a router inside that carries encrypted OASA traffic | R-COM2, T-RF1 | T-RF4 | SDR, RF design, embedded Linux | 🔒 |
@@ -72,7 +72,7 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
 | R-SEC1 | Device identity, keys, pairing | — | R-COM2, R-SEC2, T-UPD1 | Cryptography, key management | 🟢 |
-| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, T-BENCH3, T-BENCH6, MS-7 | Security engineering | 🔒 |
+| R-SEC2 | Key rotation and device removal | R-SEC1 | T-NET1, T-BENCH6, MS-7 | Security engineering | 🔒 |
 
 ### Power
 
@@ -133,17 +133,17 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-DOCK3 | Landing on a moving deck (buoy or boat pitching in waves) | T-DOCK1 | S-6, S-7 | Control, motion prediction | 🔒 |
 | T-SIM1 | Simulator / digital twin | R-CTL2 | SP-4, training | Simulation, physics engines | 🔒 |
 | T-BENCH1 | Test bench + test software | — | T-BENCH2, T-BENCH12, MS-8, Quality across all nodes | Test engineering | 🟢 |
-| T-BENCH2 | Remote autonomous lab (one site, run by its owner and AI agents from anywhere; every run leaves checked evidence) | T-BENCH1 | T-BENCH3, T-BENCH6, T-BENCH8 | Test automation, networking, security | 🔒 |
-| T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH2, R-SEC2, T-BENCH6, T-BENCH8 | T-BENCH4 | Security, operations | 🔒 |
-| T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3, T-BENCH7, T-BENCH9 | T-BENCH5, MS-24 | Distributed systems, test engineering | 🔒 |
+| T-BENCH2 | Remote autonomous lab (one site, run by its owner and AI agents from anywhere; every run leaves checked evidence) | T-BENCH1 | T-BENCH6, T-BENCH8 | Test automation, networking, security | 🔒 |
+| T-BENCH3 | Shared lab (invited members run approved suites; roles, queue, audit) | T-BENCH6, T-BENCH8 | T-BENCH4 | Security, operations | 🔒 |
+| T-BENCH4 | Federated lab network (home labs join; jobs go to a lab with the right hardware) | T-BENCH3, T-BENCH9 | T-BENCH5, MS-24 | Distributed systems, test engineering | 🔒 |
 | T-BENCH5 | Lab facility (warehouse-scale: shielded rooms, ranges, many radio and vehicle types) | T-BENCH4 | — | RF test, facilities, operations | 🔒 |
-| T-BENCH6 | Lab access: one sign-in with MFA for every lab, access by role and trust tier (open, member, secure), every access logged | T-BENCH2, R-SEC2 | T-BENCH3, T-BENCH7, T-BENCH9, T-BENCH11 | Identity and access management, security | 🔒 |
-| T-BENCH7 | Lab connector: a lab joins in one step and opens no ports; labs talk over end-to-end WireGuard carried through a managed tunnel, with an open fallback so labs keep working if the provider goes away | T-BENCH6, R-COM2 | T-BENCH4, T-BENCH9, T-BENCH11 | Networking, security | 🔒 |
-| T-BENCH8 | Lab standard (OASA-LAB): trust tiers, radio tests cabled only on the network, over-the-air only in shielded boxes or air-gapped field tests, attended jobs for anything that moves or handles high power, every resource off until booked | T-BENCH2 | T-BENCH3, T-BENCH10, T-BENCH11, T-BENCH12 | Standards, safety engineering, RF compliance | 🔒 |
-| T-BENCH9 | Resource registry and dashboard: what's where, online status from heartbeats, booking, click to access; the registry can be rebuilt from labs' own records, so no single server owns it | T-BENCH6, T-BENCH7 | T-BENCH4, T-BENCH10 | Distributed systems, monitoring, UX | 🔒 |
-| T-BENCH10 | Power-on-demand: resources sleep until booked, wake for the job and shut down after; energy per job is recorded | T-BENCH8, T-BENCH9 | MS-24 | Power electronics, scheduling, energy efficiency | 🔒 |
-| T-BENCH11 | Shared compute and storage: donated machines run throwaway VMs and encrypted, replicated storage, by trust tier | T-BENCH6, T-BENCH7, T-BENCH8 | MS-24 | Virtualization, storage, security | 🔒 |
-| T-BENCH12 | Equipment revival: old instruments get a small network adapter and a lab driver, turning donated or retired gear into bookable, autonomous lab equipment | T-BENCH1, T-BENCH8 | MS-24 | Test equipment, embedded systems, sustainability | 🔒 |
+| T-BENCH6 | Lab access (one sign-in with MFA, roles by trust tier, every access logged) | T-BENCH2, R-SEC2 | T-BENCH3, T-BENCH7 | Identity and access management, security | 🔒 |
+| T-BENCH7 | Lab connector (no open ports; end-to-end WireGuard with an open fallback) | T-BENCH6 | T-BENCH9, T-BENCH11 | Networking, security | 🔒 |
+| T-BENCH8 | Lab standard (OASA-LAB): trust tiers, cabled-only radio on the network, attended jobs, off until booked | T-BENCH2 | T-BENCH3, T-BENCH10, T-BENCH11, T-BENCH12 | Standards, safety engineering, RF compliance | 🔒 |
+| T-BENCH9 | Resource registry and dashboard | T-BENCH7 | T-BENCH4, T-BENCH10 | Distributed systems, monitoring, UX | 🔒 |
+| T-BENCH10 | Power-on-demand (sleep until booked, energy per job recorded) | T-BENCH8, T-BENCH9 | MS-24 | Power electronics, scheduling, energy efficiency | 🔒 |
+| T-BENCH11 | Shared compute and storage | T-BENCH7, T-BENCH8 | MS-24 | Virtualization, storage, security | 🔒 |
+| T-BENCH12 | Equipment revival (retired instruments become bookable lab gear) | T-BENCH1, T-BENCH8 | MS-24 | Test equipment, embedded systems, sustainability | 🔒 |
 | T-RF1 | RF scanning in radios | R-COM1 | R-COM5, T-RF2, T-RF3, X-11 | Spectrum analysis, SDR | 🔒 |
 | T-RF2 | Direction finding (bearings on TAK) | T-RF1, R-TIME1, T-MAP1 | Interference hunting | Antenna arrays, signal processing | 🔒 |
 | T-RF3 | Beamforming | T-RF1 | R-COM4, T-RF4, A-6, MS-1, MS-10, MS-17, Longer links | Phased arrays, DSP | 🔒 |

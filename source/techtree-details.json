@@ -1195,13 +1195,13 @@
     "team": []
   },
   "T-BENCH7": {
-    "brief": "Lets a member's lab join the network in one step without opening ports. Labs talk over end-to-end WireGuard carried through a managed tunnel, with an open-source fallback so the network survives losing any one provider.",
+    "brief": "Lets a member's lab join the network in one step without opening ports. Labs talk over end-to-end WireGuard carried through a managed tunnel, with an open-source fallback (such as Headscale or NetBird) so the network survives losing any one provider.",
     "github": null,
     "lead": null,
     "team": []
   },
   "T-BENCH8": {
-    "brief": "The rules every lab follows (OASA-LAB): trust tiers, cabled-only radio tests on the network, over-the-air tests only in shielded boxes or air-gapped field sites, a person on site for anything that moves or handles high power, and every resource off until it's booked.",
+    "brief": "The rules every lab follows (OASA-LAB): trust tiers (open, member, secure, air-gapped); radio tests cabled only on the network; over-the-air tests only in shielded boxes or air-gapped field sites; a person on site for anything that moves or handles high power; every resource off until booked.",
     "github": null,
     "lead": null,
     "team": []
@@ -1225,7 +1225,7 @@
     "team": []
   },
   "T-BENCH12": {
-    "brief": "Turns retired or donated instruments (older scopes, analyzers, power supplies) into network-connected lab equipment with a small adapter and a lab driver. Sustainability you can book.",
+    "brief": "Turns retired or donated instruments (older scopes, analyzers, power supplies) into network-connected lab equipment with a small adapter and a lab driver, so old gear stays useful instead of becoming waste.",
     "github": null,
     "lead": null,
     "team": []
