@@ -972,6 +972,12 @@
     "lead": null,
     "team": []
   },
+  "MS-24": {
+    "brief": "A shared research grid built from members' labs: computers, storage, radios and test instruments anyone in OASA can book over an encrypted mesh. Gear that would sit idle gets used, and people can research with equipment they could never afford alone.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
   "ST-1": {
     "brief": "A group of OASA CubeSats that extend the encrypted mesh into space. A long-term goal beyond the first test satellite.",
     "github": null,
@@ -1178,6 +1184,48 @@
   },
   "T-BENCH5": {
     "brief": "A shared, warehouse-scale lab with shielded rooms, test ranges and many radio and vehicle types, open to the lab network.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH6": {
+    "brief": "One sign-in with multi-factor authentication for every OASA lab. Each person gets access by role and trust tier, and every login and use of a resource is logged.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH7": {
+    "brief": "Lets a member's lab join the network in one step without opening ports. Labs talk over end-to-end WireGuard carried through a managed tunnel, with an open-source fallback so the network survives losing any one provider.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH8": {
+    "brief": "The rules every lab follows (OASA-LAB): trust tiers, cabled-only radio tests on the network, over-the-air tests only in shielded boxes or air-gapped field sites, a person on site for anything that moves or handles high power, and every resource off until it's booked.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH9": {
+    "brief": "Shows every lab resource in one place: what it is, where it is, whether it's online, and who can book it. One click opens access. Labs keep their own signed records, so the registry can be rebuilt anywhere.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH10": {
+    "brief": "Lab resources sleep until someone books them, wake for the job, and shut down after. Energy use per job is recorded, so efficiency is measured, not assumed.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH11": {
+    "brief": "Members donate spare computers and storage to the network. Jobs run in throwaway virtual machines, and storage is encrypted and replicated, matched to each resource's trust tier.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-BENCH12": {
+    "brief": "Turns retired or donated instruments (older scopes, analyzers, power supplies) into network-connected lab equipment with a small adapter and a lab driver. Sustainability you can book.",
     "github": null,
     "lead": null,
     "team": []
