@@ -30,6 +30,7 @@ If you're an AI assistant helping someone with an OASA idea, start with the brai
 - [Claim a node](https://joinoasa.org/docs/claim-a-node/): how members pick up tech tree work
 - [Standards](https://joinoasa.org/docs/standards/)
 - [Membership](https://joinoasa.org/docs/membership/)
+- [New member start](https://joinoasa.org/docs/new-members/): first-week setup and where to start
 
 ## Working in the code
 

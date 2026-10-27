@@ -31,4 +31,4 @@ if (!apply) {
 const ids = rows.map((r) => sqlInt(r.id)).join(', ');
 d1(`DELETE FROM application_events WHERE app_id IN (${ids});\nDELETE FROM applications WHERE id IN (${ids}) AND status IN ('declined', 'withdrawn');`, { local });
 console.log(`\nDeleted ${rows.length} application(s) at ${nowIso().slice(0, 16)}Z.`);
-console.log(`Now also delete the Discord alert messages for: ${rows.map((r) => '#' + r.id).join(', ')}`);
+console.log(`Now also delete, for ${rows.map((r) => '#' + r.id).join(', ')}: the Discord alert messages, any #staff messages naming them, and the joinoasa/admin issues (${rows.map((r) => `APP-${String(r.id).padStart(4, '0')}`).join(', ')}).`);

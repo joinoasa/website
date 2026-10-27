@@ -35,6 +35,7 @@ export default defineConfig({
         ] },
         { label: 'Membership', items: [
           { label: 'How membership works', slug: 'docs/membership' },
+          { label: 'New member start', slug: 'docs/new-members' },
           { label: 'Projects', slug: 'docs/projects' },
           { label: 'Claim a node', slug: 'docs/claim-a-node' },
         ] },

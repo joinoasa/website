@@ -32,11 +32,11 @@ export function addDays(date, days) {
   return d.toISOString().slice(0, 10);
 }
 
-/** Parses the shared flags: --local, --dry (print the SQL, run nothing). Returns the rest as `args`. */
+/** Parses the shared flags: --local, --dry (print the SQL, run nothing), --apply, --offline (don't touch GitHub). Returns the rest as `args`. */
 export function parseArgs(argv) {
   const flags = new Set(argv.filter((a) => /^--[a-z]+$/.test(a)));
   const args = argv.filter((a) => !/^--[a-z]+$/.test(a));
-  return { args, local: flags.has('--local'), dry: flags.has('--dry'), apply: flags.has('--apply') };
+  return { args, local: flags.has('--local'), dry: flags.has('--dry'), apply: flags.has('--apply'), offline: flags.has('--offline') };
 }
 
 /** Runs SQL on D1 through wrangler (no shell). Returns the result sets, one per statement. */
