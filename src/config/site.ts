@@ -26,7 +26,7 @@ export const site = {
 
   apply: {
     formUrl: '/join/apply/' as string | null, // built-in form (worker/index.ts + D1); null = email application with a question template
-    turnstileSiteKey: null as string | null, // TODO(owner): Cloudflare Turnstile site key (public); null = no spam check widget
+    turnstileSiteKey: '0x4AAAAAAFoBr1NfaoqmFMa6' as string | null, // Cloudflare Turnstile site key (public; widget "joinoasa apply form"). The secret goes in TURNSTILE_SECRET. null = no widget
   },
 
   links: {
