@@ -24,7 +24,8 @@ export function formatEstimate(e: Pick<NodeEstimate, 'hours' | 'parts_usd' | 'la
 /** Moonshot roll-up: the estimate plus how many nodes it covers. */
 export function formatShotEstimate(e: ShotEstimate | null | undefined): string {
   if (!e) return '';
-  const counted = `${e.nodes} ${e.nodes === 1 ? 'node' : 'nodes'} to go${e.missing ? `, ${e.missing} not estimated yet` : ''}`;
+  if (!e.nodes) return e.missing ? `${e.missing} ${e.missing === 1 ? 'node' : 'nodes'} still to do, not estimated yet` : 'Every needed node is done';
+  const counted = `${e.nodes} ${e.nodes === 1 ? 'node' : 'nodes'} in all still to do${e.missing ? `, ${e.missing} more not estimated yet` : ''}`;
   return `${formatEstimate(e)} (${counted})`;
 }
 

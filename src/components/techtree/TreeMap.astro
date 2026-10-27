@@ -278,9 +278,9 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
       <div data-p-people-row><dt>Who's on it</dt><dd data-p-people></dd></div>
       <div><dt data-p-req-label>Requires</dt><dd data-p-req></dd></div>
       <div data-p-unl-row><dt>Unlocks</dt><dd data-p-unl></dd></div>
-      <div data-p-ideas-row hidden><dt>Grew from</dt><dd data-p-ideas></dd></div>
       <div data-p-est-row hidden><dt data-p-est-label>Rough estimate</dt><dd><span data-p-est></span> <a href="/docs/estimates/" class="tm-est-how">How estimates work</a></dd></div>
       <div data-p-gear-row hidden><dt>Equipment</dt><dd data-p-gear></dd></div>
+      <div data-p-ideas-row hidden><dt>Grew from</dt><dd data-p-ideas></dd></div>
     </dl>
     <p class="tm-pop-actions"><a class="btn btn-primary" data-p-link></a><a class="tm-more" data-p-more></a><a class="tm-more" data-p-how href="/docs/claim-a-node/" hidden>How claiming works</a></p>
   </div>
@@ -569,7 +569,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
       });
       $('p-ideas-row').hidden = !(it.ideas ?? []).length;
       // Rough estimate (node) or roll-up of everything still needed (moonshot).
-      $('p-est-label').textContent = it.kind === 'moonshot' ? 'Rough estimate to reach it' : 'Rough estimate';
+      $('p-est-label').textContent = it.kind === 'moonshot' ? 'To reach it' : 'Rough estimate';
       $('p-est').textContent = it.est ?? '';
       $('p-est-row').hidden = !it.est;
       $('p-gear').textContent = it.gear ?? '';

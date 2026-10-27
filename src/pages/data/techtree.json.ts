@@ -13,7 +13,7 @@ export const GET: APIRoute = () => {
       brief: n.brief, moonshots: n.moonshots, ideas: (n.ideas ?? []).map((x) => x.id), github: n.github, estimate: n.estimate,
     })),
     moonshots: tree.moonshots.map((m) => ({ id: m.id, title: m.title, summary: m.summary, needs: m.builds, brief: m.brief, estimate: m.estimate })),
-    starshots: tree.starshots.map((m) => ({ id: m.id, title: m.title, summary: m.summary, buildsOn: m.builds })),
+    starshots: tree.starshots.map((m) => ({ id: m.id, title: m.title, summary: m.summary, buildsOn: m.builds, estimate: m.estimate })),
   };
   return new Response(JSON.stringify(body, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
 };

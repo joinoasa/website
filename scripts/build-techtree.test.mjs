@@ -114,7 +114,7 @@ test('TASK_REPOS lists the five code repos', () => {
 test('mergeEstimates validates nodes and rolls up moonshots over the nodes still needed', () => {
   const json = {
     nodes: [{ id: 'A-1', status: 'done' }, { id: 'A-2', status: 'locked' }, { id: 'A-3', status: 'available' }, { id: 'A-4', status: 'locked' }],
-    moonshots: [{ id: 'MS-1', reach: ['A-1', 'A-2', 'A-3', 'A-4'] }],
+    moonshots: [{ id: 'MS-1', needs: { nodes: ['A-1', 'A-2', 'A-3', 'A-4'], moonshots: [] } }],
     starshots: [],
   };
   const e = (h, r) => ({ hours: h, parts_usd: [10, 20], lab_hours: [1, 2], field_days: [0, 1], resources: r, skills: ['RF'] });
@@ -140,9 +140,35 @@ test('mergeEstimates validates nodes and rolls up moonshots over the nodes still
   assert.deepEqual(m.skills, ['RF']);
 });
 
-test('mergeEstimates leaves estimates empty without a file', () => {
-  const json = { nodes: [{ id: 'A-1', status: 'locked' }], moonshots: [{ id: 'MS-1', reach: ['A-1'] }], starshots: [] };
+test('mergeEstimates without a file: no node estimates, moonshots count what is missing', () => {
+  const json = { nodes: [{ id: 'A-1', status: 'locked' }], moonshots: [{ id: 'MS-1', needs: { nodes: ['A-1'], moonshots: [] } }], starshots: [] };
   assert.deepEqual(mergeEstimates(json, undefined), []);
   assert.equal(json.nodes[0].estimate, null);
-  assert.equal(json.moonshots[0].estimate, null);
+  assert.equal(json.moonshots[0].estimate.nodes, 0);
+  assert.equal(json.moonshots[0].estimate.missing, 1); // still says how many aren't estimated
+});
+
+test('mergeEstimates takes only the cheapest alternative and checks names and lab hours', () => {
+  const e = (likely, r = []) => ({ hours: [likely, likely, likely], parts_usd: [0, 0], lab_hours: [0, 0], field_days: [0, 0], resources: r, skills: [] });
+  const json = {
+    nodes: [
+      { id: 'B-1', status: 'locked', requiresGroups: [{ kind: 'any', ids: ['B-2', 'B-3'], text: [] }, { kind: 'atLeast', n: 1, ids: ['B-4', 'B-5'] }] },
+      { id: 'B-2', status: 'locked' }, { id: 'B-3', status: 'locked' }, { id: 'B-4', status: 'done' }, { id: 'B-5', status: 'locked' },
+      { id: 'B-6', status: 'locked' },
+    ],
+    moonshots: [{ id: 'MS-1', needs: { nodes: ['B-1'], moonshots: [] } }],
+    starshots: [{ id: 'ST-1', needs: { nodes: [], moonshots: ['MS-1'] } }],
+  };
+  const warnings = mergeEstimates(json, {
+    $resources: ['SDR'],
+    'B-1': e(10, ['SDR']), 'B-2': e(100), 'B-3': e(5, ['Typo']), 'B-5': e(50),
+    'B-6': { ...e(1), lab_hours: [0, 9] },
+  });
+  assert.ok(warnings.includes('estimates: B-3 resource "Typo" is not in $resources'));
+  assert.ok(warnings.includes('estimates: no entry for B-4'));
+  assert.ok(warnings.includes('estimates: B-6 lab_hours can\'t exceed hours'));
+  const m = json.moonshots[0].estimate;
+  assert.deepEqual(m.hours, [15, 15, 15]); // B-1 + cheaper B-3; B-4 (done) beats B-5
+  assert.equal(m.done, 1);
+  assert.deepEqual(json.starshots[0].estimate.hours, [15, 15, 15]); // through MS-1
 });

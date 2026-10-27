@@ -43,7 +43,7 @@ const needsLabel = (m: Shot, starshot: boolean) => {
           )}
           {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
           {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
-          {m.estimate && <p class="progress">Rough estimate to reach it: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
+          {m.estimate && <p class="progress">Rough estimate to reach it, counting every node it needs: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
           {m.startWith.length > 0 && (
             <div class="needs start">
               <span class="needs-label">Start with:</span>
@@ -75,7 +75,7 @@ const needsLabel = (m: Shot, starshot: boolean) => {
           )}
           {m.needs.text && <p class="needs-text">{cap(m.needs.text)}.</p>}
           {m.progress.total > 0 && <p class="progress">{m.progress.done} of {m.progress.total} needed {m.progress.total === 1 ? 'node' : 'nodes'} done · {m.progress.available} available to start</p>}
-          {m.estimate && <p class="progress">Rough estimate to reach it: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
+          {m.estimate && <p class="progress">Rough estimate to reach it, counting every node it needs: {formatShotEstimate(m.estimate as ShotEstimate)} · <a href="/docs/estimates/">How estimates work</a></p>}
           {m.startWith.length > 0 && (
             <div class="needs start">
               <span class="needs-label">Start with:</span>

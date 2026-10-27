@@ -19,11 +19,11 @@ Every [tech tree](/techtree/) node has a **rough estimate**. Estimates help plan
 | Equipment | What it needs to borrow or book, such as a spectrum analyzer or a flight test range |
 | Skills | The disciplines it needs, taken from the node's sciences |
 
-Equipment uses one shared list across the tree, so it adds up: equipment many nodes need is equipment worth asking donors for.
+Equipment uses one shared list across the tree (`$resources` in the estimates file; the build warns about any other name), so it adds up: equipment many nodes need is equipment worth asking donors for.
 
 ## Moonshots
 
-A moonshot's estimate is the sum over **every node still needed to reach it**: its key nodes, everything they require, and any moonshot it builds on. Nodes marked done count as zero. If some nodes have no estimate yet, the moonshot says how many.
+A moonshot's estimate is the sum over **the nodes needed to reach it**: its key nodes, everything they require, and any moonshot it builds on. Where a node needs "A or B" (or "two of A/B/C"), only the cheapest choices count, so the total follows one realistic path. Nodes marked done count as zero. If some nodes have no estimate yet, the moonshot says how many.
 
 Adding up ranges makes wide ranges. That's honest: a big project really is uncertain, and the range narrows as nodes are finished and estimates are refined.
 

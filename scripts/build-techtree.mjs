@@ -65,7 +65,8 @@ function range(v, n) {
 
 /**
  * Merge source/techtree-estimates.json into nodes (node.estimate) and roll them up on moonshots and
- * starshots (shot.estimate): the sum over every node still needed to reach it (done nodes count as zero).
+ * starshots (shot.estimate): the sum over the nodes needed to reach it, taking only the cheapest
+ * alternatives in "A or B" requirements. Done nodes count as zero.
  * Returns warnings. Run after deriveTree.
  */
 export function mergeEstimates(json, est) {
@@ -94,14 +95,49 @@ export function mergeEstimates(json, est) {
     }
   } else if (est !== undefined) warnings.push('estimates: file must contain an object keyed by node ID');
 
+  // Resource names must come from the shared list, so equipment adds up across the tree.
+  const vocab = est && Array.isArray(est.$resources) ? new Set(est.$resources) : null;
+  for (const n of json.nodes) {
+    const e = n.estimate;
+    if (!e) { if (est !== undefined) warnings.push(`estimates: no entry for ${n.id}`); continue; }
+    if (vocab) for (const r of e.resources) if (!vocab.has(r)) warnings.push(`estimates: ${n.id} resource "${r}" is not in $resources`);
+    if (e.lab_hours[1] > e.hours[2]) warnings.push(`estimates: ${n.id} lab_hours can't exceed hours`);
+  }
+
+  // Roll-up set: key nodes and dependent moonshots, then each node's requirements. For "A or B" and
+  // "two of A/B/C", only the cheapest alternatives count (done first, then fewest likely hours).
+  const shotById = new Map([...json.moonshots, ...json.starshots].map((s) => [s.id, s]));
+  const cost = (id) => { const n = byId.get(id); return !n ? Infinity : n.status === 'done' ? -1 : n.estimate ? n.estimate.hours[1] : Infinity; };
+  const cheapest = (ids, k) => [...ids].filter((id) => byId.has(id)).sort((a, b) => cost(a) - cost(b)).slice(0, k);
+  const pathOf = (shot) => {
+    const set = new Set();
+    const seenShots = new Set();
+    const visit = (id) => {
+      if (set.has(id) || !byId.has(id)) return;
+      set.add(id);
+      for (const g of byId.get(id).requiresGroups ?? []) {
+        if (g.kind === 'any') { if (!(g.text ?? []).length || g.ids.length) cheapest(g.ids, 1).forEach(visit); }
+        else if (g.kind === 'atLeast') cheapest(g.ids, g.n).forEach(visit);
+        else g.ids.forEach(visit);
+      }
+    };
+    const visitShot = (s) => {
+      if (!s || seenShots.has(s.id)) return;
+      seenShots.add(s.id);
+      (s.needs?.nodes ?? []).forEach(visit);
+      (s.needs?.moonshots ?? []).forEach((m) => visitShot(shotById.get(m)));
+    };
+    visitShot(shot);
+    return set;
+  };
+
   for (const s of [...json.moonshots, ...json.starshots]) {
     const total = { hours: [0, 0, 0], parts_usd: [0, 0], lab_hours: [0, 0], field_days: [0, 0] };
     const resources = new Map();
     const skills = new Set();
     let estimated = 0, missing = 0, done = 0;
-    for (const id of s.reach ?? []) {
+    for (const id of pathOf(s)) {
       const n = byId.get(id);
-      if (!n) continue;
       if (n.status === 'done') { done++; continue; }
       if (!n.estimate) { missing++; continue; }
       estimated++;
@@ -109,7 +145,7 @@ export function mergeEstimates(json, est) {
       for (const r of n.estimate.resources) resources.set(r, (resources.get(r) ?? 0) + 1);
       for (const k of n.estimate.skills) skills.add(k);
     }
-    s.estimate = estimated
+    s.estimate = estimated + missing + done
       ? { ...total, nodes: estimated, missing, done, resources: [...resources].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, nodes]) => ({ name, nodes })), skills: [...skills].sort() }
       : null;
   }
