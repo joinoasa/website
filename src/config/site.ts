@@ -97,12 +97,10 @@ export const socialLinks: NavLink[] = [
 
 export const nav = {
   primary: [
+    // Short on purpose: Moonshots, Chapters, About and Docs live in the footer.
     { href: '/techtree/', label: 'Tech tree' },
-    { href: '/moonshots/', label: 'Moonshots' },
     { href: '/ideas/', label: 'Ideas' },
-    { href: '/chapters/', label: 'Chapters' },
-    { href: '/about/', label: 'About' },
-    { href: '/docs/', label: 'Docs' },
+    { href: '/roles/', label: 'Open roles' },
   ] as NavLink[],
   apply: { href: '/join/', label: 'Apply to join', short: 'Apply' },
   footer: [
