@@ -1154,79 +1154,79 @@
   },
   "T-UPD1": {
     "brief": "Makes every software and firmware update signed and checked on the device before it installs, and only when the vehicle is landed and an operator says yes. Builds on TUF, Uptane and the PX4 and ArduPilot secure bootloaders.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/167",
     "lead": null,
     "team": []
   },
   "T-UPD2": {
     "brief": "Lets a ground station carry signed updates into the field and serve its fleet with no internet, and shows every device's version on the shared map.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/168",
     "lead": null,
     "team": []
   },
   "T-BENCH2": {
     "brief": "Lets one lab run tests with nobody in the room: its owner and AI agents start approved test suites from anywhere, watch them live, and get results an independent checker has verified.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/169",
     "lead": "citruscybersec",
     "team": []
   },
   "T-BENCH3": {
     "brief": "Opens a lab to invited members, who can run approved test suites on its hardware, with roles, a queue and an audit log.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/170",
     "lead": null,
     "team": []
   },
   "T-BENCH4": {
     "brief": "Connects members' home labs into one network. Each lab lists its hardware, and tests go to a lab that has what they need.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/171",
     "lead": null,
     "team": []
   },
   "T-BENCH5": {
     "brief": "A shared, warehouse-scale lab with shielded rooms, test ranges and many radio and vehicle types, open to the lab network.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/172",
     "lead": null,
     "team": []
   },
   "T-BENCH6": {
     "brief": "One sign-in with multi-factor authentication for every OASA lab. Each person gets access by role and trust tier, and every login and use of a resource is logged.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/178",
     "lead": null,
     "team": []
   },
   "T-BENCH7": {
     "brief": "Lets a member's lab join the network in one step without opening ports. Labs talk over end-to-end WireGuard carried through a managed tunnel, with an open-source fallback (such as Headscale or NetBird) so the network survives losing any one provider.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/179",
     "lead": null,
     "team": []
   },
   "T-BENCH8": {
     "brief": "The rules every lab follows (OASA-LAB): trust tiers (open, member, secure, air-gapped); radio tests cabled only on the network; over-the-air tests only in shielded boxes or air-gapped field sites; a person on site for anything that moves or handles high power; every resource off until booked.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/180",
     "lead": null,
     "team": []
   },
   "T-BENCH9": {
     "brief": "Shows every lab resource in one place: what it is, where it is, whether it's online, and who can book it. One click opens access. Labs keep their own signed records, so the registry can be rebuilt anywhere.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/181",
     "lead": null,
     "team": []
   },
   "T-BENCH10": {
     "brief": "Lab resources sleep until someone books them, wake for the job, and shut down after. Energy use per job is recorded, so efficiency is measured, not assumed.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/182",
     "lead": null,
     "team": []
   },
   "T-BENCH11": {
     "brief": "Members donate spare computers and storage to the network. Jobs run in throwaway virtual machines, and storage is encrypted and replicated, matched to each resource's trust tier.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/183",
     "lead": null,
     "team": []
   },
   "T-BENCH12": {
     "brief": "Turns retired or donated instruments (older scopes, analyzers, power supplies) into network-connected lab equipment with a small adapter and a lab driver, so old gear stays useful instead of becoming waste.",
-    "github": null,
+    "github": "https://github.com/joinoasa/techtree/issues/184",
     "lead": null,
     "team": []
   },
