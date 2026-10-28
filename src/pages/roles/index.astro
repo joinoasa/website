@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { roles, STATUS_LABEL, type Track } from '../../data/roles';
+import Icon from '../../components/Icon.astro';
+import { roles, STATUS_LABEL, TRACK_ICON, type Track } from '../../data/roles';
 
 const tracks: Track[] = ['Build', 'Community', 'Coordination', 'Operations'];
 const slug = (t: string) => t.toLowerCase();
@@ -41,7 +42,7 @@ const slug = (t: string) => t.toLowerCase();
       const list = roles.filter((r) => r.track === t);
       return (
         <section class="group" id={slug(t)} data-track={slug(t)}>
-          <h2>{t} <span class="count" data-count>{list.length}</span></h2>
+          <h2><Icon name={TRACK_ICON[t]} size={36} class="track-icon" />{t} <span class="count" data-count>{list.length}</span></h2>
           <table class="jobs">
             <thead>
               <tr><th scope="col">Role</th><th scope="col">Who</th><th scope="col">Time</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Apply</span></th></tr>
@@ -147,7 +148,8 @@ const slug = (t: string) => t.toLowerCase();
   .shown { margin: 0 0 0 auto; font-size: var(--step--1); color: var(--ink-muted); align-self: center; }
 
   .group { margin-bottom: var(--space-12); scroll-margin-top: var(--space-4); }
-  .group h2 { font-size: var(--step-3); display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-3); }
+  .group h2 { font-size: var(--step-3); display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+  .group h2 :global(.track-icon) { flex: none; }
   .count { font-size: var(--step-0); font-weight: var(--weight-regular); color: var(--ink-muted); }
 
   .jobs { width: 100%; border-collapse: collapse; border-top: 2px solid var(--ink); table-layout: fixed; }

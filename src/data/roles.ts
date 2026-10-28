@@ -130,6 +130,9 @@ export const roles: Role[] = [
   },
 ];
 
+/** Brand icon per track (src/icons/). */
+export const TRACK_ICON = { Build: 'build', Community: 'community', Coordination: 'field-ops', Operations: 'security' } as const;
+
 export const STATUS_LABEL: Record<Role['status'], string> = { always: 'Always open', open: 'Open', invite: 'By invite' };
 
 /** Roles an applicant can pick on the form. */

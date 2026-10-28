@@ -1,42 +1,54 @@
-/* joinoasa.org: chart-paper palette */
+/* joinoasa.org: OASA brand palette (joinoasa/brand, tokens/colors.css).
+   Brand: Deep Navy #0B253A, Steel Blue #253A66, Signal Gold #E3A32C, Mesh Teal #2F968A, Aluminum #E5E8ED.
+   Gold and teal are too light for small text on white (2.2 and 3.6), so text uses the deep variants below.
+   Ratios are against white unless noted. */
 :root {
-  /* Colour: existing roles (unchanged values) */
-  --paper: #f6f9fb;
+  /* Brand colors */
+  --navy: #0b253a;
+  --steel: #253a66;
+  --gold: #e3a32c;              /* fills, buttons (navy text 7.1), highlights; never small text on light */
+  --gold-hover: #d18f14;        /* navy text 5.7 */
+  --teal: #2f968a;              /* dots, lines, icons (3.6) */
+  --aluminum: #e5e8ed;
+
+  /* Colour roles (names kept from the first palette) */
+  --paper: #f2f4f7;
   --white: #ffffff;
-  --ink: #13233f;
-  --ink-soft: #3b4b66;
-  --ink-muted: #5d6b82;
-  --chart: #2a5fa8;
-  --chart-deep: #1d4683;
-  --airspace: #a61e6e;          /* the one accent */
-  --contour: #d3e0ea;           /* decorative rules only, never a control edge */
-  --sky: #e6f0f8;               /* hover fill */
-  --available: #1f7a4d;
-  --progress: #b7791f;
-  --done: #2a5fa8;
-  --locked: #8e9aad;
+  --ink: var(--navy);           /* 15.7 */
+  --ink-soft: #33475b;          /* 9.6; 7.8 on aluminum */
+  --ink-muted: #55677a;         /* 5.8; 4.7 on aluminum */
+  --chart: var(--steel);        /* links, ghost buttons, rules: 11.2 */
+  --chart-deep: #1a2b4f;        /* 14.0 */
+  --airspace: #8a5a0a;          /* deep gold: the accent as text, focus and moonshots (5.9) */
+  --contour: #d5dbe3;           /* decorative rules only, never a control edge */
+  --sky: var(--aluminum);       /* hover fill */
+  --available: #1e6f66;         /* deep teal (6.0) */
+  --progress: #8a5a0a;          /* deep gold (5.9) */
+  --done: var(--steel);
+  --locked: #8a94a3;
+  --error: #b3261e;             /* form errors (6.5) */
 
-  /* Colour: new roles */
-  --line-control: #6f8199;      /* inputs, chips, menu button edges: 3.98 white / 3.76 paper / 3.45 sky */
+  --line-control: #6b7a8c;      /* inputs, chips, menu button edges: 4.4 white / 4.0 paper / 3.6 aluminum */
   --focus: var(--airspace);     /* focus ring; containers on dark set --focus: var(--focus-on-dark) */
-  --focus-on-dark: #f29ccb;     /* 7.76 on ink, 8.87 on #0b1630 */
-  --accent-on-dark: #f29ccb;    /* replaces #e27ab5 (acoustic lines, gauge marker on dark) */
-  --accent-tint: #f6e4ee;       /* :target highlight; airspace text on it 5.69 */
-  --chart-on-dark: #7fa8de;     /* mesh lines, ghost-button border, list markers on dark */
-  --on-dark: #ffffff;           /* headings and strong text on dark */
-  --on-dark-body: #e3ebf5;      /* body/list text on dark (replaces #e8eef7, #dbe5f2, #dbe7f6) */
-  --on-dark-muted: #c9d6e8;     /* ledes, intros, footer copy, cue (replaces #c9d4df, #b7c8e0): 10.65 on ink */
-  --surface-dark-hover: #1a3360;/* opaque ghost hover on dark; white text 12.45 */
-  --selection: #cddff3;
+  --focus-on-dark: var(--gold); /* 7.1 on navy */
+  --accent-on-dark: var(--gold);
+  --accent-tint: #fbf0d9;       /* :target highlight; deep gold text on it 5.2 */
+  --chart-on-dark: #8fa4cc;     /* lines, ghost-button border, list markers on dark (6.2 on navy) */
+  --teal-on-dark: #4fb3a6;      /* 6.2 on navy */
+  --on-dark: #ffffff;
+  --on-dark-body: #e5e8ed;      /* 12.8 on navy */
+  --on-dark-muted: #c6d0dc;     /* 10.0 on navy */
+  --surface-dark-hover: #16354f;/* white text 12.7 */
+  --selection: #f6e2b3;
 
-  /* Type families */
-  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
-  --font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  /* Type families (brand: Sora headings, Inter body) */
+  --font-display: 'Sora Variable', 'Sora', system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, sans-serif;
 
   /* Type scale (~1.25 above body) */
   --step--1: 0.875rem;                                   /* 14  meta, captions, secondary */
-  --step-0: 1.0625rem;                                   /* 17  body */
-  --step-1: 1.3125rem;                                   /* 21  lede, intro, h3 */
+  --step-0: 1rem;                                        /* 16  body (Inter runs larger than Atkinson) */
+  --step-1: 1.25rem;                                     /* 20  lede, intro, h3 */
   --step-2: 1.625rem;                                    /* 26  column/card heading (was 28) */
   --step-3: clamp(1.75rem, 1.5rem + 1vw, 2.0625rem);     /* 28-33 section h2 (was 40) */
   --step-4: clamp(2.125rem, 1.7rem + 1.8vw, 2.625rem);   /* 34-42 inner-page h1 */
@@ -45,17 +57,18 @@
 
   --weight-regular: 400;
   --weight-ui: 650;       /* buttons, chips, IDs, range labels */
-  --weight-bold: 700;     /* h3, labels, strong (Atkinson ships 400/700 only) */
-  --weight-heading: 750;  /* h2, step numerals, footer name */
-  --weight-display: 800;  /* h1, wordmark */
+  --weight-bold: 650;     /* h3, labels, strong */
+  --weight-heading: 700;  /* h2, step numerals, footer name */
+  --weight-display: 700;  /* h1, wordmark (Sora is wide; 700 reads bold enough) */
 
-  --stretch-condensed: 90%;  /* IDs, gauge, range labels */
-  --stretch-ui: 105%;        /* buttons */
-  --stretch-heading: 112%;   /* h1, h2, footer name, cta-strip (retires 108%, 110%) */
-  --stretch-layer: 118%;     /* Descent layer h2 */
-  --stretch-brand: 125%;     /* wordmark */
+  /* Widths: Sora and Inter have no width axis, so these are kept only as hooks. */
+  --stretch-condensed: 100%;
+  --stretch-ui: 100%;
+  --stretch-heading: 100%;
+  --stretch-layer: 100%;
+  --stretch-brand: 100%;
 
-  --tracking-heading: -0.015em;
+  --tracking-heading: -0.02em;
   --leading-body: 1.6;
   --leading-lede: 1.5;       /* lede, layer intro, examples (retires 1.45) */
   --leading-heading: 1.1;
@@ -86,7 +99,7 @@
   /* Breakpoints (media queries cannot use vars): 640, 760 (header only; was 720, raised for the About link), 860, 1100 */
 
   /* Elevation */
-  --shadow-overlay: 0 8px 24px rgb(19 35 63 / 0.12);
+  --shadow-overlay: 0 8px 24px rgb(11 37 58 / 0.12);
 
   /* Motion */
   --dur-feedback: 120ms;  /* hover, press, colour */
@@ -154,8 +167,8 @@ li, dd { text-wrap: pretty; }
   transition: background-color var(--dur-feedback) var(--ease-out), border-color var(--dur-feedback) var(--ease-out), color var(--dur-feedback) var(--ease-out), transform var(--dur-feedback) var(--ease-out);
 }
 .btn:active { transform: translateY(var(--press-shift)); }
-.btn-primary { background: var(--chart); color: var(--white); }
-.btn-primary:hover { background: var(--chart-deep); border-color: var(--chart-deep); color: var(--white); }
+.btn-primary { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.btn-primary:hover { background: var(--gold-hover); border-color: var(--gold-hover); color: var(--navy); }
 .btn-ghost { color: var(--chart-deep); background: transparent; }
 .btn-ghost:hover { background: var(--sky); color: var(--ink); }
 

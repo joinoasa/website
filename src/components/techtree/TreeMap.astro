@@ -743,19 +743,19 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
 
   /* Pinned headers: zero-height sticky strips, so they stay put while the world scrolls and scales under them. */
   .tm-colbar { position: sticky; top: 0; z-index: 3; height: 0; width: calc(var(--w) * 1px * var(--tm-scale)); }
-  .tm-colbar::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 26px; background: rgb(246 249 251 / 0.94); border-bottom: 1px solid var(--contour); }
+  .tm-colbar::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 26px; background: rgb(242 244 247 / 0.94); border-bottom: 1px solid var(--contour); }
   .tm-col { position: absolute; top: 5px; left: calc(var(--x) * 1px * var(--tm-scale)); width: calc(200px * var(--tm-scale)); text-align: center; font-size: 0.75rem; line-height: 16px; font-weight: var(--weight-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
   .tm-lanebar { position: sticky; left: 0; z-index: 2; width: 0; height: 0; }
   .tm-lane-name {
     position: absolute; left: 14px; top: calc(var(--y) * 1px * var(--tm-scale) + 4px); max-width: min(34rem, 90vw);
-    padding: 1px 8px; border-radius: 999px; background: rgb(246 249 251 / 0.88); white-space: nowrap;
+    padding: 1px 8px; border-radius: 999px; background: rgb(242 244 247 / 0.88); white-space: nowrap;
     font-family: var(--font-display); font-weight: var(--weight-heading); font-stretch: var(--stretch-heading); font-size: 0.85rem; line-height: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--chart-deep);
   }
   .tm-lane-name small { margin-left: 0.6em; font-family: var(--font-body); font-weight: var(--weight-regular); font-stretch: 100%; font-size: 0.75rem; letter-spacing: 0; text-transform: none; color: var(--ink-muted); }
 
   .tm-lane-band { position: absolute; left: 8px; border-radius: var(--radius-sm); }
-  .tm-lane-band[data-odd] { background: rgb(42 95 168 / 0.04); }
-  .tm-ms-band { background: linear-gradient(180deg, var(--accent-tint), rgb(246 228 238 / 0.35)); border: 1px dashed rgb(166 30 110 / 0.35); }
+  .tm-lane-band[data-odd] { background: rgb(37 58 102 / 0.04); }
+  .tm-ms-band { background: linear-gradient(180deg, var(--accent-tint), rgb(251 240 217 / 0.35)); border: 1px dashed rgb(138 90 10 / 0.35); }
   .tm-ms-name { position: absolute; top: 18px; left: 16px; font-family: var(--font-display); font-weight: var(--weight-heading); font-stretch: var(--stretch-heading); font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--airspace); }
 
   /* Lines: short ones are clear, long ones (and moonshot needs) stay faint until a node is hovered or opened. */
@@ -774,7 +774,7 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
     position: absolute; width: 200px; height: 56px; display: grid; grid-template-columns: 22px 1fr; grid-template-rows: auto 1fr; column-gap: 8px;
     align-items: center; text-align: left; padding: 6px 10px; font: inherit; color: var(--ink); cursor: pointer;
     background: var(--white); border: 2px solid var(--line-control); border-radius: 8px;
-    box-shadow: 0 1px 2px rgb(19 35 63 / 0.08);
+    box-shadow: 0 1px 2px rgb(11 37 58 / 0.08);
     transition: box-shadow var(--dur-feedback) var(--ease-out), opacity var(--dur-state) var(--ease-out);
   }
   .tn:hover { box-shadow: var(--shadow-overlay); }
@@ -789,17 +789,17 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
   .tn[data-status='locked'] .tn-icon { background: transparent; }
   .tn[data-status='locked'] .tn-icon::before { content: ''; position: absolute; left: 5px; top: 9px; width: 12px; height: 10px; border-radius: 2px; background: var(--line-control); }
   .tn[data-status='locked'] .tn-icon::after { content: ''; position: absolute; left: 7px; top: 3px; width: 8px; height: 8px; border: 2px solid var(--line-control); border-bottom: 0; border-radius: 5px 5px 0 0; box-sizing: border-box; }
-  .tn[data-status='available'] { border-color: var(--available); box-shadow: 0 0 0 4px rgb(31 122 77 / 0.14); }
-  .tn[data-status='available'] .tn-icon { background: var(--available); box-shadow: 0 0 0 3px rgb(31 122 77 / 0.25); }
+  .tn[data-status='available'] { border-color: var(--available); box-shadow: 0 0 0 4px rgb(30 111 102 / 0.14); }
+  .tn[data-status='available'] .tn-icon { background: var(--available); box-shadow: 0 0 0 3px rgb(30 111 102 / 0.25); }
   .tn[data-status='available'] .tn-id { color: var(--available); }
   .tn[data-status='in-progress'] { border-color: var(--progress); }
-  .tn[data-status='in-progress'] .tn-icon { background: conic-gradient(var(--progress) 0 50%, rgb(183 121 31 / 0.25) 0); }
+  .tn[data-status='in-progress'] .tn-icon { background: conic-gradient(var(--progress) 0 50%, rgb(138 90 10 / 0.25) 0); }
   .tn[data-status='done'] { border-color: var(--done); background: var(--done); color: var(--white); }
   .tn[data-status='done'] .tn-id { color: var(--white); }
   .tn[data-status='done'] .tn-icon { background: var(--white); }
   .tn[data-status='done'] .tn-icon::after { content: ''; position: absolute; left: 7px; top: 4px; width: 6px; height: 11px; border: solid var(--done); border-width: 0 3px 3px 0; transform: rotate(45deg); }
   .tn-ms { border-color: var(--airspace); background: var(--white); }
-  .tn-ms .tn-icon { background: var(--airspace); clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border-radius: 0; }
+  .tn-ms .tn-icon { background: var(--gold); clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border-radius: 0; }
   .tn-ms .tn-id { color: var(--airspace); }
 
   /* "Ready" tag, and a short pulse ring (opacity and transform only, so it stays on the GPU; stops after two beats). */
@@ -812,8 +812,8 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
   .tm.has-focus .tn { opacity: 0.45; }
   .tm.has-focus .tn[data-hl] { opacity: 1; }
   .tn[data-hl='self'] { outline: calc(3px / var(--tm-scale)) solid var(--airspace); outline-offset: calc(3px / var(--tm-scale)); }
-  .tn[data-hl='up'] { box-shadow: 0 0 0 3px rgb(166 30 110 / 0.35); }
-  .tn[data-hl='down'] { box-shadow: 0 0 0 3px rgb(42 95 168 / 0.35); }
+  .tn[data-hl='up'] { box-shadow: 0 0 0 3px rgb(138 90 10 / 0.35); }
+  .tn[data-hl='down'] { box-shadow: 0 0 0 3px rgb(37 58 102 / 0.35); }
   .tm.is-filtering .tn[data-dim] { opacity: 0.2; }
   .tm.is-filtering .tn[data-hit] { outline: calc(3px / var(--tm-scale)) solid var(--airspace); outline-offset: calc(2px / var(--tm-scale)); }
 
@@ -827,13 +827,13 @@ const visualShots = [...shots].sort((a, b) => pos.get(a.m.id)!.y - pos.get(b.m.i
   .tm[data-lod='far'] .tn[data-status='in-progress'] { background: var(--progress); }
   .tm[data-lod='far'] .tn[data-status='in-progress'] .tn-id { color: var(--white); }
   .tm[data-lod='far'] .tm-col-w, .tm[data-lod='far'] .tm-lane-name small { display: none; }
-  .tm[data-lod='far'] .tm-lane-name { font-size: 0.65rem; line-height: 14px; padding: 0 5px; background: rgb(246 249 251 / 0.75); }
+  .tm[data-lod='far'] .tm-lane-name { font-size: 0.65rem; line-height: 14px; padding: 0 5px; background: rgb(242 244 247 / 0.75); }
 
   /* Popup. Default: a bottom sheet (phones, small tablets). Wide screens dock it beside the map (see below). */
   .tm-pop {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; max-height: 60svh; overflow: auto;
     background: var(--white); border: 1px solid var(--line-control); border-top: 4px solid var(--ink); border-radius: 12px 12px 0 0;
-    box-shadow: 0 -8px 32px rgb(19 35 63 / 0.22); padding: var(--space-4) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 32px rgb(11 37 58 / 0.22); padding: var(--space-4) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom));
   }
   .tm-pop[hidden] { display: none; }
   .tm-close { position: absolute; top: var(--space-1); right: var(--space-1); width: var(--tap); height: var(--tap); border: 0; background: none; font-size: 1.6rem; line-height: 1; color: var(--ink-muted); cursor: pointer; border-radius: var(--radius-md); }

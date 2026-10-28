@@ -3,9 +3,8 @@ import '../styles/fonts.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import archivoUrl from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
-import atkinson400Url from '@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-400-normal.woff2?url';
-import atkinson700Url from '@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-700-normal.woff2?url';
+import soraUrl from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import { site, socialLinks } from '../config/site';
 
 interface Props { title: string; description?: string; noindex?: boolean }
@@ -34,9 +33,8 @@ const jsonLd = {
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content={site.themeColor} />
-    <link rel="preload" as="font" type="font/woff2" href={archivoUrl} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={atkinson400Url} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={atkinson700Url} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={soraUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={interUrl} crossorigin />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

@@ -2,37 +2,30 @@
 <html lang="en"><head><meta charset="utf-8" />
 <title>OASA share image (1200x630)</title>
 <style>
-  @font-face { font-family: 'Archivo Variable'; font-weight: 100 900; font-stretch: 62% 125%; src: url('../../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'Atkinson Hyperlegible'; font-weight: 400; src: url('../../node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2'); }
-  @font-face { font-family: 'Atkinson Hyperlegible'; font-weight: 700; src: url('../../node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2'); }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; width: 1200px; height: 630px; }
-  body { position: relative; overflow: hidden; background: #13233f; color: #fff; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; }
+  @font-face { font-family: 'Sora Variable'; font-weight: 100 800; src: url('../../node_modules/@fontsource-variable/sora/files/sora-latin-wght-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter Variable'; font-weight: 100 900; src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2'); }
+  body { position: relative; overflow: hidden; background: #0b253a; color: #fff; font-family: 'Inter Variable', system-ui, sans-serif; }
   svg.mesh { position: absolute; inset: 0; }
   .brand { position: absolute; left: 80px; top: 72px; display: flex; align-items: center; gap: 18px; }
-  .brand .word { font-family: 'Archivo Variable'; font-weight: 800; font-stretch: 125%; font-size: 40px; letter-spacing: 0.02em; }
-  .name { position: absolute; left: 80px; top: 150px; font-size: 26px; color: #c9d6e8; }
-  h1 { position: absolute; left: 80px; top: 232px; width: 700px; margin: 0; font-family: 'Archivo Variable'; font-weight: 800; font-stretch: 112%; font-size: 62px; line-height: 1.08; letter-spacing: -0.015em; }
-  .url { position: absolute; left: 80px; bottom: 64px; font-family: 'Archivo Variable'; font-weight: 700; font-stretch: 105%; font-size: 28px; color: #f29ccb; }
+  .brand .word { font-family: 'Sora Variable'; font-weight: 700; font-size: 40px; letter-spacing: 0.02em; }
+  .name { position: absolute; left: 80px; top: 150px; font-size: 26px; color: #c6d0dc; }
+  h1 { position: absolute; left: 80px; top: 232px; width: 700px; margin: 0; font-family: 'Sora Variable'; font-weight: 700; font-size: 62px; line-height: 1.08; letter-spacing: -0.02em; }
+  .url { position: absolute; left: 80px; bottom: 64px; font-family: 'Sora Variable'; font-weight: 600; font-size: 28px; color: #e3a32c; }
 </style></head>
 <body>
   <svg class="mesh" viewBox="0 0 1200 630" width="1200" height="630" fill="none" aria-hidden="true">
-    <line x1="1010" y1="0" x2="1010" y2="630" stroke="#7fa8de" stroke-width="2" opacity="0.55"/>
-    <line x1="1010" y1="150" x2="1100" y2="150" stroke="#7fa8de" stroke-width="2" opacity="0.35"/>
-    <line x1="1010" y1="430" x2="920" y2="430" stroke="#7fa8de" stroke-width="2" opacity="0.35"/>
-    <circle cx="1100" cy="150" r="9" fill="#13233f" stroke="#7fa8de" stroke-width="3"/>
-    <circle cx="920" cy="430" r="9" fill="#13233f" stroke="#7fa8de" stroke-width="3"/>
-    <circle cx="1010" cy="300" r="46" stroke="#f29ccb" stroke-width="3" opacity="0.55"/>
-    <circle cx="1010" cy="300" r="26" stroke="#f29ccb" stroke-width="3" opacity="0.8"/>
-    <circle cx="1010" cy="300" r="10" fill="#f29ccb"/>
+    <line x1="1010" y1="0" x2="1010" y2="630" stroke="#8fa4cc" stroke-width="2" opacity="0.55"/>
+    <line x1="1010" y1="150" x2="1100" y2="150" stroke="#8fa4cc" stroke-width="2" opacity="0.35"/>
+    <line x1="1010" y1="430" x2="920" y2="430" stroke="#8fa4cc" stroke-width="2" opacity="0.35"/>
+    <circle cx="1100" cy="150" r="9" fill="#0b253a" stroke="#8fa4cc" stroke-width="3"/>
+    <circle cx="920" cy="430" r="9" fill="#0b253a" stroke="#8fa4cc" stroke-width="3"/>
+    <circle cx="1010" cy="300" r="46" stroke="#e3a32c" stroke-width="3" opacity="0.55"/>
+    <circle cx="1010" cy="300" r="26" stroke="#e3a32c" stroke-width="3" opacity="0.8"/>
+    <circle cx="1010" cy="300" r="10" fill="#e3a32c"/>
   </svg>
   <div class="brand">
-    <svg viewBox="0 0 32 32" width="64" height="64" fill="none" aria-hidden="true">
-      <path d="M16 5 L27 22 L5 22 Z" stroke="#7fa8de" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="16" cy="5" r="3.2" fill="#fff"/><circle cx="27" cy="22" r="3.2" fill="#fff"/>
-      <circle cx="5" cy="22" r="3.2" fill="#fff"/><circle cx="16" cy="16.5" r="2.4" fill="#f29ccb"/>
-    </svg>
-    <span class="word">OASA</span>
+    <img src="mark-on-dark.svg" height="64" alt="" />
+    <img src="wordmark-white.svg" height="40" alt="OASA" style="margin-top:6px" />
   </div>
   <div class="name">Open Autonomous Systems Alliance</div>
   <h1>Autonomous systems from orbit to the ocean floor, built in the open.</h1>

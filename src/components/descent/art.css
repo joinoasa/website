@@ -22,7 +22,7 @@
   /* ground */
   --art-field: #d7e3cc; --art-field-2: #cddcbf; --art-survey: #8fa67f; --art-survey-label: #445e37;
   /* chart label inks (darker than node rims so small text clears 4.5:1) */
-  --art-air-text: #123562; --art-airspace-text: #8f1960; --art-topo-text: #5e3c1b;
+  --art-air-text: #123562; --art-airspace-text: #8a5a0a; --art-topo-text: #5e3c1b;
   --art-road: #f7f3ea; --art-road-edge: #9d8f74; --art-road-center: #c9b98f;
   --art-soil: #cbc2b0; --art-strata: #b3a88f; --art-tree: #7f9a6a;
   --art-wall: #f9fbfc; --art-wall-edge: #9aa8b8; --art-roof: #4f5f78; --art-barn: #a65f48; --art-barn-door: #7e4535;

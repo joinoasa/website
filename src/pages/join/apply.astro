@@ -228,7 +228,7 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   .flag { font-weight: var(--weight-regular); color: var(--ink-muted); }
   .hint { margin: 0 0 var(--space-2); font-size: var(--step--1); color: var(--ink-muted); }
   .check .hint { margin: var(--space-1) 0 0 2rem; }
-  .role-banner { margin: 0 0 var(--space-6); padding: var(--space-3) var(--space-4); border-left: 4px solid var(--airspace); background: var(--accent-tint); color: var(--ink); }
+  .role-banner { margin: 0 0 var(--space-6); padding: var(--space-3) var(--space-4); border-left: 4px solid var(--gold); background: var(--accent-tint); color: var(--ink); }
   input[type='text'], input[type='email'], textarea, select {
     display: block; width: 100%; min-height: var(--tap); padding: 0.6em 0.75em;
     font: inherit; color: var(--ink); background: var(--white);
@@ -238,12 +238,12 @@ const describedBy = (f: Field) => [hintId(f), `${f.name}-error`].filter(Boolean)
   textarea { resize: vertical; line-height: var(--leading-body); }
   input:hover, textarea:hover, select:hover { border-color: var(--ink-soft); }
   input:focus-visible, textarea:focus-visible, select:focus-visible { outline-offset: 1px; border-color: var(--chart); }
-  [aria-invalid='true']:is(input[type='text'], input[type='email'], textarea) { border: 2px solid var(--airspace); }
+  [aria-invalid='true']:is(input[type='text'], input[type='email'], textarea) { border: 2px solid var(--error); }
   .choice { display: flex; align-items: flex-start; gap: 0.6rem; min-height: var(--tap); padding-block: 0.6rem; cursor: pointer; }
   .choice input { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; flex: none; }
   .radios .choice { padding-block: 0.35rem; }
-  .error { margin: var(--space-1) 0 0; color: var(--airspace); font-weight: var(--weight-bold); font-size: var(--step--1); }
-  .summary { border: 2px solid var(--airspace); background: var(--accent-tint); border-radius: var(--radius-sm); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-8); }
+  .error { margin: var(--space-1) 0 0; color: var(--error); font-weight: var(--weight-bold); font-size: var(--step--1); }
+  .summary { border: 2px solid var(--error); background: #fdecea; border-radius: var(--radius-sm); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-8); }
   .summary :global(p) { margin: 0; font-weight: var(--weight-bold); }
   .summary :global(ul) { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
   .summary :global(a) { color: var(--ink); }

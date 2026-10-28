@@ -161,7 +161,7 @@ const scenes: Record<string, any> = { space: SpaceScene, sky: SkyScene, mountain
   .layer-mountains { background: linear-gradient(#dceaf6, #eef3f6); }
   .layer-ground { background: linear-gradient(#eef3f6, #e6eee0); }
   .layer-sea { background: linear-gradient(#e6eee0 0%, #eaf2f8 45%, #9cc0e2 100%); }
-  .layer-underwater { background: linear-gradient(#9cc0e2 0%, #2e4f80 30%, #13233f 100%); }
+  .layer-underwater { background: linear-gradient(#9cc0e2 0%, #2e4f80 30%, #0b253a 100%); }
 
   .layer-space::after, .layer-sky::after, .layer-mountains::after, .layer-ground::after, .layer-sea::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 14vh; z-index: 1; pointer-events: none; }
   .layer-sky::after { background: linear-gradient(rgba(220, 234, 246, 0), #dceaf6); }
@@ -238,7 +238,7 @@ const scenes: Record<string, any> = { space: SpaceScene, sky: SkyScene, mountain
 
   @media (max-width: 860px) {
     .layer-sky { background: linear-gradient(#2c4f86 0%, #9cc0e2 6%, #dceaf6 100%); }
-    .layer-underwater { background: linear-gradient(#9cc0e2 0%, #2e4f80 8%, #13233f 100%); }
+    .layer-underwater { background: linear-gradient(#9cc0e2 0%, #2e4f80 8%, #0b253a 100%); }
     .layer-grid { grid-template-columns: 1fr; }
     .step { min-height: auto; padding-block: var(--space-12) var(--space-4); }
     .step-intro { min-height: 88svh; }

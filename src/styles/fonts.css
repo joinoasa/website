@@ -1,4 +1,4 @@
 /* Self-hosted fonts (bundled at build time, no third-party requests). */
-@import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource/atkinson-hyperlegible/latin-400.css';
-@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+/* Brand fonts (joinoasa/brand): Sora for headings, Inter for body. Variable weights. */
+@import '@fontsource-variable/sora/wght.css';
+@import '@fontsource-variable/inter/wght.css';

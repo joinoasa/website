@@ -11,7 +11,7 @@ export const site = {
   description:
     'The Open Autonomous Systems Alliance is a member-built community designing open, encrypted drones, robots and boats for American communities.',
   locale: 'en_US',
-  themeColor: '#13233f',
+  themeColor: '#0b253a',
   phase: 'Phase 0: home base', // from OASA-roadmap.md; update when the phase changes
 
   email: {

@@ -3,12 +3,18 @@ import Base from '../layouts/Base.astro';
 import tree from '../data/techtree.json';
 import { site, contact, nav } from '../config/site';
 import TreeMap from '../components/techtree/TreeMap.astro';
+import Icon, { type IconName } from '../components/Icon.astro';
 import { formatEstimate, formatResources, type NodeEstimate } from '../lib/estimates';
 
 const ORDER = [
   'Roots', 'Trunk', 'Air', 'Lighter-than-air & wind', 'Ground', 'Surface water', 'Underwater',
   'Sensing', 'Manipulation', 'Operations', 'Infrastructure inspection', 'Commercial services', 'Space',
 ];
+// Brand icon per branch (src/icons/); branches without a good match have none.
+const ICON: Record<string, IconName> = {
+  Roots: 'knowledge', Trunk: 'networking', Air: 'drones', Ground: 'ground', 'Surface water': 'surface', Underwater: 'underwater',
+  Sensing: 'sensors', Manipulation: 'build', Operations: 'field-ops', 'Infrastructure inspection': 'power', Space: 'space',
+};
 const INTRO: Record<string, string> = {
   Roots: 'What every system needs: communications, security, power, control, navigation and timing.',
   Trunk: 'The shared platform: mesh, TAK map, payloads, logs, AI, docks and RF.',
@@ -148,7 +154,7 @@ const counts = {
       <p class="visually-hidden" role="status" aria-live="polite" id="announce"></p>
       {branches.map((b) => (
         <section class="branch" data-branch={b.slug} id={b.slug}>
-          <h2>{b.name}</h2>
+          <h2 class="branch-h">{ICON[b.name] && <Icon name={ICON[b.name]} size={36} class="branch-icon" />}{b.name}</h2>
           <p class="branch-intro">{INTRO[b.name]}</p>
           <ul class="nodes">
             {b.nodes.map((n) => (
@@ -464,4 +470,6 @@ const counts = {
     .layout { grid-template-columns: 1fr; }
     .node { break-inside: avoid; }
   }
+  .branch-h { display: flex; align-items: center; gap: var(--space-3); }
+  .branch-h :global(.branch-icon) { flex: none; }
 </style>

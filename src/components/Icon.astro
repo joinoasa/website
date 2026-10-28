@@ -1,0 +1,19 @@
+---
+// Inline brand icon (src/icons/, copied from joinoasa/brand icons/system/).
+// Decorative: always next to a visible label, so it is hidden from screen readers
+// and its <title> is dropped (that also avoids duplicate IDs when an icon repeats).
+const files = import.meta.glob<string>('../icons/*.svg', { query: '?raw', import: 'default', eager: true });
+
+export type IconName = 'drones' | 'ground' | 'surface' | 'underwater' | 'space' | 'networking' | 'sensors'
+  | 'mesh-radio' | 'power' | 'build' | 'field-ops' | 'security' | 'labs' | 'community' | 'knowledge';
+
+interface Props { name: IconName; size?: number; class?: string }
+const { name, size = 32, class: cls } = Astro.props;
+const raw = files[`../icons/${name}.svg`];
+if (!raw) throw new Error(`Icon "${name}" not found in src/icons/`);
+const svg = raw
+  .replace(/<title[^>]*>[\s\S]*?<\/title>\s*/, '')
+  .replace(/\s(role|aria-labelledby)="[^"]*"/g, '')
+  .replace('<svg ', `<svg width="${size}" height="${size}" aria-hidden="true" focusable="false"${cls ? ` class="${cls}"` : ''} `);
+---
+<Fragment set:html={svg} />
