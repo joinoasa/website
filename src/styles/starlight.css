@@ -1,6 +1,6 @@
-/* Brand Starlight (docs) to match joinoasa.org */
+/* Brand Starlight (docs) to match joinoasa.org (OASA brand palette, Sora + Inter) */
 :root {
-  --sl-font: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --sl-font: 'Inter Variable', 'Inter', system-ui, sans-serif;
   --sl-menu-button-size: 2.75rem;
 }
 @media (max-width: 50rem) {
@@ -8,39 +8,38 @@
 }
 .sl-markdown-content :is(p, li) { text-wrap: pretty; }
 :root[data-theme='light'] {
-  --sl-color-accent-low: #dfe9f5;
-  --sl-color-accent: #2a5fa8;
-  --sl-color-accent-high: #13233f;
-  --sl-color-white: #13233f;
-  --sl-color-gray-1: #24344f;
-  --sl-color-gray-2: #3b4b66;
-  --sl-color-gray-3: #5d6b82;
-  --sl-color-gray-4: #8e9aad;
-  --sl-color-gray-5: #c9d4df;
-  --sl-color-gray-6: #e6eef5;
-  --sl-color-gray-7: #f6f9fb;
+  --sl-color-accent-low: #fbf0d9;
+  --sl-color-accent: #253a66;
+  --sl-color-accent-high: #0b253a;
+  --sl-color-white: #0b253a;
+  --sl-color-gray-1: #1a2b4f;
+  --sl-color-gray-2: #33475b;
+  --sl-color-gray-3: #55677a;
+  --sl-color-gray-4: #8a94a3;
+  --sl-color-gray-5: #c9d0da;
+  --sl-color-gray-6: #e5e8ed;
+  --sl-color-gray-7: #f2f4f7;
   --sl-color-black: #ffffff;
 }
 :root[data-theme='dark'] {
-  --sl-color-accent-low: #16294a;
-  --sl-color-accent: #7fa8de;
-  --sl-color-accent-high: #dbe7f6;
+  --sl-color-accent-low: #3a2a08;
+  --sl-color-accent: #e3a32c;
+  --sl-color-accent-high: #f6e2b3;
   --sl-color-white: #ffffff;
-  --sl-color-gray-1: #e6eef5;
-  --sl-color-gray-2: #c9d4df;
-  --sl-color-gray-3: #93a3b8;
-  --sl-color-gray-4: #5d6e88;
-  --sl-color-gray-5: #2b3d5c;
-  --sl-color-gray-6: #16243d;
-  --sl-color-black: #0e1a30;
+  --sl-color-gray-1: #e5e8ed;
+  --sl-color-gray-2: #c6d0dc;
+  --sl-color-gray-3: #93a1b3;
+  --sl-color-gray-4: #5f7084;
+  --sl-color-gray-5: #243d55;
+  --sl-color-gray-6: #11304a;
+  --sl-color-black: #0b253a;
 }
-:root[data-theme='dark'] header.header { border-bottom: 1px solid #2b3d5c; }
+:root[data-theme='dark'] header.header { border-bottom: 1px solid #243d55; }
 h1, h2, h3, .site-title {
-  font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
-  font-stretch: 112%;
-  letter-spacing: -0.015em;
+  font-family: 'Sora Variable', 'Sora', system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
-:root[data-theme='light'] header.header { background: #ffffff; border-bottom: 1px solid #d3e0ea; }
+:root[data-theme='light'] header.header { background: #ffffff; border-bottom: 1px solid #d5dbe3; }
 /* Flat pager links instead of shadowed cards */
 .pagination-links a { box-shadow: none; border-radius: 4px; }
 .pagefind-ui__search-clear { font-size: 0.875rem !important; }

@@ -1,14 +1,13 @@
 ---
 import Default from '@astrojs/starlight/components/Head.astro';
-import archivoUrl from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
-import atkinson400 from '@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-400-normal.woff2?url';
-import atkinson700 from '@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-700-normal.woff2?url';
+import soraUrl from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import { site } from '../../config/site';
 
 const og = `${site.url}/og.png`;
 ---
 <Default {...Astro.props}><slot /></Default>
-{[archivoUrl, atkinson400, atkinson700].map((href) => (
+{[soraUrl, interUrl].map((href) => (
   <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />
 ))}
 <meta property="og:site_name" content={site.shortName} />

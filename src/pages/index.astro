@@ -4,8 +4,14 @@ import Descent from '../components/descent/Descent.astro';
 import tree from '../data/techtree.json';
 import { stages } from '../data/membership';
 import { nav } from '../config/site';
+import Icon, { type IconName } from '../components/Icon.astro';
 
 const available = tree.nodes.filter((n) => n.status === 'available');
+// Domain branches with their brand icons; slugs match the tech tree's ?branch= filter.
+const DOMAINS: [IconName, string, string][] = [
+  ['drones', 'Air', 'air'], ['ground', 'Ground', 'ground'], ['surface', 'Surface water', 'surface-water'],
+  ['underwater', 'Underwater', 'underwater'], ['space', 'Space', 'space'],
+];
 
 const principles = [
   ['Encrypted, always', 'Every link, wired or wireless, is encrypted. We never set a standard that broadcasts to the world.'],
@@ -39,6 +45,9 @@ const principles = [
       <div>
         <h2>Start at the roots</h2>
         <p>The tech tree maps {tree.nodes.length} technologies and {tree.moonshots.length} moonshots. Each one unlocks the next. These are open for members to build right now:</p>
+        <ul class="domains" aria-label="Branches of the tree">
+          {DOMAINS.map(([icon, label, slug]) => (<li><a href={`/techtree/?branch=${slug}`}><Icon name={icon} size={36} /><span>{label}</span></a></li>))}
+        </ul>
         <p><a class="btn btn-ghost" href="/techtree/">See the full tree</a></p>
       </div>
       <ul class="open-nodes">
@@ -82,6 +91,10 @@ const principles = [
 </Base>
 
 <style>
+  .domains { list-style: none; margin: 0 0 var(--space-6); padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-2); max-width: 28rem; }
+  .domains a { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); padding: var(--space-2) 2px; border: 1px solid var(--contour); border-radius: var(--radius-sm); background: var(--white); text-decoration: none; color: var(--ink); font-size: var(--step--1); font-weight: var(--weight-bold); text-align: center; line-height: 1.2; min-height: 100%; }
+  @media (max-width: 480px) { .domains a { font-size: 0.75rem; } }
+  .domains a:hover { border-color: var(--chart); background: var(--sky); }
   .band { background: var(--white); border-block: 1px solid var(--contour); }
 
 
