@@ -1,21 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Email signature" description="Make your standard OASA email signature: type your name and role, then copy it into Gmail or any mail app." noindex>
+<Base title="Email signature" description="Make your standard OASA email signature: fill in your details, then copy it into Gmail or any mail app." noindex>
   <header class="page-head">
     <div class="wrap">
       <h1>Email signature</h1>
-      <p class="lede">Every OASA address uses the same signature. Type your details, check the preview, then copy it into your mail app.</p>
+      <p class="lede">Every OASA address uses the same signature. Fill in your details, check the preview, then copy it into your mail app.</p>
     </div>
   </header>
 
   <div class="wrap section sig-grid">
     <form class="sig-form" id="sig-form" onsubmit="return false">
-      <label><span>First name</span><input id="f-first" autocomplete="given-name" value="Your" /></label>
-      <label><span>Last name</span><input id="f-last" autocomplete="family-name" value="Name" /></label>
-      <label><span>Role</span><input id="f-role" value="Member" /></label>
-      <label><span>Email</span><input id="f-email" type="email" value="your.name@joinoasa.org" /></label>
-      <p class="hint">Email fills in from your name as <code>first.last@joinoasa.org</code>. Change it only if yours is different.</p>
+      <div class="pair">
+        <label><span>First name</span><input id="f-first" autocomplete="given-name" /></label>
+        <label><span>Last name</span><input id="f-last" autocomplete="family-name" /></label>
+      </div>
+      <label><span>Title</span><input id="f-title" placeholder="Member" /></label>
+      <label><span>Email</span><input id="f-email" type="email" placeholder="first.last@joinoasa.org" /></label>
+      <p class="hint">Fills in from your name as <code>first.last@joinoasa.org</code>. Change it only if yours is different.</p>
+      <label><span>Phone <em>(optional)</em></span><input id="f-phone" type="tel" autocomplete="tel" placeholder="Leave blank to hide" /></label>
+
+      <details class="advanced" id="advanced">
+        <summary>Advanced</summary>
+        <p class="hint">Turn icons on or off and set where each one links. Links must start with <code>https://</code>.</p>
+        <label class="check"><input type="checkbox" id="w-on" checked /> <span>Show joinoasa.org link</span></label>
+        <fieldset id="socials">
+          <legend>Icons</legend>
+        </fieldset>
+        <button class="btn btn-ghost reset" id="reset" type="button">Reset to defaults</button>
+      </details>
+
       <div class="actions">
         <button class="btn btn-primary" id="copy-rich" type="button">Copy signature</button>
         <button class="btn btn-ghost" id="copy-html" type="button">Copy HTML</button>
@@ -27,6 +41,7 @@ import Base from '../layouts/Base.astro';
       <h2 id="preview-h">Preview</h2>
       <div class="preview" id="preview"></div>
       <noscript><p>This page needs JavaScript to fill in your details. Ask your buddy for a signature instead.</p></noscript>
+      <p class="hint">Your details stay in this browser. Nothing is sent anywhere.</p>
     </section>
   </div>
 
@@ -45,16 +60,31 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .sig-grid { display: grid; gap: var(--space-6, 2rem); grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); align-items: start; }
-  @media (max-width: 52rem) { .sig-grid { grid-template-columns: minmax(0, 1fr); } }
+  .sig-grid { display: grid; gap: var(--space-6, 2rem); grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 56rem) { .sig-grid { grid-template-columns: minmax(0, 1fr); } }
   .sig-form { display: grid; gap: 0.9rem; min-width: 0; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   .sig-form label { display: grid; gap: 0.3rem; font-weight: 700; }
-  .sig-form input { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--line-control); border-radius: 6px; background: var(--white); color: var(--ink); }
-  .sig-form input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .sig-form label em { font-weight: 400; color: var(--ink-muted); }
+  .sig-form input[type='text'], .sig-form input:not([type]), .sig-form input[type='email'], .sig-form input[type='tel'], .sig-form input[type='url'] {
+    width: 100%; min-width: 0; box-sizing: border-box; font: inherit; padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line-control); border-radius: 6px; background: var(--white); color: var(--ink);
+  }
+  .sig-form input:focus-visible, .advanced summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .sig-form input[aria-invalid='true'] { border-color: #b42318; }
   .hint { overflow-wrap: anywhere; font-size: var(--step--1); color: var(--ink-muted); margin: 0; }
+  .advanced { border: 1px solid var(--contour); border-radius: 8px; padding: 0.6rem 0.9rem; background: var(--white); }
+  .advanced[open] { display: grid; gap: 0.75rem; padding-bottom: 0.9rem; }
+  .advanced summary { cursor: pointer; font-weight: 700; }
+  .advanced fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+  .advanced legend { font-weight: 700; margin-bottom: 0.4rem; }
+  .sig-form label.check { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+  .social { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.5rem; align-items: center; }
+  .social input[type='url']:disabled { opacity: 0.5; }
+  .reset { justify-self: start; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
   .copy-msg { min-height: 1.4em; margin: 0; color: var(--available); font-weight: 700; }
-  .preview { background: var(--white); border: 1px solid var(--contour); border-radius: 8px; padding: 1.25rem; overflow-x: auto; }
+  .preview { background: var(--white); border: 1px solid var(--contour); border-radius: 8px; padding: 1.25rem; overflow-x: auto; margin-bottom: 0.6rem; }
   .steps { border-top: 1px solid var(--contour); }
   .steps ol { padding-left: 1.25rem; }
   .steps li { margin-block: 0.35rem; }
@@ -62,48 +92,134 @@ import Base from '../layouts/Base.astro';
 
 <script>
   const SITE = 'https://joinoasa.org';
-  const DISCORD = 'https://discord.gg/v6vTxaKV3';
-  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const IMG = `${SITE}/email/sig/`;
+  const KEY = 'oasa-signature-v2';
+  const FONT = "font-family:'Segoe UI',Helvetica,Arial,sans-serif;";
+  const NAVY = '#0B253A', GREY = '#5B6573', GOLD = '#E3A32C', RULE = '#C9CFD8';
+
+  // Icons in display order. When OASA claims an account, put its link in `link` and set `on: true`.
+  type Social = { key: string; label: string; on: boolean; link: string };
+  const SOCIALS: Social[] = [
+    { key: 'github', label: 'GitHub', on: true, link: 'https://github.com/joinoasa' },
+    { key: 'discord', label: 'Discord', on: true, link: 'https://discord.gg/v6vTxaKV3' },
+    { key: 'youtube', label: 'YouTube', on: false, link: '' },
+    { key: 'x', label: 'X', on: false, link: '' },
+  ];
+
+  const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
   const slug = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+  const isUrl = (s: string) => { try { const u = new URL(s); return u.protocol === 'https:'; } catch { return false; } };
 
-  // Email-safe markup: tables and inline styles only. Keep in step with admin/access/email.md.
-  function signature(name: string, role: string, email: string) {
-    const font = "font-family:'Segoe UI',Helvetica,Arial,sans-serif;";
-    const link = 'color:#253A66;text-decoration:underline;';
-    const sep = '<span style="color:#C9CFD8;padding:0 8px;">|</span>';
-    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;${font}">
+  type State = { first: string; last: string; title: string; email: string; emailEdited: boolean; phone: string; site: boolean; socials: Record<string, { on: boolean; link: string }> };
+  const defaults = (): State => ({
+    first: '', last: '', title: '', email: '', emailEdited: false, phone: '', site: true,
+    socials: Object.fromEntries(SOCIALS.map((s) => [s.key, { on: s.on, link: s.link }])),
+  });
+  function load(): State {
+    const d = defaults();
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (saved && typeof saved === 'object') return { ...d, ...saved, socials: { ...d.socials, ...(saved.socials || {}) } };
+    } catch { /* private window or blocked storage: start fresh */ }
+    return d;
+  }
+  const save = (s: State) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* not critical */ } };
+
+  // Email-safe markup: tables, inline styles, hosted PNGs. Keep in step with admin/access/email.md.
+  function signature(s: State) {
+    const name = `${s.first} ${s.last}`.trim() || 'Your Name';
+    const title = s.title.trim() || 'Member';
+    const email = s.email.trim() || 'your.name@joinoasa.org';
+    const sep = `<td style="padding:0 12px;color:${RULE};font-size:16px;">|</td>`;
+    const a = `color:${NAVY};text-decoration:none;`;
+    const contact = (icon: string, text: string, href: string) =>
+      `<td style="padding:0;vertical-align:middle;line-height:0;"><img src="${IMG}${icon}.png" width="18" height="18" alt="" style="display:block;border:0;"></td>` +
+      `<td style="padding:0 0 0 8px;vertical-align:middle;white-space:nowrap;${FONT}font-size:14px;line-height:20px;"><a href="${esc(href)}" style="${a}">${esc(text)}</a></td>`;
+    const row = (cells: string[]) =>
+      `<tr><td style="padding:10px 0 0 0;"><table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>${cells.join(sep)}</tr></table></td></tr>`;
+
+    const line1 = [contact('mail', email, `mailto:${email}`)];
+    const line2: string[] = [];
+    const phone = s.phone.trim();
+    if (phone) line2.push(contact('phone', phone, `tel:${phone.replace(/[^\d+]/g, '')}`));
+    if (s.site) (phone ? line2 : line1).push(contact('link', 'joinoasa.org', SITE));
+    const contacts = row(line1) + (line2.length ? row(line2) : '');
+
+    const icons = SOCIALS.filter((x) => s.socials[x.key]?.on && isUrl(s.socials[x.key].link)).map((x) =>
+      `<td style="padding:0;"><a href="${esc(s.socials[x.key].link)}" title="${x.label}"><img src="${IMG}${x.key}.png" width="24" height="24" alt="${x.label}" style="display:block;border:0;"></a></td>`);
+    const socials = icons.length
+      ? `<tr><td style="padding:12px 0 0 0;"><table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>${icons.join(`<td style="padding:0 10px;color:${RULE};">|</td>`)}</tr></table></td></tr>`
+      : '';
+
+    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;${FONT}">
 <tr>
-<td style="padding:0 14px 0 0;vertical-align:middle;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/email/oasa-mark-128.png" width="64" height="64" alt="OASA" style="display:block;width:64px;height:64px;border:0;"></a></td>
-<td style="vertical-align:middle;${font}">
-<div style="font-size:18px;line-height:24px;font-weight:700;color:#0B253A;">${esc(name)}</div>
-<div style="font-size:13px;line-height:20px;font-weight:600;color:#5B6573;">${esc(role)}&nbsp;&middot;&nbsp;<a href="${SITE}" style="color:#253A66;text-decoration:none;font-weight:700;">Open Autonomous Systems Alliance</a></div>
-<div style="font-size:13px;line-height:22px;padding-top:2px;"><a href="mailto:${esc(email)}" style="${link}">${esc(email)}</a>${sep}<a href="${SITE}" style="${link}">joinoasa.org</a>${sep}<a href="${DISCORD}" style="${link}">Discord</a></div>
+<td style="padding:0 20px 0 0;vertical-align:middle;"><a href="${SITE}"><img src="${IMG}sig-logo.png" width="130" height="132" alt="OASA, Open Autonomous Systems Alliance" style="display:block;border:0;width:130px;height:132px;"></a></td>
+<td width="3" style="width:3px;background:${GOLD};font-size:0;line-height:0;">&nbsp;</td>
+<td style="padding:0 0 0 20px;vertical-align:middle;">
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
+<tr><td style="${FONT}font-size:22px;line-height:26px;font-weight:700;color:${NAVY};">${esc(name)}</td></tr>
+<tr><td style="${FONT}font-size:15px;line-height:20px;color:${GREY};padding:2px 0 0 0;">${esc(title)}</td></tr>
+${contacts}
+${socials}
+<tr><td style="height:14px;line-height:14px;font-size:0;">&nbsp;</td></tr>
+<tr><td style="padding:12px 0 0 0;border-top:1px solid ${RULE};${FONT}font-size:15px;line-height:20px;color:${NAVY};">Welcome to the Era of Endless Frontiers. <a href="${SITE}/join/" style="color:${GOLD};font-weight:700;text-decoration:none;">Now Build It.</a></td></tr>
+</table>
 </td>
 </tr>
-<tr><td colspan="2" style="padding-top:12px;">
-<table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>
-<td bgcolor="#0B253A" style="background:#0B253A;border-radius:8px;padding:9px 16px;${font}font-size:13px;line-height:18px;font-weight:700;color:#ffffff;">Welcome to the era of endless frontiers.&nbsp;&nbsp;<a href="${SITE}/join/" style="color:#E3A32C;text-decoration:none;font-weight:700;">Now build it.</a></td>
-</tr></table>
-</td></tr>
+<tr><td colspan="3" style="padding:16px 0 0 0;"><img src="${IMG}bar.png" width="600" height="10" alt="" style="display:block;border:0;width:600px;height:10px;"></td></tr>
 </table>`;
   }
 
-  const first = $('f-first'), last = $('f-last'), role = $('f-role'), email = $('f-email');
-  const preview = document.getElementById('preview')!, status = document.getElementById('status')!;
-  let emailTouched = false;
-  email.addEventListener('input', () => { emailTouched = true; render(); });
-
-  function render() {
-    if (!emailTouched) {
-      const local = [slug(first.value), slug(last.value)].filter(Boolean).join('.');
-      email.value = local ? `${local}@joinoasa.org` : '';
-    }
-    const name = `${first.value} ${last.value}`.trim() || 'Your Name';
-    preview.innerHTML = signature(name, role.value.trim() || 'Member', email.value.trim());
-    status.textContent = '';
+  // Build the icon controls.
+  const box = $<HTMLFieldSetElement>('socials');
+  for (const x of SOCIALS) {
+    const div = document.createElement('div');
+    div.className = 'social';
+    div.innerHTML = `<label class="check"><input type="checkbox" id="s-${x.key}-on" /> <span>${x.label}</span></label>
+      <input type="url" id="s-${x.key}-link" aria-label="${x.label} link" placeholder="https://" />`;
+    box.appendChild(div);
   }
-  [first, last, role].forEach((el) => el.addEventListener('input', render));
+
+  let state = load();
+  const fields = { first: $('f-first'), last: $('f-last'), title: $('f-title'), email: $('f-email'), phone: $('f-phone') };
+  const preview = $<HTMLDivElement>('preview'), status = $<HTMLParagraphElement>('status');
+
+  function fill() {
+    for (const k of ['first', 'last', 'title', 'email', 'phone'] as const) fields[k].value = state[k];
+    $('w-on').checked = state.site;
+    for (const x of SOCIALS) {
+      $(`s-${x.key}-on`).checked = state.socials[x.key].on;
+      $(`s-${x.key}-link`).value = state.socials[x.key].link;
+    }
+  }
+  function render() {
+    if (!state.emailEdited) {
+      const local = [slug(state.first), slug(state.last)].filter(Boolean).join('.');
+      state.email = local ? `${local}@joinoasa.org` : '';
+      fields.email.value = state.email;
+    }
+    for (const x of SOCIALS) {
+      const link = $(`s-${x.key}-link`), v = state.socials[x.key];
+      link.disabled = !v.on;
+      link.setAttribute('aria-invalid', String(v.on && !!v.link && !isUrl(v.link)));
+    }
+    preview.innerHTML = signature(state);
+    status.textContent = '';
+    save(state);
+  }
+
+  for (const k of ['first', 'last', 'title', 'phone'] as const) fields[k].addEventListener('input', () => { state[k] = fields[k].value; render(); });
+  fields.email.addEventListener('input', () => { state.email = fields.email.value; state.emailEdited = !!fields.email.value; render(); });
+  $('w-on').addEventListener('change', () => { state.site = $('w-on').checked; render(); });
+  for (const x of SOCIALS) {
+    $(`s-${x.key}-on`).addEventListener('change', () => { state.socials[x.key].on = $(`s-${x.key}-on`).checked; render(); });
+    $(`s-${x.key}-link`).addEventListener('input', () => { state.socials[x.key].link = $(`s-${x.key}-link`).value.trim(); render(); });
+  }
+  $('reset').addEventListener('click', () => {
+    const keep = { first: state.first, last: state.last, title: state.title, email: state.email, emailEdited: state.emailEdited, phone: state.phone };
+    state = { ...defaults(), ...keep }; fill(); render();
+  });
 
   async function copy(rich: boolean) {
     const html = preview.innerHTML;
@@ -115,8 +231,8 @@ import Base from '../layouts/Base.astro';
         })]);
       } else if (rich) {
         const r = document.createRange(); r.selectNodeContents(preview);
-        const s = getSelection()!; s.removeAllRanges(); s.addRange(r);
-        document.execCommand('copy'); s.removeAllRanges();
+        const sel = getSelection()!; sel.removeAllRanges(); sel.addRange(r);
+        document.execCommand('copy'); sel.removeAllRanges();
       } else {
         await navigator.clipboard.writeText(html);
       }
@@ -125,7 +241,9 @@ import Base from '../layouts/Base.astro';
       status.textContent = 'Copy failed. Select the preview and copy it by hand.';
     }
   }
-  document.getElementById('copy-rich')!.addEventListener('click', () => copy(true));
-  document.getElementById('copy-html')!.addEventListener('click', () => copy(false));
+  $('copy-rich').addEventListener('click', () => copy(true));
+  $('copy-html').addEventListener('click', () => copy(false));
+
+  fill();
   render();
 </script>
