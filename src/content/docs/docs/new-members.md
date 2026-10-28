@@ -1,7 +1,7 @@
 ---
 title: New member start
 description: Your first week as an OASA member. Set up your accounts, learn how OASA fits together and pick something to build.
-lastUpdated: 2026-10-26
+lastUpdated: 2026-10-28
 ---
 
 Welcome to the alliance. This page takes about an hour, and you can do it at your own pace. Use AI as much as you like: pointing an agent at a repo is the fastest way to learn it.
@@ -14,6 +14,17 @@ Welcome to the alliance. This page takes about an hour, and you can do it at you
 4. **Join the Discord** with the invite in your welcome email, accept the rules and say hello in `#introductions`.
 5. **Install the basics:** Git, Node.js 22, Python 3 and an editor. Or skip installing anything and open any code repo in GitHub Codespaces; each one has a ready-made dev container.
 6. **Read two short documents:** the [core values](https://github.com/joinoasa/brand/blob/main/documents/core-values/core-values.md) and the [manifesto](https://github.com/joinoasa/brand/blob/main/documents/manifesto/manifesto.md). Everything else follows from them.
+
+### Your OASA email
+
+You get **first.last@joinoasa.org** when your trial starts. Mail to it arrives in your own inbox, and you send from it in the mail app you already use. Your buddy sends you a sending login through a one-time 1Password link and walks you through this:
+
+1. **Gmail:** Settings → See all settings → Accounts and Import → *Send mail as* → *Add another email address*. Untick "Treat as an alias". SMTP server `email-smtp.us-east-1.amazonaws.com`, port 587, TLS, and the login from your buddy. Enter the confirmation code Gmail sends to your new address.
+2. **Signature:** make it on the [email signature page](/email-signature/) and paste it into Gmail.
+3. **Profile picture:** create a free Google account for your joinoasa.org address (accounts.google.com → Create account → *Use my current email address instead*) and set the [OASA avatar](/email/oasa-avatar-512.png) as its picture. Every OASA account uses the same one. This account is also how you join OASA's shared Drive.
+4. **Send your buddy a test email.**
+
+Your login can only send as your own address. Keep it in a password manager and never share it.
 
 ## 2. How OASA is organized
 
