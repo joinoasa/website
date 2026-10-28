@@ -37,6 +37,7 @@ export const site = {
     ideaForm: 'https://github.com/joinoasa/ideas/issues/new?template=idea.yml' as string | null,
     techtreeIssues: 'https://github.com/joinoasa/techtree' as string | null, // node popups link to a prefilled new issue here when a node has no issue yet
     discord: 'https://discord.gg/v6vTxaKV3' as string | null, // permanent invite; set to never expire in Discord
+    share: 'https://share.joinoasa.org' as string | null, // members' shared drive (joinoasa/share), GitHub sign-in
     ledger: null as string | null, // TODO(owner): public ledger (e.g. Open Collective) once the fiscal sponsor is set
     newsletter: null as string | null, // TODO(owner): newsletter signup URL
   },
@@ -107,7 +108,7 @@ export const nav = {
     { heading: 'Explore', links: [
       { href: '/techtree/', label: 'Tech tree' }, { href: '/moonshots/', label: 'Moonshots' }, { href: '/ideas/', label: 'Ideas' }, { href: '/chapters/', label: 'Chapters' } ] },
     { heading: 'Join', links: [
-      { href: '/join/', label: 'Apply to join' }, { href: '/roles/', label: 'Open roles' }, { href: '/docs/membership/', label: 'How membership works' }, { href: '/docs/code-of-conduct/', label: 'Code of conduct' } ] },
+      { href: '/join/', label: 'Apply to join' }, { href: '/roles/', label: 'Open roles' }, { href: '/docs/membership/', label: 'How membership works' }, { href: '/docs/code-of-conduct/', label: 'Code of conduct' }, { href: '/members/', label: 'Member hub' } ] },
     { heading: 'Learn', links: [
       { href: '/docs/', label: 'Docs' }, { href: '/docs/principles/', label: 'Principles' }, { href: '/docs/standards/', label: 'Standards' }, { href: '/docs/academy/', label: 'Academy' } ] },
     { heading: 'Organization', links: [

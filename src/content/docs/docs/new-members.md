@@ -4,7 +4,7 @@ description: Your first week as an OASA member. Set up your accounts, learn how 
 lastUpdated: 2026-10-28
 ---
 
-Welcome to the alliance. This page takes about an hour, and you can do it at your own pace. Use AI as much as you like: pointing an agent at a repo is the fastest way to learn it.
+Welcome to the alliance. This page takes about an hour, and you can do it at your own pace. Afterwards, the [Member hub](/members/) has quick links to everything. Use AI as much as you like: pointing an agent at a repo is the fastest way to learn it.
 
 ## 1. Set up your accounts
 
@@ -25,6 +25,10 @@ You get **first.last@joinoasa.org** when your trial starts. Mail to it arrives i
 4. **Send your buddy a test email.**
 
 Your login can only send as your own address. Keep it in a password manager and never share it.
+
+### The shared drive
+
+Big files (CAD, video, photos, datasheets) go on the shared drive at **[share.joinoasa.org](https://share.joinoasa.org)**. Open it in any browser and sign in with GitHub; it works for every member of the GitHub organization. Start with the *00 Start Here* folder. Code still goes in GitHub, and writing you edit together goes in Google Drive.
 
 ## 2. How OASA is organized
 
