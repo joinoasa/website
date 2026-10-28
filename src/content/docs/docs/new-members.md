@@ -20,9 +20,10 @@ Welcome to the alliance. This page takes about an hour, and you can do it at you
 You get **first.last@joinoasa.org** when your trial starts. Mail to it arrives in your own inbox, and you send from it in the mail app you already use. Your buddy sends you a sending login through a one-time 1Password link and walks you through this:
 
 1. **Gmail:** Settings → See all settings → Accounts and Import → *Send mail as* → *Add another email address*. Untick "Treat as an alias". SMTP server `email-smtp.us-east-1.amazonaws.com`, port 587, TLS, and the login from your buddy. Enter the confirmation code Gmail sends to your new address.
-2. **Signature:** make it on the [email signature page](/email-signature/) and paste it into Gmail.
-3. **Profile picture:** create a free Google account for your joinoasa.org address (accounts.google.com → Create account → *Use my current email address instead*) and set the [OASA avatar](/email/oasa-avatar-512.png) as its picture. Every OASA account uses the same one. This account is also how you join OASA's shared Drive.
-4. **Send your buddy a test email.**
+2. **OASA inbox and spam filter:** forwarded mail from a new address can land in Spam, so add one Gmail filter. Search bar → filter icon → **To:** `joinoasa.org` → **Create filter** → tick **Apply the label** (choose *New label*, name it `OASA`), **Never send it to Spam** and **Also apply filter to matching conversations** → **Create filter**. Everything sent to your OASA address (and any group address you're on) now has its own OASA label and never goes to Spam.
+3. **Signature:** make it on the [email signature page](/email-signature/) and paste it into Gmail.
+4. **Profile picture:** create a free Google account for your joinoasa.org address (accounts.google.com → Create account → *Use my current email address instead*) and set the [OASA avatar](/email/oasa-avatar-512.png) as its picture. Every OASA account uses the same one. This account is also how you join OASA's shared Drive.
+5. **Send your buddy a test email** from a different address than your own (Gmail hides mail you send to yourself).
 
 Your login can only send as your own address. Keep it in a password manager and never share it.
 
