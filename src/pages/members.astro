@@ -1,0 +1,101 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config/site';
+
+type Tile = { label: string; href?: string | null; note: string; soon?: boolean };
+const guide = (file: string) => `https://github.com/joinoasa/share/blob/main/drive/00%20Start%20Here/${encodeURIComponent(file)}`;
+
+const groups: { heading: string; tiles: Tile[] }[] = [
+  {
+    heading: 'Start here',
+    tiles: [
+      { label: 'New member start', href: '/docs/new-members/', note: 'Your first week: accounts, how OASA works, first task.' },
+      { label: 'Shared drive', href: site.links.share, note: 'Big files: CAD, video, photos. Sign in with GitHub.' },
+      { label: 'Discord', href: site.links.discord, note: 'Chat, help and voice. Say hello in #introductions.' },
+      { label: 'GitHub', href: site.links.github, note: 'All code, docs and the tech tree issues.' },
+    ],
+  },
+  {
+    heading: 'Your OASA email',
+    tiles: [
+      { label: 'Set up your address', href: '/docs/new-members/#your-oasa-email', note: 'Send and receive as first.last@joinoasa.org in Gmail.' },
+      { label: 'Email signature', href: '/email-signature/', note: 'Make the standard signature and paste it in.' },
+      { label: 'Profile picture', href: '/email/oasa-avatar-512.png', note: 'The OASA avatar every account uses.' },
+    ],
+  },
+  {
+    heading: 'Build',
+    tiles: [
+      { label: 'Tech tree', href: '/techtree/', note: 'Everything OASA is building and what unlocks next.' },
+      { label: 'Claim a node', href: '/docs/claim-a-node/', note: 'Comment /claim on an open node to take it on.' },
+      { label: 'Agent-ready tasks', href: 'https://github.com/search?q=org%3Ajoinoasa+label%3Aagent-ready+state%3Aopen&type=issues', note: 'Small jobs an AI agent can finish with you.' },
+      { label: 'Ideas', href: '/ideas/', note: 'Post an idea or see what others posted.' },
+      { label: 'Building with AI agents', href: '/docs/agents/', note: 'The rules every OASA repo shares.' },
+    ],
+  },
+  {
+    heading: 'Drive guides',
+    tiles: [
+      { label: 'Welcome and folders', href: guide('01 Welcome.md'), note: 'What goes where, and the rules.' },
+      { label: 'Upload and share', href: guide('02 Upload and share.md'), note: 'Uploading, sharing, getting a deleted file back.' },
+      { label: 'Drive as a desktop folder', href: guide('03 Desktop folder.md'), note: 'Optional, for people who move a lot of big files.' },
+      { label: 'For AI agents', href: guide('04 For AI agents.md'), note: 'Where agents write and how.' },
+    ],
+  },
+  {
+    heading: 'Coming soon',
+    tiles: [
+      { label: 'Team calendar', note: 'Meetings, build days and deadlines in one place.', soon: true },
+      { label: 'Task board', note: 'Jira for admin and non-code work, synced from GitHub.', soon: true },
+    ],
+  },
+  {
+    heading: 'Help and rules',
+    tiles: [
+      { label: 'Code of conduct', href: '/docs/code-of-conduct/', note: 'How we treat each other.' },
+      { label: 'Report a security issue', href: '/security/', note: 'Found something unsafe? Tell us privately.' },
+      { label: 'Contact', href: '/contact/', note: 'Who to email about what.' },
+    ],
+  },
+];
+---
+<Base title="Member hub" description="Quick links for OASA members: the shared drive, Discord, GitHub, your OASA email, the tech tree and guides." noindex>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Member hub</h1>
+      <p class="lede">Everything you use as an OASA member, in one place. Bookmark this page.</p>
+    </div>
+  </header>
+
+  <div class="wrap section hub">
+    {groups.map((g) => (
+      <section aria-labelledby={`h-${g.heading}`}>
+        <h2 id={`h-${g.heading}`}>{g.heading}</h2>
+        <ul class="tiles">
+          {g.tiles.filter((t) => t.soon || t.href).map((t) => (
+            <li class={t.soon ? 'tile soon' : 'tile'}>
+              {t.soon ? <span class="tile-label">{t.label}</span> : <a class="tile-label" href={t.href!}>{t.label}</a>}
+              <span class="tile-note">{t.note}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    <p class="note">Can't find something? Ask in Discord. Your buddy or an admin will point you to it, and we'll add it here.</p>
+  </div>
+</Base>
+<style>
+  .hub { display: grid; gap: var(--space-6); }
+  .hub h2 { margin: 0 0 var(--space-3); }
+  .tiles { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+  .tile { position: relative; display: grid; gap: var(--space-1); padding: var(--space-4); background: var(--white); border: 1px solid var(--contour); border-radius: var(--radius-sm); }
+  .tile:hover { border-color: var(--ink); }
+  .tile-label { font-weight: var(--weight-bold); color: var(--ink); }
+  a.tile-label { text-decoration: none; }
+  a.tile-label::after { content: ''; position: absolute; inset: 0; }
+  a.tile-label:focus-visible { outline: none; }
+  .tile:focus-within { outline: 2px solid var(--focus, var(--gold)); outline-offset: 2px; }
+  .tile-note { font-size: var(--step--1); color: var(--ink-soft); }
+  .soon { background: transparent; border-style: dashed; }
+  .soon:hover { border-color: var(--contour); }
+</style>
