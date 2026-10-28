@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Email signature" description="Make your standard OASA email signature: type your name and role, then copy it into Gmail or any mail app." noindex>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Email signature</h1>
+      <p class="lede">Every OASA address uses the same signature. Type your details, check the preview, then copy it into your mail app.</p>
+    </div>
+  </header>
+
+  <div class="wrap section sig-grid">
+    <form class="sig-form" id="sig-form" onsubmit="return false">
+      <label><span>First name</span><input id="f-first" autocomplete="given-name" value="Your" /></label>
+      <label><span>Last name</span><input id="f-last" autocomplete="family-name" value="Name" /></label>
+      <label><span>Role</span><input id="f-role" value="Member" /></label>
+      <label><span>Email</span><input id="f-email" type="email" value="your.name@joinoasa.org" /></label>
+      <p class="hint">Email fills in from your name as <code>first.last@joinoasa.org</code>. Change it only if yours is different.</p>
+      <div class="actions">
+        <button class="btn btn-primary" id="copy-rich" type="button">Copy signature</button>
+        <button class="btn btn-ghost" id="copy-html" type="button">Copy HTML</button>
+      </div>
+      <p class="copy-msg" id="status" aria-live="polite"></p>
+    </form>
+
+    <section aria-labelledby="preview-h">
+      <h2 id="preview-h">Preview</h2>
+      <div class="preview" id="preview"></div>
+      <noscript><p>This page needs JavaScript to fill in your details. Ask your buddy for a signature instead.</p></noscript>
+    </section>
+  </div>
+
+  <div class="wrap section steps">
+    <h2>Add it to Gmail</h2>
+    <ol>
+      <li>Click <strong>Copy signature</strong> above.</li>
+      <li>In Gmail: <strong>Settings → See all settings → General → Signature → Create new</strong>. Name it "OASA" and paste.</li>
+      <li>Under <strong>Signature defaults</strong>, pick your joinoasa.org address and set "OASA" for new emails and replies.</li>
+      <li>Scroll down and <strong>Save changes</strong>. Send yourself a test.</li>
+    </ol>
+    <p>Other mail apps: paste into the signature box the same way. If an app only takes code, use <strong>Copy HTML</strong>.</p>
+    <h2>Profile picture</h2>
+    <p>Every OASA account uses the same picture: <a href="/email/oasa-avatar-512.png" download>download the OASA avatar</a>. Set it on the Google account for your joinoasa.org address (Google Account → Personal info → Profile picture). Gmail shows it to the people you email.</p>
+  </div>
+</Base>
+
+<style>
+  .sig-grid { display: grid; gap: var(--space-6, 2rem); grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 52rem) { .sig-grid { grid-template-columns: minmax(0, 1fr); } }
+  .sig-form { display: grid; gap: 0.9rem; min-width: 0; }
+  .sig-form label { display: grid; gap: 0.3rem; font-weight: 700; }
+  .sig-form input { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--line-control); border-radius: 6px; background: var(--white); color: var(--ink); }
+  .sig-form input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .hint { overflow-wrap: anywhere; font-size: var(--step--1); color: var(--ink-muted); margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .copy-msg { min-height: 1.4em; margin: 0; color: var(--available); font-weight: 700; }
+  .preview { background: var(--white); border: 1px solid var(--contour); border-radius: 8px; padding: 1.25rem; overflow-x: auto; }
+  .steps { border-top: 1px solid var(--contour); }
+  .steps ol { padding-left: 1.25rem; }
+  .steps li { margin-block: 0.35rem; }
+</style>
+
+<script>
+  const SITE = 'https://joinoasa.org';
+  const DISCORD = 'https://discord.gg/v6vTxaKV3';
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  const slug = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+
+  // Email-safe markup: tables and inline styles only. Keep in step with admin/access/email.md.
+  function signature(name: string, role: string, email: string) {
+    const font = "font-family:'Segoe UI',Helvetica,Arial,sans-serif;";
+    const link = 'color:#253A66;text-decoration:underline;';
+    const sep = '<span style="color:#C9CFD8;padding:0 8px;">|</span>';
+    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;${font}">
+<tr>
+<td style="padding:0 14px 0 0;vertical-align:middle;"><a href="${SITE}" style="text-decoration:none;"><img src="${SITE}/email/oasa-mark-128.png" width="64" height="64" alt="OASA" style="display:block;width:64px;height:64px;border:0;"></a></td>
+<td style="vertical-align:middle;${font}">
+<div style="font-size:18px;line-height:24px;font-weight:700;color:#0B253A;">${esc(name)}</div>
+<div style="font-size:13px;line-height:20px;font-weight:600;color:#5B6573;">${esc(role)}&nbsp;&middot;&nbsp;<a href="${SITE}" style="color:#253A66;text-decoration:none;font-weight:700;">Open Autonomous Systems Alliance</a></div>
+<div style="font-size:13px;line-height:22px;padding-top:2px;"><a href="mailto:${esc(email)}" style="${link}">${esc(email)}</a>${sep}<a href="${SITE}" style="${link}">joinoasa.org</a>${sep}<a href="${DISCORD}" style="${link}">Discord</a></div>
+</td>
+</tr>
+<tr><td colspan="2" style="padding-top:12px;">
+<table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>
+<td bgcolor="#0B253A" style="background:#0B253A;border-radius:8px;padding:9px 16px;${font}font-size:13px;line-height:18px;font-weight:700;color:#ffffff;">Welcome to the era of endless frontiers.&nbsp;&nbsp;<a href="${SITE}/join/" style="color:#E3A32C;text-decoration:none;font-weight:700;">Now build it.</a></td>
+</tr></table>
+</td></tr>
+</table>`;
+  }
+
+  const first = $('f-first'), last = $('f-last'), role = $('f-role'), email = $('f-email');
+  const preview = document.getElementById('preview')!, status = document.getElementById('status')!;
+  let emailTouched = false;
+  email.addEventListener('input', () => { emailTouched = true; render(); });
+
+  function render() {
+    if (!emailTouched) {
+      const local = [slug(first.value), slug(last.value)].filter(Boolean).join('.');
+      email.value = local ? `${local}@joinoasa.org` : '';
+    }
+    const name = `${first.value} ${last.value}`.trim() || 'Your Name';
+    preview.innerHTML = signature(name, role.value.trim() || 'Member', email.value.trim());
+    status.textContent = '';
+  }
+  [first, last, role].forEach((el) => el.addEventListener('input', render));
+
+  async function copy(rich: boolean) {
+    const html = preview.innerHTML;
+    try {
+      if (rich && 'ClipboardItem' in window) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([preview.innerText], { type: 'text/plain' }),
+        })]);
+      } else if (rich) {
+        const r = document.createRange(); r.selectNodeContents(preview);
+        const s = getSelection()!; s.removeAllRanges(); s.addRange(r);
+        document.execCommand('copy'); s.removeAllRanges();
+      } else {
+        await navigator.clipboard.writeText(html);
+      }
+      status.textContent = rich ? 'Copied. Paste it into your signature box.' : 'HTML copied.';
+    } catch {
+      status.textContent = 'Copy failed. Select the preview and copy it by hand.';
+    }
+  }
+  document.getElementById('copy-rich')!.addEventListener('click', () => copy(true));
+  document.getElementById('copy-html')!.addEventListener('click', () => copy(false));
+  render();
+</script>
