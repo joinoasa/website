@@ -36,6 +36,10 @@ export default defineConfig({
         { label: 'Membership', items: [
           { label: 'How membership works', slug: 'docs/membership' },
           { label: 'New member start', slug: 'docs/new-members' },
+          { label: 'Setup checklist', slug: 'docs/setup-checklist' },
+          { label: 'How work gets done', slug: 'docs/how-work-gets-done' },
+          { label: 'Start without code', slug: 'docs/start-without-code' },
+          { label: 'Buddy guide', slug: 'docs/buddy-guide' },
           { label: 'Open roles', link: '/roles/' },
           { label: 'Projects', slug: 'docs/projects' },
           { label: 'Claim a node', slug: 'docs/claim-a-node' },
