@@ -92,6 +92,28 @@ export const roles: Role[] = [
     needs: 'Sees names and handles, never application data.',
   },
   {
+    slug: 'social-media-coordinator', title: 'Social media coordinator', track: 'Community', who: 'Members', hours: '2–4 a week', status: 'open', apply: true,
+    purpose: 'Show the world what OASA builds, and bring in the next builders.',
+    duties: [
+      'Turn builds, demos and milestones into short posts and clips on YouTube, X, TikTok, Instagram and LinkedIn.',
+      'Keep a simple posting calendar and follow the brand guide.',
+      'Answer comments and messages, and pass applicants and press to the right people.',
+    ],
+    fits: 'People who like telling stories about technical work.',
+    needs: 'Two-factor authentication. You post through each site\'s own roles, never the main login.',
+  },
+  {
+    slug: 'artist', title: 'Artist', track: 'Community', who: 'Any member', hours: 'Any', status: 'always', apply: true,
+    purpose: "Give OASA's work a look people remember.",
+    duties: [
+      'Make graphics, posters and slides from the brand kit.',
+      'Edit video and motion pieces for posts and talks.',
+      'Draw concept art for moonshots and tech tree nodes.',
+    ],
+    fits: 'Designers, illustrators, video editors and animators.',
+    needs: 'Art is shared under CC BY-SA 4.0. No weapons in any art.',
+  },
+  {
     slug: 'project-manager', title: 'Project manager', track: 'Coordination', who: 'Builders', hours: '3–6 a week', status: 'open', apply: false,
     purpose: 'Get a moonshot, or a group of nodes, from plan to done.',
     duties: [
