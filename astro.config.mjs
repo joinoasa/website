@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 import { site as cfg, socialLinks } from './src/config/site.ts';
 
 // Docs social icons come from src/config/site.ts; only configured links appear.
-const socialIcons = { GitHub: 'github', Discord: 'discord', X: 'x.com', LinkedIn: 'linkedin', YouTube: 'youtube', Instagram: 'instagram' };
+const socialIcons = { GitHub: 'github', Discord: 'discord', X: 'x.com', LinkedIn: 'linkedin', YouTube: 'youtube', Instagram: 'instagram', TikTok: 'tiktok' };
 const social = socialLinks.map((l) => ({ icon: socialIcons[l.label], label: l.label, href: l.href }));
 
 export default defineConfig({
