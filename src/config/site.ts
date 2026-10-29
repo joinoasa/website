@@ -45,7 +45,7 @@ export const site = {
   social: {
     x: null as string | null, // TODO(owner): full profile URL
     linkedin: null as string | null, // TODO(owner)
-    youtube: null as string | null, // TODO(owner)
+    youtube: 'https://www.youtube.com/@joinoasa' as string | null,
     instagram: null as string | null, // TODO(owner)
   },
 
