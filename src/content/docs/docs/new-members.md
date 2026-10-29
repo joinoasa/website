@@ -1,10 +1,10 @@
 ---
 title: New member start
 description: Your first week as an OASA member. Set up your accounts, learn how OASA fits together and pick something to build.
-lastUpdated: 2026-10-28
+lastUpdated: 2026-10-29
 ---
 
-Welcome to the alliance. This page takes about an hour, and you can do it at your own pace. Afterwards, the [Member hub](/members/) has quick links to everything. Use AI as much as you like: pointing an agent at a repo is the fastest way to learn it.
+Welcome to the alliance. This page takes about an hour, and you can do it at your own pace. Tick your progress on the [setup checklist](/docs/setup-checklist/), and see [how work gets done](/docs/how-work-gets-done/). Don't write code? Start with [Start without code](/docs/start-without-code/). Afterwards, the [Member hub](/members/) has quick links to everything. Use AI as much as you like: pointing an agent at a repo is the fastest way to learn it.
 
 ## 1. Set up your accounts
 
