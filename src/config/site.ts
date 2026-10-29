@@ -47,6 +47,7 @@ export const site = {
     linkedin: null as string | null, // TODO(owner)
     youtube: 'https://www.youtube.com/@joinoasa' as string | null,
     instagram: null as string | null, // TODO(owner)
+    tiktok: 'https://www.tiktok.com/@joinoasa' as string | null,
   },
 
   org: {
@@ -94,6 +95,7 @@ export const socialLinks: NavLink[] = [
   site.social.linkedin && { label: 'LinkedIn', href: site.social.linkedin },
   site.social.youtube && { label: 'YouTube', href: site.social.youtube },
   site.social.instagram && { label: 'Instagram', href: site.social.instagram },
+  site.social.tiktok && { label: 'TikTok', href: site.social.tiktok },
 ].filter(Boolean) as NavLink[];
 
 export const nav = {
