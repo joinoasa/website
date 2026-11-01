@@ -1050,6 +1050,12 @@
     "lead": null,
     "team": []
   },
+  "G-10": {
+    "brief": "An open tracked chassis anyone can build: drivetrain, battery bay, payload rails and e-stops to a published standard. Landscaping, snow, inspection and rescue robots start from it instead of from scratch.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
   "M-7": {
     "brief": "A quick-attach mount for ground robots, like the one on a skid-steer, carrying mechanical, power and data connections. Any tool built to it works on any OASA ground robot.",
     "github": "https://github.com/joinoasa/techtree/issues/151",
@@ -1231,8 +1237,20 @@
     "team": []
   },
   "R-COM5": {
-    "brief": "One open, affordable SDR radio any OASA device can use as its IP link, from drones to solar nodes. Band cards cover sub-GHz for control and fallback and 5.8 GHz with a beamforming array for data.",
+    "brief": "One open, affordable SDR radio we design ourselves, used as the IP link by people and robots alike. The same core comes in handheld, backpack, vehicle, tower and airborne versions, with band cards for sub-GHz control and 5.8 GHz data; only specialty jobs like underwater or space get their own radio.",
     "github": "https://github.com/joinoasa/techtree/issues/174",
+    "lead": null,
+    "team": []
+  },
+  "R-COM6": {
+    "brief": "Run IP over our own modem on lab SDRs (USRP B200mini and E310 first): a network interface on each end, ping and throughput across coax, and the OASA encrypted link on top. It proves the stack our own radio will run.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "R-COM7": {
+    "brief": "A handheld radio for people that speaks the same IP network as the robots: push-to-talk voice, text and position, with TAK on a phone. Responders and machines see and hear each other on one encrypted network.",
+    "github": null,
     "lead": null,
     "team": []
   },
