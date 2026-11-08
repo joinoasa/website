@@ -61,11 +61,13 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| R-COM1 | Basic radio link (off-the-shelf) | — | R-COM2, R-CTL1, T-PAY1, T-RF1 | RF basics, antennas | 🟢 |
+| R-COM1 | Basic radio link (off-the-shelf) | — | R-COM2, R-COM6, R-CTL1, T-PAY1, T-RF1 | RF basics, antennas | 🟢 |
 | R-COM2 | Encrypted link (OASA-SEC v0) | R-COM1, R-SEC1 | R-COM4, R-COM5, T-MAP1, T-NET1, U-3, O-2, SP-1, MS-7 | Cryptography basics, networking | 🔒 |
 | R-COM3 | Physical links (copper/fiber tether) | — | R-PWR4, L-4, U-1, U-2, I-1, C-3 | Fiber optics, cabling, signal integrity | 🟢 |
 | R-COM4 | Laser links (free-space optical, encrypted) with in-flight pointing and tracking | R-COM2, T-RF3 | R-PWR5, SP-2, MS-17 | Optics, tracking control | 🔒 |
-| R-COM5 | Open SDR radio: multi-band IP radio with plug-in band cards (sub-GHz control and fallback, 5.8 GHz data, 60 GHz later) and a router inside that carries encrypted OASA traffic | R-COM2, T-RF1 | T-RF4 | SDR, RF design, embedded Linux | 🔒 |
+| R-COM5 | Open SDR radio: one multi-band IP radio for many jobs, from scratch. One shared core (compute, transceiver, router carrying encrypted OASA traffic) with plug-in band cards (sub-GHz control and fallback, 5.8 GHz data, 60 GHz later), built as handheld, backpack, vehicle, tower and airborne versions; specialty radios (underwater, space) are the exceptions | R-COM2, T-RF1, R-COM6 | R-COM7, T-RF4 | SDR, RF design, embedded Linux | 🔒 |
+| R-COM6 | IP link over OASA's own waveform on lab SDRs (a network interface over our modem; ping, throughput and the encrypted link across coax): the first step toward our own radio | R-COM1 | R-COM5 | DSP, modem design, networking | 🔒 |
+| R-COM7 | Human radio: handheld push-to-talk voice and data on the same IP radio as the robots, with TAK on a phone, so people and robots share one network | R-COM5, T-MAP1 | — | Audio codecs, human factors, embedded Linux | 🔒 |
 
 ### Security
 
@@ -113,14 +115,14 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | T-MAP2, T-RF2, T-RF4, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
+| T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | R-COM7, T-MAP2, T-RF2, T-RF4, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
 | T-MAP2 | Tap-to-control from TAK | T-MAP1, R-CTL2 | T-NET3, T-AI3, T-TSK1, T-LEARN1 | Mission control, UX | 🔒 |
 | T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, T-UPD2, S-2, I-1 | Mesh networking | 🔒 |
 | T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, T-RF4, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
 | T-NET3 | Multi-GCS handoff, multi-operator control | T-NET2, T-MAP2 | T-NET4, O-4 | Distributed systems | 🔒 |
 | T-NET4 | Large mesh scaling (100+ nodes) | T-NET3 | R-TIME2, O-1, O-14, MS-1, MS-10 | Network scaling | 🔒 |
 | T-NET5 | Meshtastic / LoRa bridge (encrypted gateway between OASA and Meshtastic networks) | T-NET1 | O-18, O-22, MS-20, MS-23 | LoRa, protocol bridging | 🔒 |
-| T-PAY1 | Payload standard (OASA-PAY) | R-COM1, R-PWR1 | T-AI1, L-1, S-4, X-2, X-3, X-4, M-1, M-3, M-4, M-7, MS-7 | Mechanical/electrical interfaces | 🔒 |
+| T-PAY1 | Payload standard (OASA-PAY) | R-COM1, R-PWR1 | T-AI1, L-1, G-10, S-4, X-2, X-3, X-4, M-1, M-3, M-4, M-7, MS-7 | Mechanical/electrical interfaces | 🔒 |
 | T-LOG1 | Black box logs (OASA-LOG) | — | T-LEARN1, A-9, O-8, SP-1, MS-7, MS-11 | Data formats, reliability | 🟢 |
 | T-AI1 | Edge AI module | T-PAY1, X-1 | T-AI2, T-SITE3, T-SAFE1, T-LEARN1, L-6, G-3, G-7, S-5, U-7, X-7, M-11, O-5, O-7, O-11, O-15, O-20, O-24, I-5, I-6, C-1, X-13 | Machine learning, computer vision | 🔒 |
 | T-AI2 | Mission from a sentence ("survey the north field, find hogs") | T-AI1, T-TSK1 | T-AI3, SP-5, MS-18 | AI planning, language models | 🔒 |
@@ -195,15 +197,16 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 
 | ID | Node | Requires | Unlocks | Sciences | Status |
 |---|---|---|---|---|---|
-| G-1 | Wheeled / tracked rover | R-CTL2 | G-3, G-4, G-5, G-6, G-7, G-8, M-7, O-5, O-10, I-1, C-4 | Mechanical engineering, drivetrains | 🔒 |
+| G-1 | Wheeled / tracked rover | R-CTL2 | G-3, G-4, G-5, G-6, G-7, G-10, M-7, O-5, O-10, I-1, C-4 | Mechanical engineering, drivetrains | 🔒 |
 | G-2 | Legged robot | R-CTL2, R-NAV3 | G-5, I-4, Rough-terrain missions | Legged locomotion, ROS 2 | 🔒 |
 | G-3 | City trash-pickup robot | G-1, T-AI1, M-1 | MS-4 | Manipulation, perception | 🔒 |
 | G-4 | Rover mothership (carries/charges drones) | G-1, T-DOCK2 | MS-5 | Integration | 🔒 |
 | G-5 | Underground explorer (caves, tunnels, collapsed buildings; autonomous 3D mapping; drops its own relays) | G-1 or G-2, R-NAV3, X-3, M-5 | SP-3, MS-16 | SLAM, confined-space robotics | 🔒 |
 | G-6 | Snow and ice robot (sidewalks first, then streets; de-icing) | G-1, R-NAV2 | MS-21 | Winter operations, traction | 🔒 |
 | G-7 | Mobility assist robot (guide, delivery for elderly/disabled neighbors) | G-1, T-AI1 | — | Assistive technology, human-robot interaction | 🔒 |
-| G-8 | Compact landscaping robot (tracked; slopes, trails, tight spots, no trailer needed) | G-1, M-7, T-SAFE1 | G-9, O-23 | Drivetrains, traction, slope stability | 🔒 |
+| G-8 | Compact landscaping robot (tracked; slopes, trails, tight spots, no trailer needed) | G-10, M-7, T-SAFE1 | G-9, O-23 | Drivetrains, traction, slope stability | 🔒 |
 | G-9 | Full-size landscaping robot (skid-steer scale) | G-8 | M-10, I-10 | Heavy equipment design, hydraulics | 🔒 |
+| G-10 | OASA tracked platform: an open, modular tracked chassis (drivetrain, battery bay, payload rails, e-stops) that other ground robots build on | G-1, T-PAY1 | G-8 | Drivetrains, traction, mechanical design | 🔒 |
 
 ### 3.4 Surface Water
 
