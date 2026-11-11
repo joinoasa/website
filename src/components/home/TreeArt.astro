@@ -1,0 +1,139 @@
+---
+// The tech tree drawn as a tree, built from the live tree data: one dot per technology.
+// Roots in the soil, the trunk, one ring per branch, moonshots around the moon, starshots as stars.
+// Positions come from tree-layout.mjs (tested with `npm test`); this file only draws them.
+import tree from '../../data/techtree.json';
+import { glyphs, type GlyphName } from '../descent/glyphs';
+import { rand } from '../descent/art';
+import { treeLayout, star4 } from './tree-layout.mjs';
+
+const { roots, trunk, branches, sky, totals } = treeLayout(tree);
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+const dots = [...trunk.dots, ...roots.dots, ...roots.tips, ...branches.flatMap((b) => b.dots)];
+const label = `The OASA tech tree drawn as a tree: ${roots.count} root technologies in the soil, a trunk of ${trunk.count}, ` +
+  `${branches.length} branches, ${plural(sky.moonshots.count, 'moonshot')} around the moon and ${plural(sky.starshots.count, 'starshot')}. ` +
+  `${totals.available} of ${totals.total} technologies are open to build now.`;
+
+let tufts = '';
+for (let i = 0; i < 26; i++) {
+  const x = Math.round(60 + i * 35 + rand(i) * 12);
+  if (x > 440 && x < 560) continue;
+  tufts += `M${x} 878l-4 -9M${x} 878l3 -11M${x} 878l8 -7`;
+}
+const { moon } = sky;
+---
+<svg class="tree-art" viewBox="0 0 1000 1240" role="img" aria-label={label}>
+  <g class="sky" aria-hidden="true">
+    {sky.specks.map((s) => <circle cx={s.x} cy={s.y} r={s.r} opacity={s.o} class="speck" />)}
+    {sky.starshots.stars.length > 0 && <path d={sky.starshots.stars.map((s) => star4(s.x, s.y, s.r)).join(' ')} class="gold-fill" />}
+    <circle cx={moon.x} cy={moon.y} r={moon.orbit} class="orbit" />
+    <circle cx={moon.x} cy={moon.y} r={moon.r} class="moon" />
+    <circle cx={moon.x - 18} cy={moon.y - 14} r="11" class="crater" />
+    <circle cx={moon.x + 20} cy={moon.y + 8} r="15" class="crater" />
+    <circle cx={moon.x - 6} cy={moon.y + 28} r="7" class="crater" />
+    {sky.moonshots.dots.map((d) => <circle cx={d.x} cy={d.y} r="3.6" class="gold-fill" />)}
+  </g>
+
+  <g class="soil" aria-hidden="true">
+    <path d="M30 880H970C970 1050 820 1222 500 1222C180 1222 30 1050 30 880Z" class="soil-fill" />
+    <path d="M62 950Q280 936 500 952T938 946 M112 1030Q300 1046 500 1032T888 1034 M196 1112Q340 1100 500 1114T804 1108" class="strata" />
+    <path d="M30 880H970" class="ground" />
+    <path d={tufts} class="tufts" />
+  </g>
+
+  <g class="wood" aria-hidden="true">
+    <path d={roots.paths.join('')} class="root" />
+    {branches.map((b) => <path d={b.path} stroke-width={b.width} class="branch" />)}
+    <path d="M440 882C466 864 464 800 468 566L532 566C536 800 534 864 560 882Z" class="trunk" />
+    <path d="M528 150Q640 78 762 96 M650 226Q712 176 778 162" class="aim" />
+  </g>
+
+  <g class="dots" aria-hidden="true">
+    {dots.map((d) => d.status === 'locked'
+      ? <circle cx={d.x} cy={d.y} r="4.4" class="d-locked" />
+      : <>
+          {d.status === 'available' && <circle cx={d.x} cy={d.y} r="11" class="d-glow" />}
+          <circle cx={d.x} cy={d.y} r={d.status === 'in-progress' ? 5 : 6.2} class={`d-${d.status}`} />
+        </>)}
+  </g>
+
+  <g class="badges" aria-hidden="true">
+    {branches.map((b) => (
+      <g transform={`translate(${b.x} ${b.y})`}>
+        <circle r="25" class="disc" />
+        <g transform="scale(0.926)">
+          {glyphs[b.glyph as GlyphName].map(([t, d, sw]) => t === 's'
+            ? <path d={d} class="g-s" stroke-width={sw} />
+            : <path d={d} class={t === 'f' ? 'g-f' : 'g-k'} />)}
+        </g>
+      </g>
+    ))}
+  </g>
+
+  <g class="labels" aria-hidden="true">
+    {branches.map((b) => (
+      <>
+        <text x={b.labelX} y={b.labelY} class="t">{b.label}</text>
+        <text x={b.labelX} y={b.countY} class="t-n">{b.count}</text>
+      </>
+    ))}
+    <text x="584" y="770" class="t start">Trunk</text>
+    <text x="584" y="794" class="t-n start">{trunk.count}</text>
+    <text x="70" y="924" class="t start in-soil">Roots</text>
+    <text x="140" y="924" class="t-n start in-soil">{roots.count}</text>
+    {roots.tips.map((t) => (
+      <>
+        <text x={t.x} y={t.y + 36} class:list={['t-id', 'in-soil', { open: t.status === 'available' }]}>{t.id}</text>
+        <text x={t.x} y={t.y + 58} class="t-tip in-soil">{t.name}</text>
+      </>
+    ))}
+    {sky.starshots.count > 0 && <text x="124" y="148" class="t-gold">{plural(sky.starshots.count, 'starshot')}</text>}
+    {sky.moonshots.count > 0 && <text x={moon.x} y={moon.y + 112} class="t-gold">{plural(sky.moonshots.count, 'moonshot')}</text>}
+  </g>
+</svg>
+
+<style>
+  .tree-art {
+    --t-sky: var(--home-deep, #071726); --t-soil: #12294a; --t-strata: #234a7a; --t-grass: #5fa88b;
+    --t-wood: #2f5489; --t-trunk: #1a3a66; --t-locked: #7391bd; --t-open: #6fd0c3; --t-count: #a9beda;
+    width: 100%; height: auto;
+  }
+  .speck { fill: var(--white); }
+  .gold-fill { fill: var(--gold); }
+  .orbit { fill: none; stroke: #9fc0ea; stroke-width: 1; stroke-dasharray: 2 6; opacity: 0.6; }
+  .moon { fill: #dfe8f3; }
+  .crater { fill: #c5d3e4; }
+  .soil-fill { fill: var(--t-soil); }
+  .strata { fill: none; stroke: var(--t-strata); stroke-width: 1.4; }
+  .ground { fill: none; stroke: var(--t-grass); stroke-width: 4; stroke-linecap: round; }
+  .tufts { fill: none; stroke: var(--t-grass); stroke-width: 2; stroke-linecap: round; }
+  .root { fill: none; stroke: var(--t-wood); stroke-width: 7; stroke-linecap: round; }
+  .branch { fill: none; stroke: var(--t-wood); stroke-linecap: round; }
+  .trunk { fill: var(--t-trunk); stroke: var(--t-wood); stroke-width: 3; stroke-linejoin: round; }
+  .aim { fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 0.85; }
+
+  .d-locked { fill: var(--t-locked); }
+  .d-glow { fill: var(--t-open); opacity: 0.22; }
+  .d-available { fill: var(--t-open); stroke: var(--t-sky); stroke-width: 1.5; }
+  .d-in-progress { fill: var(--t-sky); stroke: var(--t-open); stroke-width: 2.5; }
+  .d-done { fill: var(--white); stroke: var(--t-sky); stroke-width: 1.5; }
+
+  .disc { fill: var(--white); stroke: #8fc0f2; stroke-width: 3; }
+  .g-f { fill: var(--navy); }
+  .g-k { fill: var(--white); }
+  .g-s { fill: none; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; }
+
+  text { font-family: var(--font-body); text-anchor: middle; paint-order: stroke; stroke: var(--t-sky); stroke-width: 4px; stroke-linejoin: round; }
+  text.start { text-anchor: start; }
+  text.in-soil { stroke: var(--t-soil); }
+  .t { font-size: 22px; font-weight: 700; fill: var(--white); }
+  .t-n { font-size: 17px; font-weight: 600; fill: var(--t-count); }
+  .t-gold { font-size: 21px; font-weight: 700; fill: var(--gold); }
+  .t-id { font-size: 21px; font-weight: 700; fill: var(--t-count); }
+  .t-id.open { fill: var(--t-open); }
+  .t-tip { font-size: 17px; font-weight: 500; fill: #dce6f2; }
+
+  @media (forced-colors: active) {
+    text { stroke: none; }
+  }
+</style>

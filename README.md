@@ -19,7 +19,8 @@ npm run build      # outputs to dist/
 | `src/pages/robots.txt.ts`, `src/pages/.well-known/security.txt.ts` | Generated from the config |
 | `src/content/docs/docs/` | Docs pages (Markdown). Edit these to update /docs |
 | `src/components/docs/` | Starlight overrides (header links, footer, head tags) |
-| `src/components/descent/` | Home page hero (the Descent: space to seabed) |
+| `src/components/home/` | Home page drawings: the tech tree as a tree (from the tree data) and the one-scene panorama |
+| `src/components/descent/` | The Descent (`/descent/`): space to seabed, one layer per screen |
 | `src/layouts/Base.astro` | Page shell: meta, canonical, social tags, JSON-LD, fonts |
 | `src/styles/global.css` | Colors, type, shared utilities (`.cta-strip`, `.prose`, `.note`) and print rules |
 | `source/OASA-techtree.md` | Tech tree source of truth |

@@ -7,8 +7,8 @@ import soraUrl from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff
 import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import { site, socialLinks } from '../config/site';
 
-interface Props { title: string; description?: string; noindex?: boolean }
-const { title, description = site.description, noindex = false } = Astro.props;
+interface Props { title: string; description?: string; noindex?: boolean; darkHeader?: boolean }
+const { title, description = site.description, noindex = false, darkHeader = false } = Astro.props;
 const fullTitle = title === 'Home' ? 'OASA — Open Autonomous Systems Alliance' : `${title} · OASA`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = `${site.url}/og.png`;
@@ -57,7 +57,7 @@ const jsonLd = {
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Header />
+    <Header dark={darkHeader} />
     <main id="main"><slot /></main>
     <Footer />
   </body>
