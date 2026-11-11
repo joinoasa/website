@@ -1,0 +1,194 @@
+---
+// One wide cutaway drawing: orbit, sky, a ridge, a town, the pipes under it, a river and its bed,
+// with every vehicle on one gold mesh. It is the short version of the Descent (/descent/)
+// and uses the same glyphs and node badges. Coordinates use a 1440 x 860 viewBox.
+import { glyphs, type GlyphName } from '../descent/glyphs';
+import { wave, cloud, rand } from '../descent/art';
+import { star4 } from './tree-layout.mjs';
+
+type Domain = 'air' | 'land' | 'water';
+type Node = { id: string; x: number; y: number; glyph: GlyphName; domain: Domain; label: string; dy: number; onLight?: boolean; hub?: boolean; dx?: number; anchor?: 'start' | 'end' };
+const nodes: Node[] = [
+  { id: 'cubesat', x: 1010, y: 84, glyph: 'cubesat', domain: 'air', label: 'CubeSat', dy: -36 },
+  { id: 'balloon', x: 628, y: 214, glyph: 'balloon', domain: 'air', label: 'High-altitude balloon', dy: -36 },
+  { id: 'glider', x: 318, y: 226, glyph: 'glider', domain: 'air', label: 'Atmospheric satellite', dy: -36 },
+  { id: 'blimp', x: 1136, y: 322, glyph: 'blimp', domain: 'air', label: 'Solar blimp', dy: -38 },
+  { id: 'wing', x: 520, y: 372, glyph: 'wing', domain: 'air', label: 'Relay drone', dy: -38 },
+  { id: 'quad', x: 806, y: 402, glyph: 'quad', domain: 'air', label: 'Quadcopter team', dy: -38 },
+  { id: 'tower', x: 150, y: 292, glyph: 'tower', domain: 'land', label: 'Summit tower', dy: -36 },
+  { id: 'legged', x: 300, y: 436, glyph: 'legged', domain: 'land', label: 'Legged robot', dy: -36 },
+  { id: 'hive', x: 640, y: 498, glyph: 'hive', domain: 'land', label: 'Mobile hive', dy: -44, onLight: true, hub: true },
+  { id: 'rover', x: 500, y: 512, glyph: 'rover', domain: 'land', label: 'Farm rover', dy: -36, onLight: true },
+  { id: 'pole', x: 900, y: 470, glyph: 'pole', domain: 'land', label: 'Pole sensor', dy: -38, onLight: true },
+  { id: 'crawler', x: 646, y: 661, glyph: 'crawler', domain: 'land', label: 'Pipe crawler', dy: 6, onLight: true, dx: 36, anchor: 'start' },
+  { id: 'boat', x: 1078, y: 540, glyph: 'boat', domain: 'water', label: 'Solar boat', dy: -38, onLight: true },
+  { id: 'buoy', x: 1336, y: 546, glyph: 'buoy', domain: 'water', label: 'Buoy', dy: -38, onLight: true },
+  { id: 'rov', x: 1046, y: 676, glyph: 'rov', domain: 'water', label: 'Tethered ROV', dy: 48 },
+  { id: 'sub', x: 1226, y: 690, glyph: 'sub', domain: 'water', label: 'Autonomous sub', dy: -44, hub: true },
+  { id: 'fish', x: 1340, y: 652, glyph: 'fish', domain: 'water', label: 'Robotic fish', dy: 46 },
+  { id: 'reefbot', x: 1352, y: 768, glyph: 'reefbot', domain: 'water', label: 'Reef robot', dy: 6, dx: -36, anchor: 'end' },
+];
+const at = Object.fromEntries(nodes.map((n) => [n.id, n]));
+type Kind = 'mesh' | 'tether' | 'acoustic';
+const links: [string, string, Kind?][] = [
+  ['cubesat', 'balloon'], ['balloon', 'glider'], ['balloon', 'blimp'], ['glider', 'tower'], ['tower', 'wing'], ['wing', 'quad'], ['balloon', 'wing'], ['quad', 'blimp'],
+  ['quad', 'hive'], ['wing', 'hive'], ['tower', 'legged'], ['hive', 'pole'], ['hive', 'rover'], ['pole', 'boat'], ['blimp', 'boat'], ['boat', 'buoy'],
+  ['hive', 'crawler', 'tether'], ['boat', 'rov', 'tether'], ['boat', 'sub', 'acoustic'], ['sub', 'fish', 'acoustic'], ['sub', 'reefbot', 'acoustic'],
+];
+const line = (a: string, b: string) => `M${at[a].x} ${at[a].y}L${at[b].x} ${at[b].y}`;
+
+const stars = Array.from({ length: 150 }, (_, i) => {
+  const y = rand(i + 77) * 290;
+  return { x: (rand(i + 1) * 1440).toFixed(1), y: y.toFixed(1), r: (0.5 + rand(i + 31) * 1.1).toFixed(2), o: ((0.35 + rand(i + 9) * 0.6) * (1 - y / 330)).toFixed(2) };
+});
+const clouds = [[905, 418, 170, 46], [1290, 446, 130, 36], [640, 470, 120, 30]].map(([cx, by, w, h]) => cloud(cx, by, w, h));
+const conifers = [[26, 498, 1], [58, 486, 1.1], [92, 500, 0.9], [150, 508, 1], [186, 498, 1.1], [228, 498, 0.9], [262, 512, 1], [300, 526, 0.9], [330, 536, 0.8]]
+  .map(([x, y, k]) => `M${x} ${y - 20 * k}L${x + 7 * k} ${y}H${x - 7 * k}Z`).join('');
+const kelp = [[1150, 800, 86], [1166, 804, 62], [1136, 798, 54], [1410, 802, 70], [1424, 806, 48]]
+  .map(([x, y, h]) => `M${x} ${y}q-9 ${-h * 0.25} 0 ${-h * 0.5}t0 ${-h * 0.5}`).join(' ');
+const school = [[1372, 612], [1388, 604], [1400, 616], [1416, 608], [1384, 622]].map(([x, y]) => `M${x} ${y}q6 -4 12 0q-6 4 -12 0Zm12 0l4 -3v6Z`).join('');
+const townTrees = [[600, 9], [668, 12], [820, 10], [850, 8]];
+const ticks: [number, string, boolean?][] = [[60, '400 km'], [176, '100 km'], [262, '20 km'], [318, '3,000 m'], [545, '0 m', true]];
+const label = `One drawing of OASA systems at work, linked by one encrypted mesh: ${nodes.map((n) => n.label).join(', ')}.`;
+---
+<div class="pano">
+  <div class="pano-inner">
+    <svg viewBox="0 0 1440 860" role="img" aria-label={label}>
+      <defs>
+        <linearGradient id="pano-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#071726" /><stop offset="0.2" stop-color="#0D2748" /><stop offset="0.36" stop-color="#1F4C84" /><stop offset="0.5" stop-color="#5E93CC" /><stop offset="0.63" stop-color="#C4DCF1" /></linearGradient>
+        <linearGradient id="pano-soil" x1="0" y1="566" x2="0" y2="860" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#CBC2B0" /><stop offset="0.3" stop-color="#A89D88" /><stop offset="0.62" stop-color="#4B4F58" /><stop offset="0.86" stop-color="#132238" /><stop offset="1" stop-color="#071726" /></linearGradient>
+        <linearGradient id="pano-sea" x1="0" y1="560" x2="0" y2="860" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#A9CBE8" /><stop offset="0.16" stop-color="#5E9CC9" /><stop offset="0.5" stop-color="#1D5880" /><stop offset="0.85" stop-color="#0B2B49" /><stop offset="1" stop-color="#071726" /></linearGradient>
+      </defs>
+
+      <g class="scenery" aria-hidden="true">
+        <rect width="1440" height="860" fill="url(#pano-sky)" />
+        {stars.map((s) => <circle cx={s.x} cy={s.y} r={s.r} opacity={s.o} fill="#fff" />)}
+        <path d={`${star4(236, 96, 9)} ${star4(872, 150, 6)} ${star4(1360, 214, 7)}`} class="gold-fill" />
+        <circle cx="1296" cy="86" r="24" fill="#DFE8F3" /><circle cx="1306" cy="80" r="21" fill="#091B30" />
+        <path d="M70 176H1440" class="chart-line" stroke="#9FC0EA" opacity="0.6" />
+        <path d="M70 262H1440" class="chart-line" stroke="#DCEAF8" opacity="0.5" />
+        {clouds.map((c) => (<><path d={c.base} fill="#DCE8F4" opacity="0.9" /><path d={c.top} fill="#FFFFFF" opacity="0.95" /></>))}
+
+        {/* far ridge, headland, mountains */}
+        <path d="M-10 478L70 448L150 466L250 430L350 462L460 436L570 476L690 452L800 486L905 510L905 545L-10 545Z" fill="#B7C9DC" />
+        <path d="M1150 561Q1230 528 1320 542L1450 532V561Z" fill="#9DB6CE" />
+        <path d="M-10 545L-10 430L52 396L100 356L150 316L192 350L236 374L292 354L342 398L402 440L470 492L548 545Z" fill="#8DA2B8" />
+        <path d="M150 316L192 350L236 374L292 354L342 398L402 440L470 492L548 545L318 545L262 452L214 404Z" fill="#0B253A" opacity="0.16" />
+        <path d="M150 316L176 337L163 345L150 334L136 347L124 337Z M292 354L308 368L298 373L290 366L280 374L272 367Z" fill="#FFFFFF" />
+        <path d="M-10 545L-10 498L60 478L130 506L212 484L296 516L372 545Z" fill="#9FB3A1" />
+        <path d={conifers} fill="#5F7C66" />
+
+        {/* water, drawn before the land so the shore overlaps it */}
+        <rect x="930" y="560" width="520" height="310" fill="url(#pano-sea)" />
+        <path d="M1070 562L1010 860H1090L1120 562Z M1230 562L1210 860H1300L1290 562Z" fill="#FFFFFF" opacity="0.07" />
+        <path d={wave(560, 3, 36, 936, 1450)} stroke="#4F86BD" stroke-width="2.5" fill="none" />
+        <path d={wave(574, 2, 30, 990, 1450)} stroke="#FFFFFF" stroke-width="1.2" fill="none" opacity="0.5" />
+        <path d="M1010 650H1440 M1040 740H1440" class="chart-line" stroke="#CFE2F3" stroke-width="1" opacity="0.45" />
+
+        {/* land: soil cutaway down to the riverbed, then grass */}
+        <path d="M-10 545L905 545Q940 550 955 582Q975 642 1005 700Q1040 772 1112 796Q1180 814 1250 800Q1330 784 1400 804L1450 810V870H-10Z" fill="url(#pano-soil)" />
+        <path d="M-10 628Q200 618 420 632T900 626 M-10 676Q240 690 480 678T960 690 M-10 730Q260 718 520 734T1010 726" stroke="#0B253A" stroke-width="1.2" fill="none" opacity="0.16" />
+        <path d="M-10 545L905 545Q940 550 955 582L944 596Q930 574 898 572L-10 572Z" fill="#D2E0C6" />
+        <path d="M-10 545L905 545Q940 550 955 582" stroke="#6F9160" stroke-width="3" fill="none" />
+        <path d="M955 582Q975 642 1005 700Q1040 772 1112 796Q1180 814 1250 800Q1330 784 1400 804L1450 810" stroke="#0B253A" stroke-width="2" fill="none" opacity="0.35" />
+        <path d={kelp} stroke="#3F8F7C" stroke-width="4" stroke-linecap="round" fill="none" />
+        <path d="M1288 794v-18m0 6l-9 -10m9 4l9 -12 M1316 790v-14m0 5l8 -9" stroke="#E0A99B" stroke-width="4" stroke-linecap="round" fill="none" />
+        <path d="M1262 800a12 12 0 0 1 24 0Z" fill="#C98A7A" />
+        <path d={school} fill="#9FC0EA" opacity="0.85" />
+
+        {/* town: poles and wire, barn and silo, makerspace, house, trees */}
+        <path d="M770 545V486 M900 545V496" stroke="#8A6A4A" stroke-width="4" fill="none" /><path d="M762 494H778 M892 504H908" stroke="#8A6A4A" stroke-width="3" /><path d="M770 492Q836 520 900 502" stroke="#5B6B7D" stroke-width="1.4" fill="none" />
+        <path d="M336 545V512L346 498H380L390 512V545Z" fill="#A65F48" /><path d="M330 514L346 496H380L396 514L390 516L378 502H348L336 516Z" fill="#4F5F78" /><path d="M356 545V526H370V545Z" fill="#7E4535" />
+        <path d="M400 545V492Q408 480 416 492V545Z" fill="#DFE6EC" stroke="#9AA8B8" stroke-width="1.2" />
+        <path d="M694 545V498H760V545Z" fill="#F9FBFC" stroke="#9AA8B8" stroke-width="1.5" /><path d="M688 500L694 486H760L766 500Z" fill="#4F5F78" /><path d="M702 510h14v12h-14Z M722 510h14v12h-14Z" fill="#9FC0EA" /><path d="M742 545V520h12v25Z" fill="#4F5F78" />
+        <path d="M560 545V522H586V545Z" fill="#F9FBFC" stroke="#9AA8B8" stroke-width="1.2" /><path d="M556 524L573 508L590 524Z" fill="#4F5F78" />
+        {townTrees.map(([x, r]) => (<><path d={`M${x} 545V${545 - r}`} stroke="#6B5A45" stroke-width="2.5" /><circle cx={x} cy={545 - r - 8} r={r} fill="#7F9A6A" /></>))}
+
+        {/* pipe under the street and the shaft down to it */}
+        <path d="M646 572V642" stroke="#8C8473" stroke-width="12" /><path d="M646 572V642" stroke="#E3DDD1" stroke-width="8" />
+        <rect x="300" y="642" width="640" height="38" rx="19" fill="#E3DDD1" stroke="#8C8473" stroke-width="2" /><path d="M380 642v38M500 642v38M760 642v38M860 642v38" stroke="#8C8473" stroke-width="1.5" />
+      </g>
+
+      <g class="links" aria-hidden="true">
+        {links.map(([a, b, kind = 'mesh']) => kind === 'acoustic'
+          ? <path d={line(a, b)} class="l-acoustic" />
+          : <><path d={line(a, b)} class={`l-${kind}-under`} /><path d={line(a, b)} class={`l-${kind}`} /></>)}
+      </g>
+
+      <g class="nodes" aria-hidden="true">
+        {nodes.map((n) => {
+          const R = n.hub ? 28 : 23;
+          return (
+            <g transform={`translate(${n.x} ${n.y})`} class:list={['node', `n-${n.domain}`, { 'n-high': n.domain === 'air' && n.y < 300, 'n-deep': n.domain === 'water' && n.y > 600 }]}>
+              {n.hub && <circle r={R + 9} class="halo" />}
+              {!n.hub && n.domain === 'land' && <circle r={R + 4.5} class="ring" />}
+              {!n.hub && n.domain === 'water' && <circle r={R + 4.5} class="dotring" />}
+              <circle r={R} class="disc" />
+              {n.domain === 'air' && <path d={`M${R + 1.5} 0H${R + 7}M${-R - 1.5} 0H${-R - 7}M0 ${R + 1.5}V${R + 7}M0 ${-R - 1.5}V${-R - 7}`} class="ticks" />}
+              <g transform={`scale(${(R / 27).toFixed(3)})`}>
+                {glyphs[n.glyph].map(([t, d, sw]) => t === 's'
+                  ? <path d={d} class="g-s" stroke-width={sw} />
+                  : <path d={d} class={t === 'f' ? 'g-f' : 'g-k'} />)}
+              </g>
+            </g>
+          );
+        })}
+      </g>
+
+      <g class="labels" aria-hidden="true">
+        {nodes.map((n) => <text x={n.x + (n.dx ?? 0)} y={n.y + n.dy} class:list={['lbl', n.anchor, { 'on-light': n.onLight }]}>{n.label}</text>)}
+        <path d="M24 60V545" stroke="#FFFFFF" stroke-width="2" opacity="0.7" /><path d="M24 545V820" stroke="#0B253A" stroke-width="2" opacity="0.5" />
+        {ticks.map(([y, t, onLight]) => (
+          <>
+            <path d={`M24 ${y}H40`} stroke={onLight ? '#0B253A' : '#FFFFFF'} stroke-width="2" />
+            <text x="48" y={y + 5} class:list={['tick', 'start', { 'on-light': onLight }]}>{t}</text>
+          </>
+        ))}
+        <text x="1428" y="645" class="tick end">−50 m</text>
+        <text x="1428" y="735" class="tick end">−150 m</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<style>
+  /* On narrow screens the drawing keeps a readable size and shows its middle (the town). */
+  .pano { overflow: hidden; }
+  .pano-inner { width: max(100%, 57.5rem); margin-left: 50%; transform: translateX(-50%); }
+  svg { width: 100%; height: auto; }
+
+  .gold-fill { fill: var(--gold); }
+  .chart-line { fill: none; stroke-width: 1.2; stroke-dasharray: 2 7; }
+
+  .l-mesh-under { fill: none; stroke: var(--navy); stroke-width: 5; opacity: 0.28; stroke-linecap: round; }
+  .l-mesh { fill: none; stroke: var(--gold); stroke-width: 2.4; stroke-linecap: round; }
+  .l-tether-under { fill: none; stroke: #f4f7fa; stroke-width: 4; opacity: 0.5; }
+  .l-tether { fill: none; stroke: #44556a; stroke-width: 2; }
+  .l-acoustic { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 1 7; stroke-linecap: round; }
+
+  .node { --rim: #2f6fb0; --fill: #ffffff; }
+  .n-high { --rim: #8fc0f2; }
+  .n-land { --rim: #7a4f26; --fill: #fdf8f1; }
+  .n-water { --rim: #16566a; --fill: #f0f7fa; --dots: #16566a; }
+  .n-deep { --dots: #bfd9ea; }
+  .disc { fill: var(--fill); stroke: var(--rim); stroke-width: 3; }
+  .ticks { stroke: var(--rim); stroke-width: 3; }
+  .ring { fill: none; stroke: var(--rim); stroke-width: 1.25; }
+  .dotring { fill: none; stroke: var(--dots); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 0 4.5; }
+  .halo { fill: none; stroke: var(--gold); stroke-width: 1.75; stroke-dasharray: 4 5; }
+  .g-f { fill: var(--navy); }
+  .g-k { fill: var(--fill); }
+  .g-s { fill: none; stroke: var(--navy); stroke-linecap: round; stroke-linejoin: round; }
+
+  text { font-family: var(--font-body); font-weight: 700; text-anchor: middle; fill: var(--white); paint-order: stroke; stroke: var(--navy); stroke-width: 4px; stroke-linejoin: round; }
+  text.start { text-anchor: start; }
+  text.end { text-anchor: end; }
+  text.on-light { fill: var(--navy); stroke: var(--white); }
+  .lbl { font-size: 15px; }
+  .tick { font-size: 13px; stroke-width: 3px; }
+  text.tick.end { font-size: 12px; }
+
+  @media (forced-colors: active) {
+    text { stroke: none; }
+  }
+</style>

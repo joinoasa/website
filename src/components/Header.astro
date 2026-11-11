@@ -1,15 +1,18 @@
 ---
 import { nav } from '../config/site';
 
+// `dark` puts the header on the deep navy of a dark page top (the home page).
+interface Props { dark?: boolean }
+const { dark = false } = Astro.props;
 const links = nav.primary;
 const path = Astro.url.pathname;
 const onJoin = path.startsWith(nav.apply.href);
 ---
-<header class="site-header">
+<header class:list={['site-header', { 'on-dark': dark }]}>
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="OASA home">
-      <img src="/oasa-mark.svg" width="47" height="32" alt="" />
-      <img class="word" src="/oasa-wordmark.svg" width="86" height="22" alt="OASA" />
+      <img src={dark ? '/oasa-mark-on-dark.svg' : '/oasa-mark.svg'} width="47" height="32" alt="" />
+      <img class="word" src={dark ? '/oasa-wordmark-white.svg' : '/oasa-wordmark.svg'} width="86" height="22" alt="OASA" />
     </a>
 
     <nav class="desktop" aria-label="Main">
@@ -57,6 +60,15 @@ const onJoin = path.startsWith(nav.apply.href);
   .menu ul { flex-direction: column; align-items: stretch; gap: 0; }
   .menu li + li { border-top: 1px solid var(--contour); }
   .menu a { width: 100%; }
+
+  /* Dark variant. The menu panel stays a white surface, so only the bar changes. */
+  .on-dark { --focus: var(--focus-on-dark); background: #071726; border-bottom-color: rgb(255 255 255 / 0.12); }
+  .on-dark .desktop a:not(.btn) { color: var(--on-dark-muted); }
+  .on-dark .desktop a:not(.btn):hover, .on-dark .desktop a:not(.btn)[aria-current='page'] { color: var(--on-dark); border-bottom-color: var(--chart-on-dark); }
+  .on-dark .menu summary { color: var(--on-dark); border-color: var(--chart-on-dark); }
+  .on-dark .menu summary:hover, .on-dark .menu summary:active { background: var(--surface-dark-hover); }
+  .on-dark .menu[open] summary { border-color: var(--on-dark); }
+  .on-dark .menu nav { --focus: var(--airspace); }
 
   @media (max-width: 760px) {
     .desktop { display: none; }

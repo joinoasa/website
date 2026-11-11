@@ -104,6 +104,7 @@ export const nav = {
     { href: '/techtree/', label: 'Tech tree' },
     { href: '/ideas/', label: 'Ideas' },
     { href: '/roles/', label: 'Open roles' },
+    { href: '/partners/', label: 'Partners' },
   ] as NavLink[],
   apply: { href: '/join/', label: 'Apply to join', short: 'Apply' },
   footer: [
