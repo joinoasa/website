@@ -117,8 +117,8 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 |---|---|---|---|---|---|
 | T-MAP1 | TAK bridge (position, battery, status) | R-COM2, R-NAV1 | R-COM7, T-MAP2, T-RF2, T-RF4, T-UPD2, O-3, O-26, MS-7 | CoT, geospatial data | 🔒 |
 | T-MAP2 | Tap-to-control from TAK | T-MAP1, R-CTL2 | T-NET3, T-AI3, T-TSK1, T-LEARN1 | Mission control, UX | 🔒 |
-| T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, T-UPD2, S-2, I-1 | Mesh networking | 🔒 |
-| T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, T-RF4, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
+| T-NET1 | Small encrypted mesh (3–5 nodes) | R-COM2, R-SEC2 | T-NET2, T-NET5, T-NODE1, T-UPD2, T-MSG1, S-2, I-1 | Mesh networking | 🔒 |
+| T-NET2 | Best-path routing + traffic priority | T-NET1 | T-NET3, T-VID1, T-TSK1, T-RF4, T-MSG2, A-7, L-6, M-5, SP-3, MS-7 | Routing algorithms, QoS | 🔒 |
 | T-NET3 | Multi-GCS handoff, multi-operator control | T-NET2, T-MAP2 | T-NET4, O-4 | Distributed systems | 🔒 |
 | T-NET4 | Large mesh scaling (100+ nodes) | T-NET3 | R-TIME2, O-1, O-14, MS-1, MS-10 | Network scaling | 🔒 |
 | T-NET5 | Meshtastic / LoRa bridge (encrypted gateway between OASA and Meshtastic networks) | T-NET1 | O-18, O-22, MS-20, MS-23 | LoRa, protocol bridging | 🔒 |
@@ -161,6 +161,8 @@ Like a tech tree in a video game: every system grows from the same **roots**, sh
 | T-UPD1 | Signed updates (OASA-UPDATE): every release signed, checked on the device before install; installs only when landed and approved; trial boot, then confirm or revert | R-SEC1 | T-UPD2, MS-7 | Software supply chain, bootloaders, security | 🔒 |
 | T-UPD2 | Field updates: a ground station caches signed updates and serves its fleet over Wi-Fi or the mesh; every device's version shows on TAK | T-UPD1, T-NET1, T-MAP1 | — | Distributed systems, operations | 🔒 |
 | T-FILES1 | Shared project files (OASA-FILES): a repo manifest (`oasa.toml`) first, then BOMs, CAD metadata and test results that people and AI tools read the same way | — | MS-8 | Data formats, documentation | 🟢 |
+| T-MSG1 | Phone radio and messenger: a pocket open-hardware radio that pairs with a phone over USB-C or wirelessly, with an app for private encrypted text and push-to-talk voice between nearby users when there is no cell service; relays through OASA nodes | T-NET1 | T-MSG2 | Embedded hardware, mobile apps, voice codecs, mesh networking | 🔒 |
+| T-MSG2 | Phone radio calls and photos: two-way voice calls and photo sharing on a faster radio, with channel sharing so many users can be in range at once | T-MSG1, T-NET2 | — | RF design, voice and image compression, QoS | 🔒 |
 
 ---
 
