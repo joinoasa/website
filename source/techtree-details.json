@@ -1271,5 +1271,17 @@
     "github": "https://github.com/joinoasa/techtree/issues/177",
     "lead": "citruscybersec",
     "team": []
+  },
+  "T-MSG1": {
+    "brief": "A small open radio that plugs into or pairs with a phone, and an app that sends private encrypted texts and push-to-talk voice to people nearby when there is no cell service, at a crowded event or in the wilderness. Messages hop through other users and OASA nodes.",
+    "github": null,
+    "lead": null,
+    "team": []
+  },
+  "T-MSG2": {
+    "brief": "Adds two-way voice calls and photo sharing to the phone radio on a faster radio, and shares channels so many users in one place don't block each other.",
+    "github": null,
+    "lead": null,
+    "team": []
   }
 }
