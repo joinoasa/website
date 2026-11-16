@@ -241,6 +241,14 @@ Run `apps:due` weekly. Guardian consent (youth, when it opens) can still be set 
 
 **Deleting an application on request:** `npx wrangler d1 execute DB --remote --command "DELETE FROM application_events WHERE app_id = 12; DELETE FROM applications WHERE id = 12"`. Also delete the matching Discord alert message (the scripts never touch Discord).
 
+### Waitlists
+
+Project pages can collect email sign-ups (first: `/phone-radio/`). The form posts to `POST /api/waitlist`, which stores the address and the list name in the `waitlist` table (`migrations/0004_waitlist.sql`) and nothing else. No alert is sent. To add a list, add its slug and pages to `WAITLISTS` in `worker/index.ts`.
+
+```bash
+npx wrangler d1 execute DB --remote --command "SELECT list, COUNT(*) FROM waitlist GROUP BY list"
+```
+
 ### Yearly chores
 
 - Renew `security.securityTxtExpires` in `src/config/site.ts`.

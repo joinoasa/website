@@ -4,6 +4,8 @@
 //
 // POST /api/apply  stores a membership application in D1, posts a short alert to Discord and
 //                  opens an "Applicant" issue in the private joinoasa/admin repo.
+// POST /api/waitlist  stores an email address on a project waitlist in D1 (first: /phone-radio/).
+//                  No alert is sent and nothing but the address and the list name is kept.
 // Cron (Mondays)   posts the weekly applications digest to Discord #staff (worker/admin.js).
 //
 // Bindings and secrets (README → "Applications"):
@@ -38,12 +40,18 @@ interface Ctx { waitUntil(p: Promise<unknown>): void }
 const THANKS = '/join/thanks/';
 const NOT_SENT = '/join/not-sent/';
 const MAX_BODY = 64 * 1024;
+// Project waitlists: slug -> the pages a browser without JavaScript is sent to.
+const WAITLISTS: Record<string, Pages> = {
+  'phone-radio': { ok: '/phone-radio/thanks/', fail: '/phone-radio/not-sent/' },
+};
+const MAX_EMAIL = 254;
 const EMAIL_RE = /^[^\s@<>()[\],;:"]+@[^\s@<>()[\],;:"]+\.[^\s@<>()[\],;:"]{2,}$/;
 
+interface Pages { ok: string; fail: string }
 type Values = Record<string, string>;
 type Errors = Record<string, string>;
 
-export { validate, clean };
+export { validate, clean, waitlistEmail };
 
 export default {
   async fetch(request: Request, env: Env, ctx: Ctx): Promise<Response> {
@@ -55,6 +63,15 @@ export default {
       } catch (err) {
         console.error('apply failed', err);
         return reply(request, 500, { ok: false, reason: 'server', message: 'Something went wrong on our side. Please try again in a few minutes.' });
+      }
+    }
+    if (url.pathname === '/api/waitlist' || url.pathname === '/api/waitlist/') {
+      if (request.method !== 'POST') return json({ ok: false, message: 'Use POST.' }, 405, { Allow: 'POST' });
+      try {
+        return await waitlist(request, env);
+      } catch (err) {
+        console.error('waitlist failed', err);
+        return reply(request, 500, { ok: false, reason: 'server', message: 'Something went wrong on our side. Please try again in a few minutes.' }, WAITLISTS['phone-radio']);
       }
     }
     if (url.pathname.startsWith('/api/')) return json({ ok: false, message: 'Not found.' }, 404);
@@ -120,6 +137,57 @@ async function apply(request: Request, env: Env, ctx: Ctx): Promise<Response> {
   if (env.ADMIN_ISSUES_TOKEN) ctx.waitUntil(openApplicantIssue(env.ADMIN_ISSUES_TOKEN, ADMIN_REPO, () => applicantIssue(id, values)));
 
   return reply(request, 200, { ok: true, redirect: THANKS });
+}
+
+/** Adds an email address to a project waitlist. Stores the address and the list name only. */
+async function waitlist(request: Request, env: Env): Promise<Response> {
+  let pages = WAITLISTS['phone-radio'];
+  const origin = request.headers.get('Origin');
+  if (origin && origin !== new URL(request.url).origin) {
+    return reply(request, 403, { ok: false, reason: 'origin', message: 'This form only accepts submissions from joinoasa.org.' }, pages);
+  }
+  const length = Number(request.headers.get('Content-Length') ?? 0);
+  if (length > MAX_BODY) return reply(request, 413, { ok: false, reason: 'size', message: 'That is too long.' }, pages);
+
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return reply(request, 400, { ok: false, reason: 'format', message: 'We could not read the form. Please try again.' }, pages);
+  }
+
+  const list = str(form.get('list'));
+  if (!Object.hasOwn(WAITLISTS, list)) {
+    return reply(request, 400, { ok: false, reason: 'invalid', message: 'Unknown waitlist.' }, pages);
+  }
+  pages = WAITLISTS[list];
+
+  // Honeypot: people never see this field, so anything in it is a bot. Pretend it worked.
+  if (str(form.get('website'))) return reply(request, 200, { ok: true, redirect: pages.ok }, pages);
+
+  if (!env.DB) {
+    return reply(request, 503, { ok: false, reason: 'not_ready', message: 'The waitlist is not open yet. Please email us instead.' }, pages);
+  }
+
+  if (env.TURNSTILE_SECRET) {
+    const passed = await turnstile(env.TURNSTILE_SECRET, str(form.get('cf-turnstile-response')), request.headers.get('CF-Connecting-IP'));
+    if (!passed) return reply(request, 400, { ok: false, reason: 'captcha', message: 'The spam check did not pass. Please try again.' }, pages);
+  }
+
+  const email = waitlistEmail(str(form.get('email')));
+  if (!email) {
+    return reply(request, 400, { ok: false, reason: 'invalid', message: 'Please enter a valid email address.', errors: { email: 'Please enter a valid email address.' } }, pages);
+  }
+
+  // Signing up twice is fine: the second insert is ignored and the answer is the same.
+  await env.DB.prepare('INSERT OR IGNORE INTO waitlist (list, email) VALUES (?1, ?2)').bind(list, email).run();
+  return reply(request, 200, { ok: true, redirect: pages.ok }, pages);
+}
+
+/** A cleaned, lower-case email address, or '' if it is not one. */
+function waitlistEmail(raw: string): string {
+  const v = raw.normalize('NFC').replace(/[\u0000-\u001F\u007F]/g, '').trim().toLowerCase();
+  return v.length <= MAX_EMAIL && EMAIL_RE.test(v) ? v : '';
 }
 
 function validate(form: FormData): { values: Values; errors: Errors } {
@@ -218,9 +286,9 @@ async function notify(webhook: string, id: number, v: Values): Promise<void> {
 interface Outcome { ok: boolean; redirect?: string; reason?: string; message?: string; errors?: Errors }
 
 /** JSON for the page's script; a redirect for browsers without JavaScript. */
-function reply(request: Request, status: number, body: Outcome): Response {
+function reply(request: Request, status: number, body: Outcome, pages: Pages = { ok: THANKS, fail: NOT_SENT }): Response {
   if ((request.headers.get('Accept') ?? '').includes('application/json')) return json(body, status);
-  const to = body.ok ? THANKS : `${NOT_SENT}?reason=${encodeURIComponent(body.reason ?? 'server')}`;
+  const to = body.ok ? pages.ok : `${pages.fail}?reason=${encodeURIComponent(body.reason ?? 'server')}`;
   return new Response(null, { status: 303, headers: { Location: to, 'Cache-Control': 'no-store' } });
 }
 

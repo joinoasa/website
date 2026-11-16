@@ -1,0 +1,72 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site, contact, mailto } from '../../config/site';
+
+const siteKey = site.apply.turnstileSiteKey;
+const general = contact('general');
+
+const does = [
+  { title: 'Voice, nearby', body: 'Call someone and talk, one person at a time, like a walkie-talkie.' },
+  { title: 'Private text, farther', body: 'One-to-one and group messages that only your group can read.' },
+  { title: 'A shared map', body: 'See where your group is, on maps you downloaded ahead of time.' },
+  { title: 'No account, no subscription', body: 'No sign-up, no phone number and no server.' },
+];
+---
+<Base title="Keelstead" description="Keelstead is a pocket radio and an app for private voice and text between people nearby when there is no cell service. Open hardware, open source. Join the waitlist.">
+  <header class="page-head">
+    <div class="wrap">
+      <h1>Private voice and text when there is no service</h1>
+      <p class="lede">Keelstead is a pocket radio that pairs with your phone, and an app for iPhone and Android. For crowded events where the network is overloaded, and for places where there is none.</p>
+    </div>
+  </header>
+
+  <div class="wrap section prose">
+    <h2 class="first">What it does</h2>
+    <dl class="does">
+      {does.map((d) => (
+        <div><dt>{d.title}</dt><dd>{d.body}</dd></div>
+      ))}
+    </dl>
+    <p>Every radio passes on other people's messages without being able to read them, so coverage grows with each one nearby. The hardware, the radio's software and the apps are all open source.</p>
+
+    <h2>Where it stands</h2>
+    <p>Early. Bench tests come first, and we'll post the results as we go, including what doesn't work. We'll publish range and battery life only after we have measured them outdoors. It is tech tree node <a href="/techtree/#T-MSG1">T-MSG1</a>.</p>
+
+    <h2 id="waitlist">Join the waitlist</h2>
+    <p>Leave your email and we'll write when Keelstead has something to show: test results, the beta and preorders. Nothing else.</p>
+    <form class="waitlist" method="post" action="/api/waitlist">
+      <input type="hidden" name="list" value="phone-radio" />
+      <div class="field">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" />
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label for="website">Leave this empty</label>
+        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      {siteKey && (
+        <div class="spam">
+          <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light" data-size="flexible"></div>
+          <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        </div>
+      )}
+      <button class="btn btn-primary" type="submit">Join the waitlist</button>
+      <p class="small">We keep only your email address and the date you joined. See the <a href="/privacy/#waitlists">privacy page</a>. To leave the list, email <a href={mailto(general, 'Remove me from the phone radio waitlist')}>{general}</a>.</p>
+    </form>
+  </div>
+</Base>
+<style>
+  .prose .first { margin-top: 0; }
+  .does { margin: 0 0 var(--space-6); max-width: 46rem; border-top: 2px solid var(--ink); }
+  .does > div { display: grid; grid-template-columns: 1fr 1.6fr; gap: var(--space-4); padding-block: var(--space-4); border-bottom: 1px solid var(--contour); }
+  .does dt { font-weight: var(--weight-bold); }
+  .does dd { margin: 0; color: var(--ink-soft); }
+  .waitlist { max-width: 30rem; }
+  .field { display: grid; gap: var(--space-1); margin-bottom: var(--space-4); }
+  .field label { font-weight: var(--weight-bold); }
+  .field input { min-height: var(--tap); padding: var(--space-2) var(--space-3); font: inherit; border: 1px solid var(--ink); border-radius: 4px; background: transparent; color: inherit; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .cf-turnstile { margin: var(--space-2) 0 var(--space-4); }
+  .small { font-size: var(--step--1); color: var(--ink-soft); margin-top: var(--space-4); }
+  @media (max-width: 640px) { .does > div { grid-template-columns: 1fr; gap: var(--space-1); } }
+</style>
