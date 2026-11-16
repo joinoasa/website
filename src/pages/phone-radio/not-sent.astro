@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { contact, mailto } from '../../config/site';
+
+const general = contact('general');
+---
+<Base title="Not added to the waitlist" description="Your waitlist sign-up did not go through." noindex>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>You weren't added to the waitlist</h1>
+      <p class="lede" id="why">Something went wrong with the form.</p>
+    </div>
+  </header>
+
+  <div class="wrap section prose">
+    <p>Please go back and try again, and check that the email address is complete.</p>
+    <p class="actions"><a class="btn btn-primary" href="/phone-radio/#waitlist">Back to the form</a><a class="btn btn-ghost" href={mailto(general, 'Add me to the phone radio waitlist')}>Join by email instead</a></p>
+  </div>
+</Base>
+<script>
+  const reasons: Record<string, string> = {
+    invalid: "That email address didn't look right.",
+    captcha: "The spam check didn't pass. Please try again.",
+    size: 'That was too long.',
+    not_ready: 'The waitlist is not open yet. Please join by email.',
+    origin: 'The form was sent from somewhere other than joinoasa.org.',
+    server: 'Something went wrong on our side. Please try again in a few minutes.',
+  };
+  const reason = new URLSearchParams(location.search).get('reason') ?? '';
+  const el = document.getElementById('why');
+  if (el && reasons[reason]) el.textContent = reasons[reason];
+</script>
+<style>
+  .actions { margin-block: var(--space-6); }
+</style>
